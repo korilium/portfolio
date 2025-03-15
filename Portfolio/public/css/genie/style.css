@@ -80,11 +80,11 @@ body {
 .profile-picture {
     position: absolute; /* Position relative to .background-picture */
     bottom: 10px;
-    left: 10px;
+    left: 20px;
     border-radius: 50%;
     overflow: hidden;
-    width: 100px;
-    height: 100px;
+    width: 10vw;
+    height: 10vw;
     z-index: 1; /* Ensure it appears above the background */
 }
 
@@ -92,4 +92,41 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.story {
+    position: relative;
+    padding: 20px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    z-index: 2;
+}
+
+.footer {
+    position: relative;
+    padding: 20px;
+    height: 100px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: center;
+    gap: 30px;
+    z-index: 4;
+}
+
+.socials {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    gap: 20px; /* Add spacing between icons */
+    padding: 10px; /* Optional padding for spacing */
+}
+
+.socials-icon img[alt="github"] {
+    width: 50px; /* Set the desired width */
+    height: 50px; /* Set the desired height */
 }

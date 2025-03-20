@@ -1,0 +1,7 @@
+@import url("style.css");
+
+
+.menu a[href="resume.html"] {
+    text-decoration: underline; /* Underline the Home link */
+    text-underline-offset: 4px; /* Add some space between the text and the underline */
+}

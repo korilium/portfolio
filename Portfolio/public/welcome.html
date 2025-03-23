@@ -26,24 +26,106 @@
   </header>
   
   <main class="page"> 
+    <script src="script.js"></script>
     <section class="background-picture">
-      <img src="img/deltaOverT2.svg" alt="Background Image">
+      <div class="container">
+        <div class="delta" id="delta">Δ</div>
+        <div class="division-line"></div>
+        <div class="time" id="time">t</div>
+      </div>
       <div class="profile-picture">
         <img src="img/profilePic.jpg" alt="Profile Picture">
       </div>
     </section>
     
     <section class="story">
-      <h1>Key Takeaways</h1>
-      <p>In the heart of Hesbaie lies Borgloon—my hometown where collaboration wasn’t just a word, but a way of life. I grew up in a place where firing up the BBQ for a community cookout or organizing creative events at the youth bar meant everyone rolled up their sleeves and turned everyday gatherings into lively celebrations.</p>
-      <p>That same spirit of self-reliance and community magic still inspires me today. As I stepped into university life, I discovered that true success isn’t about boasting—it’s about the grit and grind. My first venture into entrepreneurship quickly taught me that business is 1% inspiration and 99% perspiration. When aspirations started to fade, an exchange program took my attention away from me to Flint, Michigan. Far from the nurturing embrace of Borgloon, Flint’s rough edges reminded me that a supportive community and safe space can vanish in the blink of an eye. This revelation deepened my appreciation for social cohesion and the vital importance of understanding one another.</p>
-      <p>After returning home with a burning question—how could a once-prosperous region lose its wealth so quickly?—I dove into actuarial & financial engineering studies at KU Leuven. It was here that the world of finance beckoned, introducing me to the realms of the stock market, mortality, and general financial literacy. At the time, decentralized finance in the cryptospace piqued my interest as I realized that while financial markets could be more efficient and less costly for society, there was little to no incentive to change that. The relentless power of compound interest is the great driver of wealth creation and the main cause that widens the gap of inequality. To restructure the concept of compound interest into a tool that stimulates continuous merit and good housefathering rather than one that benefits a select few of wealthy people, is an idea of great pondering for me.</p>
-      <p>My journey then led me to Brussels, where I embraced a new chapter in the bustling heart of the city as I started working for a consumer organization. I initially set up home on Zuidlaan, just a stone’s throw from the South Station—a neighborhood that, while far from glamorous, offered me a raw and authentic glimpse into urban life. It was there where wealth inequality can be seen on the streets instead of being an interesting statistic number. It wasn’t long before I discovered that working for a consumer rights organization wasn’t quite what I’d imagined. Instead of championing consumer protection, I found myself caught up in a relentless drive to boost subscription numbers—a sharp contrast to the pertained image that I had in mind.</p>
-      <p>Disillusioned by this charade, I eventually started to look for other opportunities and I moved into a modest apartment above my aunt at Barricade Plein. I accepted the fact that although the financial world had its flaws, at least its high fees and exuberant profits were laid bare. With that honest exposure, I plunged back into finance, eventually joining Marsh McLennan—a financial consultancy group where I tackled the challenging task of helping organizations navigate their pension liabilities.</p>
-      <p>Relocating to Etterbeek with friends for a better work-life balance, I embraced the steep learning curve with determination and grit. Amidst this whirlwind of professional reinvention, a personal passion project—Peccon (short for Pecunia Consulium)—began to take shape. My dream is to democratize finance by boosting financial literacy, crafting intuitive planning tools, establishing a democratic fund, and designing financial products with a social conscience. I’ve already developed a modern portfolio theory tool, yet I’m still on the hunt for a slick, integrated website that can harmonize all these elements into one dynamic platform.</p>
-      <p>This is my journey—from the nurturing orchards of Borgloon to the bustling urban sprawl near Zuidlaan and beyond—a story of hard work, community spirit, and the relentless belief that, when we roll up our sleeves, we can build something truly extraordinary.</p>
-    </section>
+      <h1>In short</h1>
+      <p>Time flies, especially in this era. The present, our delta t, has never had so many options to chose from. paradoxically we now live longer then ever before. Reconciling the present needs with the future necessities is one humankind most difficult endeavors. How do people opt for the best choice?   </p>
+      </section>
+    <div class="marquee">
+      <div class="panel">
+        <div class="box"><p>Box 1</p></div>
+        <div class="box"><p>Box 2</p></div>
+        <div class="box"><p>Box 3</p></div>
+        <div class="box"><p>Box 4</p></div>
+        <div class="box"><p>Box 5</p></div>
+        <div class="box"><p>Box 6</p></div>
+
+      </div>
+    </div>
   </main>
+
+  <script>
+    const boxes = document.querySelectorAll('.box');
+    const panel = document.querySelector('.panel');
+    let currentIndex = 2; // Start with Box 2 selected (index 2)
+    let autoSelectInterval;
+    let isHovered = false;
+
+    function updateSelectedBox() {
+      boxes.forEach((box, index) => {
+        box.classList.remove('selected', 'fade');
+        box.style.opacity = '0'; // Default to hidden for non-adjacent boxes
+  
+        if (index === currentIndex) {
+          box.classList.add('selected');
+          box.style.opacity = '1'; // Fully visible selected box
+        } else if (index === currentIndex - 1 || index === currentIndex + 1) {
+          box.classList.add('fade');
+          box.style.opacity = '1'; // Visible adjacent boxes with less opacity
+        } else if (index === currentIndex - 2 || index === currentIndex + 2) {
+          box.classList.add('fade');
+          box.style.opacity = '0.7'; // Less visible boxes that are further away
+        }
+      });
+  
+      // Ensure the selected box is always centered
+      const offset = -(currentIndex * (150 + 16)); // Offset calculation to center the selected box
+      panel.style.transform = `translateX(calc(50vw - 83px + ${offset}px))`;
+    }
+  
+    function moveToNextBox() {
+      currentIndex = (currentIndex + 1) % boxes.length; // Loop back to the beginning after the last box
+      updateSelectedBox();
+    }
+  
+    // Handle user click to select a box
+    boxes.forEach((box, index) => {
+      box.addEventListener('click', () => {
+        currentIndex = index; // Update selection when clicked
+        updateSelectedBox();
+        resetAutoSelect(); // Reset auto select when user clicks
+      });
+    });
+  
+    // Pause auto selection when mouse is hovering over the panel
+    panel.addEventListener('mouseenter', () => {
+      isHovered = true;
+      resetAutoSelect(); // Stop automatic box selection on hover
+    });
+  
+    panel.addEventListener('mouseleave', () => {
+      isHovered = false;
+      startAutoSelect(); // Resume automatic box selection when mouse leaves
+    });
+  
+    function startAutoSelect() {
+      if (!autoSelectInterval && !isHovered) {
+        autoSelectInterval = setInterval(() => {
+          moveToNextBox();
+        }, 7000); // Select the next box every 5 seconds
+      }
+    }
+  
+    function resetAutoSelect() {
+      clearInterval(autoSelectInterval);
+      autoSelectInterval = null;
+    }
+  
+    // Initialize the panel to loop the boxes and center the selected box
+    updateSelectedBox(); // Ensure the first box is selected on load
+    startAutoSelect();
+  </script>
   
   <footer class="footer">
     <div class="socials"> 

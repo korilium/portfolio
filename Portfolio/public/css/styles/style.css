@@ -6,9 +6,9 @@
 }
 
 body {
-    font-family: 'Courier New', Courier, monospace; /* Typewriting font */
+    font-family: Arial, Helvetica, sans-serif; /* Ensure consistent font with other elements */
     font-size: small;
-    color: #D5E2DF;
+    color: #c1ddd6;
 }
 
 .header {
@@ -41,7 +41,8 @@ body {
 
 .menu a {
     text-decoration: none; /* Added to remove underline from links */
-    color: #D5E2DF; /
+    color: #D5E2DF; 
+    font-family: 'Courier New', Courier, monospace; /* Typewriting font */
 
 
 }

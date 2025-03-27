@@ -12,10 +12,12 @@
 
   
 .container {
+    padding-top: 100px;
     text-align: center;
     position: relative;
     font-size: 3rem; /* Adjusted for better scaling */
     margin: 0 auto;
+    min-height: 300px;
   }
   
   /* Delta and Time Styling */
@@ -84,6 +86,7 @@
 
 
 .background-picture img {
+  
     width: 100%;
     height: auto;
     max-height: 350px; /* Ensure the image height maxes out at 250px */
@@ -96,40 +99,47 @@
   padding: 0 20px; /* Add padding for smaller screens */
 }
 .profile-picture-container {
-  position: relative; /* Allows positioning of the text relative to the image */
-  display: inline-block; /* Keep the image and text inline */
-}
-.profile-picture {
+  display: flex; /* Flexbox for consistent alignment */
+  flex-direction: column; /* Stack the description below the picture */
+  align-items: center; /* Center-align the picture and text */
   position: absolute;
-  bottom: 20px; /* Adjust positioning relative to the background image */
-  left: 20px; /* Adjust positioning relative to the background image */
+  bottom: 20px; /* Position relative to the background */
+  left: 20px; /* Position relative to the background */
+  z-index: 4; /* Ensure it appears above other elements */
+}
+
+.profile-picture {
   border-radius: 50%; /* Keep the circular shape */
   overflow: hidden; /* Ensure the image stays within the circular boundary */
   width: 15vw; /* Use viewport width for responsiveness */
-  height: 15vw; /* Maintain the aspect ratio */
-  max-width: 400px; /* Set a maximum size for larger screens */
-  max-height: 400px; /* Set a maximum size for larger screens */
+  height: 15vw; /* Maintain a perfect square for circular cropping */
+  max-width: 250px; /* Set a maximum size for larger screens */
+  max-height: 250px; /* Maintain a consistent aspect ratio */
   min-width: 80px; /* Set a minimum size for smaller screens */
-  min-height: 80px; /* Set a minimum size for smaller screens */
+  min-height: 80px; /* Maintain the aspect ratio */
   border: 2px solid #c1ddd6; /* Add a border for emphasis */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  display: flex; /* Flexbox ensures the content inside aligns correctly */
+  align-items: center; /* Center the image vertically */
+  justify-content: center; /* Center the image horizontally */
+  background-color: #000; /* Fallback background color to avoid blank areas */
   z-index: 4; /* Ensure it appears above other elements */
-  text-align: center; /* Ensure the profile picture and text are centered */
-  display: inline-block;
-
 }
 
 .profile-picture img {
-  width: 100%; /* Make the image fill the container */
-  height: 100%; /* Ensure the image maintains the circular shape */
-  object-fit: cover; /* Crop the image to fill the circle */
+  width: 100%; /* Ensure the image fills the container */
+  height: 100%; /* Ensure the image fills the container */
+  border-radius: 50%; /* Creates the circular effect */
+  object-fit: cover; /* Ensures the image is cropped perfectly to fill the circle */
+  object-position: center; /* Centers the image content within the circle */
+  display: block; /* Removes inline-block spacing issues */
 }
+
 .profile-description {
-  font-size: 18px; /* Text size */
+  margin-top: 10px; /* Spacing between the image and text */
+  font-size: 1.2rem; /* Set a responsive font size */
   color: #c1ddd6; /* Text color */
-  margin-top: 5px; /* Space between the image and text */
-  position: absolute;
-  left: 15px; /* Offset text slightly to the right from the image */
+  text-align: center; /* Center the text under the picture */
+  font-weight: bold; /* Make the text bold */
 }
 
 .story {

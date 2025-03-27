@@ -22,12 +22,13 @@ body {
     flex-direction: row;
     justify-content: space-between;
     gap: 30px;
-    z-index: 4;
+
 }
 .menu-container {
     width: 100%;
     display: flex;
     justify-content: flex-end;
+    font-size: large;
 }
 .menu {
         background-color: transparent;
@@ -69,7 +70,11 @@ body {
     background-color: transparent;
 }
 
-
+.page {
+    max-width: 1800px; /* Limit the width for better readability */
+    margin: 0 auto; /* Center the container */
+    padding: 0 20px; /* Add padding for smaller screens */
+  }
 
 
 

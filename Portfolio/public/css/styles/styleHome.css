@@ -93,11 +93,6 @@
     object-fit: cover;
 }
 
-.page {
-  max-width: 1800px; /* Limit the width for better readability */
-  margin: 0 auto; /* Center the container */
-  padding: 0 20px; /* Add padding for smaller screens */
-}
 .profile-picture-container {
   display: flex; /* Flexbox for consistent alignment */
   flex-direction: column; /* Stack the description below the picture */

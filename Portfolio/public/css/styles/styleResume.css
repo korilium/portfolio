@@ -17,79 +17,65 @@
     font-size: 1.5rem; /* Adjusted for better scaling */
     margin-bottom: 1rem; /* Add some space between the header and the menu */
 }
+.resume-title {
+  font-size: 2rem;
+  margin-bottom: 10%;
+}
 
-#curly-brace
-{
-  width: 150px;
+.subtitle {
+  font-size: 1.5rem;
+  margin-top: 1%;
+}
+
+/* Timeline Container */
+.timeline-container {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  position: relative;
+}
+
+/* Timeline Item */
+.timeline-item {
+  position: relative;
+  padding-left: 40px;
+}
+
+.timeline-line {
   position: absolute;
-  margin-left: 50px;
-  top: 300px;
-  transform: rotate(90deg); /* Rotate the element by 90 degrees */
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #93EAD6;
+  animation: pulse 5s infinite;
 }
 
-.brace
-{
-  border-bottom: 5px solid;
-  margin: 0 10%;
-  width: 30%;
-  height: 20px;  
-  float: left;
+.timeline-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.brace:before,
-.brace:after
-{
-  content: "";
-  width: 10%;
-  height: 50px;
-  position: absolute;
-  display: block;
+.timeline-content ul {
+  list-style-type: none;
+  margin-top: 10px;
 }
 
-#left:before
-{  
-  border-bottom: 5px solid;  
-  border-bottom-left-radius: 20px;
-  margin-left: -10%;
-  margin-top: -30px;
+.timeline-content ul li {
+  margin-bottom: 8px;
 }
 
-#left:after
-{
-  border-top: 5px solid;
-  border-top-right-radius: 20px;
-  margin-left: 30%;
-  margin-top: 20px;    
-}
-
-#right:before
-{
-  border-top: 5px solid;
-  border-top-left-radius: 20px;
-  margin-left: -10%;
-  margin-top: 20px;
-}
-
-#right:after
-{
-  border-bottom: 5px solid;
-  border-bottom-right-radius: 20px;
-  margin-left: 30%;
-  margin-top: -30px;
-}
-
-.education{
-    margin-left: 15%;
-    margin-top: 7%;
-}
-
-.education ul {
-    list-style-type: none; /* Remove any bullet points or numbers */
-    padding-left: 0; /* Remove any padding */
+/* Pulse Effect */
+@keyframes pulse {
+  0% {
+    background-color: #93EAD6;
   }
-
-  .education li {
-    margin-bottom: 10px; /* Space between items */
-    font-size: 1.1rem; /* Optional: adjust text size */
+  50% {
+    background-color: #D5E2DF;
+  }
+  100% {
+    background-color: #79e0c8;
+  }
 }
-

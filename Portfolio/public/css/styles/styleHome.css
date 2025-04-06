@@ -26,7 +26,7 @@
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
     color: transparent; /* Make the text itself invisible */
-    background: linear-gradient(90deg, #93EAD6, #D5E2DF, #93EAD6); /* Gradient glow */
+    background: linear-gradient(90deg, #79e0c8, #D5E2DF, #93EAD6); /* Gradient glow */
     background-size: 200% auto; /* Double the size for animation */
     background-clip: text; /* Clip the gradient to the text */
     text-fill-color: transparent; /* Ensure text color is transparent */
@@ -37,7 +37,7 @@
   .division-line {
     width: 150px;
     height: 5px;
-    background: linear-gradient(90deg, #93EAD6, #D5E2DF, #93EAD6);
+    background: linear-gradient(90deg, #79e0c8, #D5E2DF, #93EAD6);
     background-size: 200% auto;
     margin: 1rem auto;
     border-radius: 10px; /* Smooth edges for the line */

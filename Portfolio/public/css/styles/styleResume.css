@@ -46,27 +46,46 @@
   left: 20px;
   top: 0;
   bottom: 0;
-  width: 2px;
+  width: 3px;
   background-color: #93EAD6;
   animation: pulse 5s infinite;
 }
 
 .timeline-content {
-  background-color: #fff;
+  background-color: #c1ddd6;
+  color: #22443e; /* Ensure text is visible */
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  font-size: 1rem;
+  list-style-type: disc;
 }
 
 .timeline-content ul {
-  list-style-type: none;
   margin-top: 10px;
+  padding-left: 3%;
+  position: relative;
+  list-style-type: disc;
 }
 
 .timeline-content ul li {
-  margin-bottom: 8px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  list-style-type: disc;
 }
 
+.point-title {
+  max-width: 70%;
+  text-align: left;
+}
+
+.date {
+  font-size: 0.9rem;
+  white-space: nowrap;
+  text-align: right;
+}
 /* Pulse Effect */
 @keyframes pulse {
   0% {

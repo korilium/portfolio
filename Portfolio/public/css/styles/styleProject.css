@@ -9,3 +9,39 @@
 
 
 
+.FullLogoImage {
+    width: 20%;
+    height: auto;
+    max-width: 300px; /* Adjust the max-width as needed */
+    margin: 0 auto; /* Center the logo */
+    display: block; /* Ensure it's a block element for centering */
+}
+
+.Logo1Image {
+    width: 10%;
+    height: auto;
+    max-width: 300px; /* Adjust the max-width as needed */
+    margin: 0 auto; /* Center the logo */
+    display: block; /* Ensure it's a block element for centering */
+}
+.Logo2Image {
+    width: 10%;
+    height: auto;
+    max-width: 300px; /* Adjust the max-width as needed */
+    margin: 0 auto; /* Center the logo */
+    display: block; /* Ensure it's a block element for centering */
+}
+.Logo3Image {
+    width: 10%;
+    height: auto;
+    max-width: 300px; /* Adjust the max-width as needed */
+    margin: 0 auto; /* Center the logo */
+    display: block; /* Ensure it's a block element for centering */
+}
+.Logo4Image {
+    width: 10%;
+    height: auto;
+    max-width: 300px; /* Adjust the max-width as needed */
+    margin: 0 auto; /* Center the logo */
+    display: block; /* Ensure it's a block element for centering */
+}

@@ -45,12 +45,22 @@
         </div>
       </div>
       <div class="connector1">
-        <div class="vertical-line"></div>
+        <div class="vertical-line">
+          <div class="pulse"></div> <!-- Pulse effect -->
+        </div>
         <div class="horizontal-lines">
-          <div class="horizontal-line" ></div>
-          <div class="horizontal-line" ></div>
-          <div class="horizontal-line" ></div>
-          <div class="horizontal-line" ></div>
+          <div class="horizontal-line" data-index = "1" >
+            <div class="secondary-pulse"></div>
+          </div>
+          <div class="horizontal-line" data-index = "2" >
+            <div class="secondary-pulse"></div>
+          </div>
+          <div class="horizontal-line" data-index = "3" >
+            <div class="secondary-pulse"></div>
+          </div>
+          <div class="horizontal-line" data-index = "4" >
+            <div class="secondary-pulse"></div>
+          </div>
         </div>
       </div>
 
@@ -98,7 +108,37 @@
         </div>
       </div>
     </div>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const connector = document.querySelector(".connector1");
+    const pulse = document.querySelector(".pulse");
+    const horizontalLines = document.querySelectorAll(".horizontal-line");
 
+    pulse.addEventListener("animationiteration", () => {
+        horizontalLines.forEach((line, index) => {
+            const lineTop = line.getBoundingClientRect().top;
+            const pulseTop = pulse.getBoundingClientRect().top;
+
+            // Check if the pulse is near a horizontal line
+            if (Math.abs(lineTop - pulseTop) < 20) {
+                // Create and position the secondary pulse
+                const secondaryPulse = document.createElement("div");
+                secondaryPulse.className = "secondary-pulse";
+                secondaryPulse.style.top = `${line.offsetTop - 7}px`; // Center the pulse on the line
+                secondaryPulse.style.left = `${line.offsetLeft + line.offsetWidth}px`; // End of the line
+
+                // Append to the connector and animate
+                connector.appendChild(secondaryPulse);
+
+                // Remove pulse after animation completes
+                secondaryPulse.addEventListener("animationend", () => {
+                    secondaryPulse.remove();
+                });
+            }
+        });
+    });
+});
+</script>
 
     <!-- Footer -->
     <div class="footer">

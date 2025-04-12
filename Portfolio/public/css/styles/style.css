@@ -26,13 +26,17 @@ body {
 .menu-container {
     width: 100%;
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
     font-size: large;
 }
 .menu {
         background-color: transparent;
         display: flex;
-        justify-content: flex-end;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
         margin-top: 50px;
         list-style-type: none;
         padding-bottom: 5px;

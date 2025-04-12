@@ -6,21 +6,25 @@
     text-underline-offset: 4px; /* Add some space between the text and the underline */
 }
 
+.resume{
+  margin-left: 10%;
+  width: 80%;
+  justify-content: center;
 
+}
 
 .resume-title { 
-    font-size: 2rem; /* Adjusted for better scaling */
-    margin-bottom: 2rem; /* Add some space between the header and the menu */
-}
+    font-size: 2.5em; /* Adjusted for better scaling */
+    margin-top: 2.5%; /* Space above the title */
+    margin-bottom: 5%; /* Add some space between the header and the menu */
+    text-align: center;
+  }
 
 .subtitle {
     font-size: 1.5rem; /* Adjusted for better scaling */
     margin-bottom: 1rem; /* Add some space between the header and the menu */
 }
-.resume-title {
-  font-size: 2rem;
-  margin-bottom: 10%;
-}
+
 
 .subtitle {
   font-size: 1.5rem;

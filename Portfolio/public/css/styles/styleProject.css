@@ -2,46 +2,187 @@
 @import url("style.css");
 
 
+  
 .menu a[href="project.html"] {
     text-decoration: underline; /* Underline the Home link */
     text-underline-offset: 4px; /* Add some space between the text and the underline */
 }
 
 
-
-.FullLogoImage {
-    width: 20%;
-    height: auto;
-    max-width: 300px; /* Adjust the max-width as needed */
-    margin: 0 auto; /* Center the logo */
-    display: block; /* Ensure it's a block element for centering */
+.title {
+    font-size: 2em;
+    text-align: center;
+    margin-top: 20px;
+    color: #D5E2DF; /* Darker color for better contrast */
+    margin-bottom: 5%; /* Add some space between the header and the menu */
 }
 
-.Logo1Image {
-    width: 10%;
-    height: auto;
-    max-width: 300px; /* Adjust the max-width as needed */
-    margin: 0 auto; /* Center the logo */
+.grid {
+    display: grid;
+    grid-template-columns: 20% 1fr; /* Four equal columns */
+    gap: 20px; /* Space between grid items */
+    margin-top: 20px; /* Space above the grid */
+    width: 100%; /* Full width of the container */
+}
+
+/* FullLogoContainer section below title */
+.FullLogoContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    grid-column-start: 1; /* Start from the first column */
+    grid-column-end: 2; /* Span all four columns */
+}
+
+    /* FullLogoImage */
+    .FullLogoImage {
+        width: 100%; /* Default width for larger screens */
+        height: 100%;
+        max-width: 100%; /* Maximum width for the image */
+        display: block; /* Ensure it's a block element for centering */
+    }
+
+    /* FullLogoDescription */
+    .FullLogoContainer2 {
+        display: flex; /* Use flexbox to place dots and description side by side */
+        justify-content: flex-start; /* Ensure enough space between the two elements */
+        align-items: center; /* Vertically center the items */
+        margin-top: 20px; /* Ensure it's a block element for centering */
+    }
+
+    .dots {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 30%; /* Width of the dots section */
+        height: 100%; /* Full height */
+        font-size: 3em; /* Make dots large */
+        color: #D5E2DF; /* Dot color */
+        margin-right: 20px; /* Space between dots and description */
+        margin-bottom: 7%;
+    }
+
+    /* Create big dots */
+    .dots::before {
+        content: '. . .'; /* Add the dots */
+        font-size: 2em; /* Make the dots larger */
+        color: #D5E2DF; /* Dot color */
+        position: relative;
+        left: 40%; /* Center the dots */
+        transform: translateX(-50%); /* Adjust for centering */
+    }
+
+    /* Full Description Styling */
+    .descriptionFull {
+        width: 65%; /* Adjust width of the description section */
+        font-size: 1.2em; /* Text size */
+        text-align: left; /* Align text to the left */
+        border-radius: 8px;
+        background-color: #c1ddd6;
+        color: #22443e; /* Ensure text is visible */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        font-size: 1rem;
+        padding: 20px;
+    }
+
+
+
+.connector1 {
+    display: flex;
+    flex-direction: column; /* Stack the vertical line and the horizontal lines */
+    align-items: center; /* Center the lines horizontally */
+    position: relative;
+    height: 88%; /* Occupy full height of the parent container */
+    width: 1%; /* Thickness of the vertical line */
+    background-color: #D5E2DF; /* Color of the vertical line */
+    grid-column-start:1 ;
+    grid-row-start: 2;
+    grid-row-end: 6; /* Span all four rows */
+    margin-left: 50%;
+  }
+
+.horizontal-line {
+    position: absolute;
+    width: 8000%; /* Length of the horizontal lines */
+    height: 0.2%; /* Line thickness */
+    background-color: #D5E2DF;
+}
+
+/* Positioning Individual Horizontal Lines */
+.horizontal-line:nth-child(1) {
+    top: 15%; /* Connect to the first logo */
+    left: 50%;
+}
+
+.horizontal-line:nth-child(2) {
+    top: 40%; /* Connect to the second logo */
+    left: 50%;
+}
+
+.horizontal-line:nth-child(3) {
+    top: 70%; /* Connect to the third logo */
+    left: 50%;
+}
+
+.horizontal-line:nth-child(4) {
+    top: 100%; /* Connect to the fourth logo */
+    left: 50%;
+}
+
+
+
+
+.logoContainer {
+        display: flex; /* Use flexbox to place dots and description side by side */
+        justify-content: flex-start; /* Ensure enough space between the two elements */
+        width: 100%; /* Full width of the container */
+        gap: 20px; /* Space between logo and description */
+       
+    }
+
+
+
+.Logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40%; /* Full width of the container */
+    height: 100%;
+    max-width: 100%; /* Adjust the max-width as needed */
+    margin-top: 20px; /* Space above the logo */
+    grid-column-start: 1; /* Start from the first column */
+    grid-column-end: 2; /* Span all four columns */
+}
+
+.LogoImage {
+    display: flex;
+    position: relative;
+    width: 60%;
+    height: 100%;
+    max-width: 100%; /* Adjust the max-width as needed */
+    margin-left: 30%;
+    margin-bottom: 10%;
     display: block; /* Ensure it's a block element for centering */
 }
-.Logo2Image {
-    width: 10%;
-    height: auto;
-    max-width: 300px; /* Adjust the max-width as needed */
-    margin: 0 auto; /* Center the logo */
-    display: block; /* Ensure it's a block element for centering */
+
+.LogoDescription {
+    margin-top: 8%;
+    width: 80%; /* Adjust the width as needed */
+    height: 50%;
+    max-width: none; /* Remove any maximum width constraints */
+    display: flex; /* Enable Flexbox */
+    justify-content: center; /* Horizontally center the text */
+    align-items: center; /* Vertically center the text */
+    text-align: left; /* Center the text inside the container */
+    position: relative; /* Ensures the text is centered inside the element */
+    border-radius: 8px;
+    background-color: #c1ddd6;
+    color: #22443e; /* Ensure text is visible */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+    padding: 20px;
 }
-.Logo3Image {
-    width: 10%;
-    height: auto;
-    max-width: 300px; /* Adjust the max-width as needed */
-    margin: 0 auto; /* Center the logo */
-    display: block; /* Ensure it's a block element for centering */
-}
-.Logo4Image {
-    width: 10%;
-    height: auto;
-    max-width: 300px; /* Adjust the max-width as needed */
-    margin: 0 auto; /* Center the logo */
-    display: block; /* Ensure it's a block element for centering */
-}
+
+
+  

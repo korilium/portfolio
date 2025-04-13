@@ -1,4 +1,3 @@
 personal portfolio website 
 
-* creative sources 
-    * https://uxdesignerstockholm.se/ 
+check it out at: 

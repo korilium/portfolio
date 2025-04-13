@@ -103,7 +103,7 @@
     /* Adjust width of the description section */
     font-size: 1.2em;
     /* Text size */
-    text-align: left;
+    text-align: center;
     /* Align text to the left */
     border-radius: 8px;
     background-color: #c1ddd6;
@@ -199,7 +199,7 @@
     /* Initially invisible */
     animation: secondary-pulse 10s linear infinite;
     ;
-    animation-delay: 4s;
+    animation-delay: 3s;
     z-index: 5;
 }
 
@@ -217,7 +217,7 @@
     /* Initially invisible */
     animation: secondary-pulse 10s linear infinite;
     ;
-    animation-delay: 7s;
+    animation-delay: 6s;
     z-index: 5;
 }
 
@@ -234,7 +234,7 @@
     /* Initially invisible */
     animation: secondary-pulse 10s linear infinite;
     ;
-    animation-delay: 10s;
+    animation-delay: 9s;
     z-index: 5;
 }
 

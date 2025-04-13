@@ -1,1 +1,0 @@
-"C:\Users\E-FORCE\AppData\Local\Programs\Julia-1.11.4\bin\julia" --color=yes --depwarn=no --project=@. -q -i -- "%~dp0..\bootstrap.jl" -s=true %*

@@ -12,7 +12,7 @@
 
   
 .container {
-    padding-top: 100px;
+    padding-top: 5%; /* Space between the top of the page and the content */
     text-align: center;
     position: relative;
     font-size: 3rem; /* Adjusted for better scaling */
@@ -131,7 +131,7 @@
 
 .profile-description {
   margin-top: 10px; /* Spacing between the image and text */
-  font-size: 1.2rem; /* Set a responsive font size */
+  font-size: 1rem; /* Set a responsive font size */
   color: #c1ddd6; /* Text color */
   text-align: center; /* Center the text under the picture */
   font-weight: bold; /* Make the text bold */
@@ -154,14 +154,14 @@
 
 .story-text {
   font-family: Arial, Helvetica, sans-serif; /* Ensure consistent font with other elements */
-  font-size: 1.2rem; /* Match a readable font size */
+  font-size: 1rem; /* Match a readable font size */
   line-height: 1.8; /* Improve text spacing for readability */
   color: #22443e; /* Ensure text is visible */
   padding: 20px; /* Maintain consistent padding */
   background-color: #c1ddd6;
   border-radius: 16px; /* Match the rounded corners */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-  text-align: justify; /* Keep text alignment consistent */
+  text-align: center; /* Keep text alignment consistent */
 }
 
 .story-text p {

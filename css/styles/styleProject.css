@@ -85,7 +85,6 @@
 
 /* Create big dots */
 .dots::before {
-    content: '. . .';
     /* Add the dots */
     font-size: 2em;
     /* Make the dots larger */
@@ -139,7 +138,7 @@
 
 .vertical-line {
     position: relative;
-    width: 8%;
+    width: 16%;
     height: 100%;
     background-color: rgba(69, 126, 113, 0.192);
 }

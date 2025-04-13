@@ -1,192 +1,494 @@
-
 @import url("style.css");
 
 
-  
+
 .menu a[href="project.html"] {
-    text-decoration: underline; /* Underline the Home link */
-    text-underline-offset: 4px; /* Add some space between the text and the underline */
+    text-decoration: underline;
+    /* Underline the Home link */
+    text-underline-offset: 4px;
+    /* Add some space between the text and the underline */
 }
 
 
 .title {
-    font-size: 2em;
+    font-size: 1.5em;
     text-align: center;
     margin-top: 20px;
-    color: #D5E2DF; /* Darker color for better contrast */
-    margin-bottom: 5%; /* Add some space between the header and the menu */
+    /* Darker color for better contrast */
+    margin-bottom: 5%;
+    /* Add some space between the header and the menu */
 }
 
 .grid {
     display: grid;
-    grid-template-columns: 20% 1fr; /* Four equal columns */
-    gap: 20px; /* Space between grid items */
-    margin-top: 20px; /* Space above the grid */
-    width: 100%; /* Full width of the container */
+    grid-template-columns: 20% 1fr;
+    /* Four equal columns */
+    gap: 20px;
+    /* Space between grid items */
+    margin-top: 20px;
+    /* Space above the grid */
+    width: 100%;
+    /* Full width of the container */
 }
 
 /* FullLogoContainer section below title */
-.FullLogoContainer{
+.FullLogoContainer {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top: 20px;
-    grid-column-start: 1; /* Start from the first column */
-    grid-column-end: 2; /* Span all four columns */
+    grid-column-start: 1;
+    /* Start from the first column */
+    grid-column-end: 2;
+    /* Span all four columns */
 }
 
-    /* FullLogoImage */
-    .FullLogoImage {
-        width: 100%; /* Default width for larger screens */
-        height: 100%;
-        max-width: 100%; /* Maximum width for the image */
-        display: block; /* Ensure it's a block element for centering */
-    }
+/* FullLogoImage */
+.FullLogoImage {
+    width: 100%;
+    /* Default width for larger screens */
+    height: 100%;
+    max-width: 100%;
+    /* Maximum width for the image */
+    display: block;
+    /* Ensure it's a block element for centering */
+}
 
-    /* FullLogoDescription */
-    .FullLogoContainer2 {
-        display: flex; /* Use flexbox to place dots and description side by side */
-        justify-content: flex-start; /* Ensure enough space between the two elements */
-        align-items: center; /* Vertically center the items */
-        margin-top: 20px; /* Ensure it's a block element for centering */
-    }
+/* FullLogoDescription */
+.FullLogoContainer2 {
+    display: flex;
+    /* Use flexbox to place dots and description side by side */
+    justify-content: flex-start;
+    /* Ensure enough space between the two elements */
+    align-items: center;
+    /* Vertically center the items */
+    margin-top: 20px;
+    /* Ensure it's a block element for centering */
+}
 
-    .dots {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 30%; /* Width of the dots section */
-        height: 100%; /* Full height */
-        font-size: 3em; /* Make dots large */
-        color: #D5E2DF; /* Dot color */
-        margin-right: 20px; /* Space between dots and description */
-        margin-bottom: 7%;
-    }
+.dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30%;
+    /* Width of the dots section */
+    height: 100%;
+    /* Full height */
+    font-size: 3em;
+    /* Make dots large */
+    color: #D5E2DF;
+    /* Dot color */
+    margin-right: 20px;
+    /* Space between dots and description */
+    margin-bottom: 7%;
+}
 
-    /* Create big dots */
-    .dots::before {
-        content: '. . .'; /* Add the dots */
-        font-size: 2em; /* Make the dots larger */
-        color: #D5E2DF; /* Dot color */
-        position: relative;
-        left: 40%; /* Center the dots */
-        transform: translateX(-50%); /* Adjust for centering */
-    }
+/* Create big dots */
+.dots::before {
+    content: '. . .';
+    /* Add the dots */
+    font-size: 2em;
+    /* Make the dots larger */
+    color: #D5E2DF;
+    /* Dot color */
+    position: relative;
+    left: 40%;
+    /* Center the dots */
+    transform: translateX(-50%);
+    /* Adjust for centering */
+}
 
-    /* Full Description Styling */
-    .descriptionFull {
-        width: 65%; /* Adjust width of the description section */
-        font-size: 1.2em; /* Text size */
-        text-align: left; /* Align text to the left */
-        border-radius: 8px;
-        background-color: #c1ddd6;
-        color: #22443e; /* Ensure text is visible */
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        font-size: 1rem;
-        padding: 20px;
-    }
+/* Full Description Styling */
+.descriptionFull {
+    width: 65%;
+    /* Adjust width of the description section */
+    font-size: 1.2em;
+    /* Text size */
+    text-align: left;
+    /* Align text to the left */
+    border-radius: 8px;
+    background-color: #c1ddd6;
+    color: #22443e;
+    /* Ensure text is visible */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+    padding: 20px;
+}
 
 
 
 .connector1 {
     display: flex;
-    flex-direction: column; /* Stack the vertical line and the horizontal lines */
-    align-items: center; /* Center the lines horizontally */
+    flex-direction: column;
+    /* Stack the vertical line and the horizontal lines */
+    align-items: center;
+    /* Center the lines horizontally */
     position: relative;
-    height: 88%; /* Occupy full height of the parent container */
-    width: 1%; /* Thickness of the vertical line */
-    background-color: #D5E2DF; /* Color of the vertical line */
-    grid-column-start:1 ;
+    height: 88%;
+    /* Occupy full height of the parent container */
+    width: 1%;
+    /* Thickness of the vertical line */
+    background-color: #000000;
+    /* Color of the vertical line */
+    grid-column-start: 1;
     grid-row-start: 2;
-    grid-row-end: 6; /* Span all four rows */
+    grid-row-end: 6;
+    /* Span all four rows */
     margin-left: 50%;
-  }
-  .vertical-line {
+}
+
+.vertical-line {
     position: relative;
-    width: 100%;
+    width: 8%;
     height: 100%;
-    background-color: #D5E2DF;
-  }
+    background-color: rgba(69, 126, 113, 0.192);
+}
 
-  .pulse {
+.pulse {
     position: absolute;
-    width: 10px; /* Size of the pulse */
-    height: 10px;
-    background-color: #00ff7f; /* Pulse color */
+    width: 2px;
+    /* Size of the pulse */
+    height: 2px;
+    background-color: #79e0c8;
+    box-shadow: #c1ddd6 0 0 0 0px #79e0c8;
+    /* Pulse color */
     border-radius: 50%;
-    animation: pulse-move 4s linear infinite; /* Infinite loop */
-  }
+    transform: scale(1);
+    animation: pulse-move 10s linear infinite;
+    /* Infinite loop */
+}
 
-  .secondary-pulse {
+.secondary-pulse1 {
     position: absolute;
-    width: 15px; /* Size of the secondary pulse */
-    height: 15px;
-    background-color: #ff7f50; /* Secondary pulse color */
+    width: 2px;
+    /* Size of the secondary pulse */
+    height: 2px;
+    background-color: #79e0c8;
+    /* Secondary pulse color */
     border-radius: 50%;
-    opacity: 0; /* Initially invisible */
-    animation: secondary-pulse 4s linear infinite;;
+    opacity: 0;
+    /* Initially invisible */
+    animation: secondary-pulse 10s linear infinite;
+    ;
+    animation-delay: 1s;
     z-index: 5;
 }
-  
-  /* Animation for pulse */
-  @keyframes pulse-move {
-    0% {
-      top: 0; /* Start at the top */
-      opacity: 1; /* Fully visible */
-      transform: scale(1); /* Normal size */
-    }
-    50% {
-      opacity: 1; /* Slightly faded */
-      transform: scale(1.5); /* Bigger size */
-    }
-    100% {
-      top: 100%; /* End at the bottom */
-      opacity: 1; /* Disappear */
-      transform: scale(1); /* Normal size */
-    }
-  }
 
-  /* Secondary pulse animation */
-
-  @keyframes secondary-pulse {
+@keyframes secondary-pulse {
     0% {
-        left:0;
+        left: 0;
         transform: scale(0.5);
         opacity: 1;
     }
+
     100% {
         left: 100%;
         transform: scale(2);
         opacity: 0;
     }
 }
-  
+
+.secondary-pulse2 {
+    position: absolute;
+    width: 2px;
+    /* Size of the secondary pulse */
+    height: 2px;
+    background-color: #79e0c8;
+    /* Secondary pulse color */
+    border-radius: 50%;
+    opacity: 0;
+    /* Initially invisible */
+    animation: secondary-pulse 10s linear infinite;
+    ;
+    animation-delay: 4s;
+    z-index: 5;
+}
+
+
+
+.secondary-pulse3 {
+    position: absolute;
+    width: 2px;
+    /* Size of the secondary pulse */
+    height: 2px;
+    background-color: #79e0c8;
+    /* Secondary pulse color */
+    border-radius: 50%;
+    opacity: 0;
+    /* Initially invisible */
+    animation: secondary-pulse 10s linear infinite;
+    ;
+    animation-delay: 7s;
+    z-index: 5;
+}
+
+
+.secondary-pulse4 {
+    position: absolute;
+    width: 2px;
+    /* Size of the secondary pulse */
+    height: 2px;
+    background-color: #79e0c8;
+    /* Secondary pulse color */
+    border-radius: 50%;
+    opacity: 0;
+    /* Initially invisible */
+    animation: secondary-pulse 10s linear infinite;
+    ;
+    animation-delay: 10s;
+    z-index: 5;
+}
+
+
+/* Animation for pulse */
+@keyframes secondary-pulse  {
+    0% {
+        left: 0;
+        /* Start at the top */
+        /* Fully visible */
+        transform: scale(1);
+        /* Normal size */
+        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+    }
+
+    10% {
+        left: 10%;
+        /* Slightly faded */
+        transform: scale(0.90);
+        /* Bigger size */
+        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+    }
+
+
+
+    20% {
+        left: 20%;
+        /* Slightly faded */
+        transform: scale(1);
+        /* Bigger size */
+        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+    }
+
+
+    30% {
+        left: 30%;
+        /* Slightly faded */
+        transform: scale(0.9);
+        /* Bigger size */
+        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+    }
+
+
+    40% {
+        left: 40%;
+        /* Slightly faded */
+        transform: scale(1);
+        /* Bigger size */
+        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+    }
+
+
+    50% {
+        left: 50%;
+        /* Fully visible */
+        transform: scale(0.9);
+        /* Normal size */
+        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+    }
+
+    60% {
+        left: 60%;
+        /* Slightly faded */
+        transform: scale(1);
+        /* Bigger size */
+        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+    }
+
+
+
+    70% {
+        left: 70%;
+
+        /* Slightly faded */
+        transform: scale(0.9);
+        /* Bigger size */
+        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+    }
+
+
+
+    80% {
+        left: 80%;
+        /* Slightly faded */
+        transform: scale(1);
+        /* Bigger size */
+        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+    }
+
+
+    90% {
+        left: 90%;
+        /* Slightly faded */
+        transform: scale(0.9);
+        /* Bigger size */
+        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+    }
+
+
+
+    100% {
+        left: 100%;
+        /* End at the bottom */
+        opacity: 1;
+        /* Disappear */
+        transform: scale(1);
+        /* Normal size */
+        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+    }
+}
+
+
+/* Animation for pulse */
+@keyframes pulse-move {
+    0% {
+        top: 0;
+        /* Start at the top */
+        /* Fully visible */
+        transform: scale(1);
+        /* Normal size */
+        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+    }
+
+    10% {
+        top: 10%;
+        /* Slightly faded */
+        transform: scale(0.90);
+        /* Bigger size */
+        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+    }
+
+
+
+    20% {
+        top: 20%;
+        /* Slightly faded */
+        transform: scale(1);
+        /* Bigger size */
+        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+    }
+
+
+    30% {
+        top: 30%;
+        /* Slightly faded */
+        transform: scale(0.9);
+        /* Bigger size */
+        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+    }
+
+
+    40% {
+        top: 40%;
+        /* Slightly faded */
+        transform: scale(1);
+        /* Bigger size */
+        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+    }
+
+
+    50% {
+        top: 50%;
+        /* Fully visible */
+        transform: scale(0.9);
+        /* Normal size */
+        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+    }
+
+    60% {
+        top: 60%;
+        /* Slightly faded */
+        transform: scale(1);
+        /* Bigger size */
+        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+    }
+
+
+
+    70% {
+        top: 70%;
+
+        /* Slightly faded */
+        transform: scale(0.9);
+        /* Bigger size */
+        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+    }
+
+
+
+    80% {
+        top: 80%;
+        /* Slightly faded */
+        transform: scale(1);
+        /* Bigger size */
+        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+    }
+
+
+    90% {
+        top: 90%;
+        /* Slightly faded */
+        transform: scale(0.9);
+        /* Bigger size */
+        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+    }
+
+
+
+    100% {
+        top: 100%;
+        /* End at the bottom */
+        opacity: 1;
+        /* Disappear */
+        transform: scale(1);
+        /* Normal size */
+        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+    }
+}
+
+
+
 
 .horizontal-line {
     position: absolute;
-    width: 8000%; /* Length of the horizontal lines */
-    height: 0.2%; /* Line thickness */
-    background-color: #D5E2DF;
+    width: 8000%;
+    /* Length of the horizontal lines */
+    height: 0.1%;
+    /* Line thickness */
+    background-color: rgba(69, 126, 113, 0.192);
 }
 
 /* Positioning Individual Horizontal Lines */
 .horizontal-line:nth-child(1) {
-    top: 15%; /* Connect to the first logo */
+    top: 15%;
+    /* Connect to the first logo */
     left: 50%;
 }
 
 .horizontal-line:nth-child(2) {
-    top: 40%; /* Connect to the second logo */
+    top: 40%;
+    /* Connect to the second logo */
     left: 50%;
 }
 
 .horizontal-line:nth-child(3) {
-    top: 70%; /* Connect to the third logo */
+    top: 70%;
+    /* Connect to the third logo */
     left: 50%;
 }
 
 .horizontal-line:nth-child(4) {
-    top: 100%; /* Connect to the fourth logo */
+    top: 100%;
+    /* Connect to the fourth logo */
     left: 50%;
 }
 
@@ -194,12 +496,16 @@
 
 
 .logoContainer {
-        display: flex; /* Use flexbox to place dots and description side by side */
-        justify-content: flex-start; /* Ensure enough space between the two elements */
-        width: 100%; /* Full width of the container */
-        gap: 20px; /* Space between logo and description */
-       
-    }
+    display: flex;
+    /* Use flexbox to place dots and description side by side */
+    justify-content: flex-start;
+    /* Ensure enough space between the two elements */
+    width: 100%;
+    /* Full width of the container */
+    gap: 20px;
+    /* Space between logo and description */
+
+}
 
 
 
@@ -207,12 +513,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 40%; /* Full width of the container */
+    width: 40%;
+    /* Full width of the container */
     height: 100%;
-    max-width: 100%; /* Adjust the max-width as needed */
-    margin-top: 20px; /* Space above the logo */
-    grid-column-start: 1; /* Start from the first column */
-    grid-column-end: 2; /* Span all four columns */
+    max-width: 100%;
+    /* Adjust the max-width as needed */
+    margin-top: 20px;
+    /* Space above the logo */
+    grid-column-start: 1;
+    /* Start from the first column */
+    grid-column-end: 2;
+    /* Span all four columns */
 }
 
 .LogoImage {
@@ -220,29 +531,36 @@
     position: relative;
     width: 60%;
     height: 100%;
-    max-width: 100%; /* Adjust the max-width as needed */
+    max-width: 100%;
+    /* Adjust the max-width as needed */
     margin-left: 30%;
     margin-bottom: 10%;
-    display: block; /* Ensure it's a block element for centering */
+    display: block;
+    /* Ensure it's a block element for centering */
 }
 
 .LogoDescription {
     margin-top: 8%;
-    width: 80%; /* Adjust the width as needed */
+    width: 80%;
+    /* Adjust the width as needed */
     height: 50%;
-    max-width: none; /* Remove any maximum width constraints */
-    display: flex; /* Enable Flexbox */
-    justify-content: center; /* Horizontally center the text */
-    align-items: center; /* Vertically center the text */
-    text-align: left; /* Center the text inside the container */
-    position: relative; /* Ensures the text is centered inside the element */
+    max-width: none;
+    /* Remove any maximum width constraints */
+    display: flex;
+    /* Enable Flexbox */
+    justify-content: center;
+    /* Horizontally center the text */
+    align-items: center;
+    /* Vertically center the text */
+    text-align: left;
+    /* Center the text inside the container */
+    position: relative;
+    /* Ensures the text is centered inside the element */
     border-radius: 8px;
     background-color: #c1ddd6;
-    color: #22443e; /* Ensure text is visible */
+    color: #22443e;
+    /* Ensure text is visible */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     font-size: 1rem;
     padding: 20px;
 }
-
-
-  

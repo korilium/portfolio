@@ -29,6 +29,7 @@
   <!-- Main Content -->
   <div class="page">
     <div class="title">
+      <h1>Peccon Project</h1>
     </div>
     <div class="grid">
       <div class="FullLogoContainer">
@@ -40,8 +41,8 @@
         <div class="dots"> </div>
         <div class="descriptionFull"  >
           <p>
-            Peccon is a project that aims to create a platform for the exchange of knowledge, experience, tools and products in the field of pensions. The goal is to provide a space where professionals can share their insights, ask questions, and learn from each other. The platform will include features such as forums, articles, and webinars, all focused on the topic of pensions.
-          </p>
+            A platform for the exchange of knowledge, experience, tools and products in financial planning. 
+            It is to provide a space where people can share their insights, ask questions, and learn from each other. The project stands on four main pillars.         </p>
         </div>
       </div>
       <div class="connector1">
@@ -50,16 +51,16 @@
         </div>
         <div class="horizontal-lines">
           <div class="horizontal-line" data-index = "1" >
-            <div class="secondary-pulse"></div>
+            <div class="secondary-pulse1"></div>
           </div>
           <div class="horizontal-line" data-index = "2" >
-            <div class="secondary-pulse"></div>
+            <div class="secondary-pulse2"></div>
           </div>
           <div class="horizontal-line" data-index = "3" >
-            <div class="secondary-pulse"></div>
+            <div class="secondary-pulse3"></div>
           </div>
           <div class="horizontal-line" data-index = "4" >
-            <div class="secondary-pulse"></div>
+            <div class="secondary-pulse4"></div>
           </div>
         </div>
       </div>
@@ -70,7 +71,7 @@
         </div>
         <div class="LogoDescription">
           <p>
-            The logo of Peccon is a stylized representation of the Greek goddess Athena, who is often associated with wisdom and knowledge. The logo features a minimalist design, with clean lines and a modern aesthetic. The use of blue and white colors reflects the themes of trust and professionalism, while the overall design conveys a sense of innovation and forward-thinking.
+            Literacy: Providing resources that can help individuals make informed decisions about their finances.
           </p>
         </div>
       </div>
@@ -81,7 +82,7 @@
         </div>
         <div class="LogoDescription">
           <p>
-            The bull is a symbol of strength and determination, representing the resilience and tenacity of the Peccon community. The bull is often associated with financial markets, where it symbolizes a bullish trend or optimism. In the context of Peccon, the bull represents the collective strength of professionals working together to improve the pension landscape.
+            Planning tools: Offering tools that can help individuals create and manage their financial plans.
           </p>
         </div>
       </div>
@@ -92,7 +93,7 @@
         </div>
         <div class="LogoDescription">
           <p>
-            The stars in the Peccon logo represent the guiding light of knowledge and experience. They symbolize the aspiration to reach new heights in the field of pensions, as well as the idea of collaboration and shared learning. The stars also evoke a sense of community, as they remind us that we are all part of a larger constellation of professionals working towards a common goal.
+            The fund: Gain access to the financial products and services by becoming owner of the platform.
           </p>
         </div>
       </div>
@@ -103,42 +104,12 @@
         </div>
         <div class="LogoDescription">
           <p>
-            The background of the Peccon logo is a representation of the digital landscape in which the platform operates. It features a network of interconnected lines and nodes, symbolizing the flow of information and ideas within the community. The background design reflects the modern, tech-savvy nature of Peccon, as well as its commitment to leveraging technology to enhance the pension experience.
+            Products: Developing financial products with community driven features.
           </p>
         </div>
       </div>
     </div>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const connector = document.querySelector(".connector1");
-    const pulse = document.querySelector(".pulse");
-    const horizontalLines = document.querySelectorAll(".horizontal-line");
 
-    pulse.addEventListener("animationiteration", () => {
-        horizontalLines.forEach((line, index) => {
-            const lineTop = line.getBoundingClientRect().top;
-            const pulseTop = pulse.getBoundingClientRect().top;
-
-            // Check if the pulse is near a horizontal line
-            if (Math.abs(lineTop - pulseTop) < 20) {
-                // Create and position the secondary pulse
-                const secondaryPulse = document.createElement("div");
-                secondaryPulse.className = "secondary-pulse";
-                secondaryPulse.style.top = `${line.offsetTop - 7}px`; // Center the pulse on the line
-                secondaryPulse.style.left = `${line.offsetLeft + line.offsetWidth}px`; // End of the line
-
-                // Append to the connector and animate
-                connector.appendChild(secondaryPulse);
-
-                // Remove pulse after animation completes
-                secondaryPulse.addEventListener("animationend", () => {
-                    secondaryPulse.remove();
-                });
-            }
-        });
-    });
-});
-</script>
 
     <!-- Footer -->
     <div class="footer">

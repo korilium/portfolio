@@ -31,12 +31,17 @@ for mdfile in glob("*.md", posts_dir)
     <!DOCTYPE html>
     <html lang="en">
     <head>
-      <meta charset="UTF-8">
+      <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
       <title>Blog Post</title>
-      <link rel="stylesheet" href="../../style.css">
+  <!-- Favicon -->
+  <link rel="icon" href="img/favicon.svg">
+  <!-- Stylesheet -->
+  <link href="../../../css/styles/styleHome.css" rel="stylesheet">
     </head>
     <body>
-      <a href="../index.html">← Back to Blog</a>
+      <a href="../../index.html">← Back to Blog</a>
       <article>
         $html_body
       </article>

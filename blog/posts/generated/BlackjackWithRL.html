@@ -13,10 +13,16 @@
   <body>
     <a href="../../index.html">← Back to Blog</a>
     <article>
-      <h1>My First Blog Post</h1>
+      <h1>Blackjack With RL</h1>
 <p><em>Date: 2025-01-01</em></p>
-<p>Welcome to my blog!<br />
-This is written in <strong>Markdown</strong> and will be converted into HTML.</p>
+<p>We have all played blackjack before. The goal of the game is to beat the bank (casino) in getting as close the the number 21 but not overreaching it. For a single deck you would have 52 cards and the number of possible two-card hands are:</p>
+<p>$ player: \binom{52}{2} = 1,326$</p>
+<p>while for the bank this would be:</p>
+<p>$ bank: \binom{50}{2}= 1,225$</p>
+<p>In total you would have a total of the following possible states:</p>
+<p>$$ \sum_{n=2}^{11} \binom{52}{n} \times \sum_{m=2}^{11} \binom{52-2}{m}$$</p>
+<p>where $n$ are the number of cards in the player hands and $m$ are the number of cards in the banks hands.</p>
+<p>this is an astronomical large number to model and therefore we need to make an abstraction of the game and only consider the total card value of the banks hands and the players hands.</p>
 
     </article>
   </body>

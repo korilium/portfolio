@@ -19,11 +19,21 @@
     <nav class="menu-container" aria-label="Main Navigation">
       <ul class="menu">
         <li><a href="index.html">Home</a></li>
-        <li><a href="blog/index.html">Blog</a></li>
+        <li><a href="blog/posts/generated/index.html">Blog</a></li>
         <li><a href="resume.html">Curriculum</a></li>
         <li><a href="project.html">Peccon</a></li>
       </ul>
     </nav>
+    <button id="theme-toggle">Toggle Light/Dark</button>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const toggle = document.getElementById("theme-toggle");
+        toggle.addEventListener("click", () => {
+          document.body.classList.toggle("light");
+        });
+      });
+    </script>
   </header>
 
   <main class="page">
@@ -39,7 +49,7 @@
         </div>
         <p class="profile-description">Ignace Decocq</p>
       </div>
-    </div>
+      </div>
     </section>
 
     <section class="story">
@@ -54,7 +64,7 @@
           focus lies in developing the information, tools, and products necessary to empower individuals to navigate
           this intricate balance with confidence and clarity.</p>
       </div>
-<!-- 
+      <!-- 
       <h1 class="subtitles-questions"> Fun Questions</h1>
         </h1>
         <div class="marquee">
@@ -112,7 +122,7 @@
         </div>
     </section> -->
 
-    <!-- <script>
+      <!-- <script>
       const boxes = document.querySelectorAll('.box');
       const panel = document.querySelector('.panel');
       let currentIndex = 2; // Start with Box 2 selected (index 2)
@@ -213,11 +223,12 @@
   <footer class="footer">
     <div class="socials">
       <div class="socials-icon">
-        <a href="mailto:igance.decocq@hotmail.com" aria-label="Facebook"><img src="img/socials/Email.jpg" alt="Email"></a>
+        <a href="mailto:igance.decocq@hotmail.com" aria-label="Facebook"><img src="img/socials/Email.jpg"
+            alt="Email"></a>
       </div>
       <div class="socials-icon">
-        <a href="https://www.linkedin.com/in/ignace-decocq-7a47472aa/" aria-label="LinkedIn"><img src="img/socials/linkedin.png"
-            alt="LinkedIn"></a>
+        <a href="https://www.linkedin.com/in/ignace-decocq-7a47472aa/" aria-label="LinkedIn"><img
+            src="img/socials/linkedin.png" alt="LinkedIn"></a>
       </div>
       <div class="socials-icon">
         <a href="https://github.com/korilium" aria-label="GitHub"><img src="img/socials/github.svg" alt="GitHub"></a>

@@ -1,1 +1,104 @@
 @import url("style.css");
+
+body {
+  display: flex;
+  font-family: sans-serif;
+  margin: 0;
+}
+
+aside {
+  width: 220px;
+  background: #f5f5f5;
+  padding: 1rem;
+  border-right: 1px solid #ddd;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+
+
+aside h2 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+aside ul {
+  list-style: none;
+  padding: 0;
+}
+
+aside li {
+  margin: 0.5rem 0;
+}
+
+aside a {
+  text-decoration: none;
+  color: #333;
+}
+
+aside a.current {
+  font-weight: bold;
+  color: #007acc;
+}
+
+main {
+  flex: 1;
+  padding: 2rem;
+}
+
+aside h2 { font-size: 1.2rem; margin-bottom: 1rem; }
+aside ul { list-style: none; padding: 0; }
+aside li { margin: 0.5rem 0; }
+aside a { text-decoration: none; color: #333; }
+aside a.current { font-weight: bold; color: #007acc; }
+
+main { flex: 1; padding: 2rem; }
+
+
+/* Blog content */
+/* Blog content inside main */
+body.index {
+    display: flex;
+    flex-direction: column; /* stack header + blog vertically */
+    font-family: sans-serif;
+    margin: 0;
+}
+
+/* Blog content centered */
+.blog {
+    margin-top: 100px;       /* space for header */
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+/* Blog links styling */
+.blog ul {
+    list-style: none;
+    padding: 0;
+    text-align: center;       /* center list items */
+}
+
+.blog li {
+    margin: 0.5rem 0;
+}
+
+.blog a {
+    text-decoration: none;
+    color: #c1ddd6;
+    font-weight: bold;
+}
+
+.blog a:hover {
+    color: #f0a500;
+}
+
+/* Paragraph spacing inside blog */
+.blog p {
+    margin-bottom: 1rem;
+}

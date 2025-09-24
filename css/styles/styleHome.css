@@ -6,10 +6,6 @@
     text-decoration: underline; /* Underline the Home link */
     text-underline-offset: 4px; /* Add some space between the text and the underline */
 }
-
-
-
-
   
 .container {
     padding-top: 5%; /* Space between the top of the page and the content */
@@ -26,7 +22,7 @@
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
     color: transparent; /* Make the text itself invisible */
-    background: linear-gradient(90deg, #79e0c8, #D5E2DF, #93EAD6); /* Gradient glow */
+    background: linear-gradient(90deg, var(--image-darkcolor), var(--image-lightcolor), var(--image-accentcolor)); /* Gradient glow */
     background-size: 200% auto; /* Double the size for animation */
     background-clip: text; /* Clip the gradient to the text */
     text-fill-color: transparent; /* Ensure text color is transparent */
@@ -37,7 +33,7 @@
   .division-line {
     width: 150px;
     height: 5px;
-    background: linear-gradient(90deg, #79e0c8, #D5E2DF, #93EAD6);
+    background: linear-gradient(90deg, var(--image-darkcolor), var(--image-lightcolor), var(--image-accentcolor));
     background-size: 200% auto;
     margin: 1rem auto;
     border-radius: 10px; /* Smooth edges for the line */
@@ -112,7 +108,7 @@
   max-height: 250px; /* Maintain a consistent aspect ratio */
   min-width: 80px; /* Set a minimum size for smaller screens */
   min-height: 80px; /* Maintain the aspect ratio */
-  border: 2px solid #c1ddd6; /* Add a border for emphasis */
+  border: 2px solid var(--image-darkcolor); /* Add a border for emphasis */
   display: flex; /* Flexbox ensures the content inside aligns correctly */
   align-items: center; /* Center the image vertically */
   justify-content: center; /* Center the image horizontally */
@@ -132,7 +128,7 @@
 .profile-description {
   margin-top: 10px; /* Spacing between the image and text */
   font-size: 1rem; /* Set a responsive font size */
-  color: #c1ddd6; /* Text color */
+  color: var(--text-color); /* Text color */
   text-align: center; /* Center the text under the picture */
   font-weight: bold; /* Make the text bold */
 }
@@ -158,7 +154,7 @@
   line-height: 1.8; /* Improve text spacing for readability */
   color: #22443e; /* Ensure text is visible */
   padding: 20px; /* Maintain consistent padding */
-  background-color: #c1ddd6;
+  background-color: var(--image-accentcolor);
   border-radius: 16px; /* Match the rounded corners */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
   text-align: center; /* Keep text alignment consistent */

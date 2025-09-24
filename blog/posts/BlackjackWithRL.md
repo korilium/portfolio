@@ -4,9 +4,15 @@
 
 We have all played blackjack before. The goal of the game is to beat the bank (casino) in getting as close the the number 21 but not overreaching it. For a single deck you would have 52 cards and the number of possible two-card hands are: 
 
+
+
 $ player: \binom{52}{2} = 1,326$ 
 
+
+
 while for the bank this would be: 
+
+
 
 $ bank: \binom{50}{2}= 1,225$ 
 

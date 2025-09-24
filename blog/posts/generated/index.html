@@ -18,7 +18,21 @@
                 <li><a href="../../../project.html">Peccon</a></li>
             </ul>
         </div>
+            </div>
+        <button id="theme-toggle">Toggle Light/Dark</button>  
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const toggle = document.getElementById("theme-toggle");
+        toggle.addEventListener("click", () => {
+
+          document.body.classList.toggle("light");
+        });
+      });
+    </script>
+  </div>
+
     </div>
+
     <div class="blog">
       <h1>The Peccon Blog</h1>
       <ul>

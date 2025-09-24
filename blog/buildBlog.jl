@@ -44,6 +44,7 @@ html_page = raw"""
     svg: { fontCache: 'global' }
     };
   </script>
+
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
 
 </head>
@@ -87,7 +88,21 @@ index_template = raw"""
                 <li><a href="../../../project.html">Peccon</a></li>
             </ul>
         </div>
+            </div>
+        <button id="theme-toggle">Toggle Light/Dark</button>  
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const toggle = document.getElementById("theme-toggle");
+        toggle.addEventListener("click", () => {
+
+          document.body.classList.toggle("light");
+        });
+      });
+    </script>
+  </div>
+
     </div>
+
     <div class="blog">
       <h1>The Peccon Blog</h1>
       <ul>

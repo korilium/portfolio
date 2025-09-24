@@ -41,6 +41,14 @@
     /* Start from the first column */
     grid-column-end: 2;
     /* Span all four columns */
+    padding: 10px;               /* space around image */
+    border-radius: 12px;         /* rounded corners for smooth blending */
+    background: radial-gradient(
+        circle,var(--image-accentcolor),   /* semi-transparent in center */
+        var(--img-bg) 140%             /* fades to page background */
+    );                            /* subtle gradient fade */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* soft shadow for depth */
+    transition: background 0.3s ease, box-shadow 0.3s ease; 
 }
 
 /* FullLogoImage */
@@ -52,6 +60,7 @@
     /* Maximum width for the image */
     display: block;
     /* Ensure it's a block element for centering */
+    background-color: 1px solid var(--img-bg); /* Border color for light mode */
 }
 
 /* FullLogoDescription */
@@ -76,7 +85,7 @@
     /* Full height */
     font-size: 3em;
     /* Make dots large */
-    color: var(--image-darkcolor);
+    color: var(--image-accentcolor);
     /* Dot color */
     margin-right: 20px;
     /* Space between dots and description */
@@ -88,7 +97,7 @@
     /* Add the dots */
     font-size: 2em;
     /* Make the dots larger */
-    color: var(--image-darkcolor);
+    color: var(--image-accentcolor);
     /* Dot color */
     position: relative;
     left: 40%;
@@ -106,7 +115,7 @@
     text-align: center;
     /* Align text to the left */
     border-radius: 8px;
-    background-color: var(--image-darkcolor);
+    background-color: var(--image-accentcolor);
     color: var(--text-color);
     /* Ensure text is visible */
     box-shadow: 0 0 10px rgba(1, 22, 18, 0.1);
@@ -127,7 +136,6 @@
     /* Occupy full height of the parent container */
     width: 1%;
     /* Thickness of the vertical line */
-    background-color: var(--image-accentcolor);
     /* Color of the vertical line */
     grid-column-start: 1;
     grid-row-start: 2;
@@ -140,16 +148,15 @@
     position: relative;
     width: 16%;
     height: 100%;
-    background-color: rgba(69, 126, 113, 0.192);
 }
 
 .pulse {
     position: absolute;
-    width: 2px;
+    width: 5px;
     /* Size of the pulse */
-    height: 2px;
-    background-color: var(--image-accentcolor);
-    box-shadow: var(--image-lightcolor) 0 0 0 0px var(--image-accentcolor);
+    height: 5px;
+    background-color: var(--image-darkcolor);
+    box-shadow: var(--image-darkcolor) 0 0 0 0px var(--image-darkcolor);
     /* Pulse color */
     border-radius: 50%;
     transform: scale(1);
@@ -157,302 +164,87 @@
     /* Infinite loop */
 }
 
-.secondary-pulse1 {
-    position: absolute;
-    width: 2px;
-    /* Size of the secondary pulse */
-    height: 2px;
-    background-color: var(--image-accentcolor);
-    /* Secondary pulse color */
-    border-radius: 50%;
-    opacity: 0;
-    /* Initially invisible */
-    animation: secondary-pulse 10s linear infinite;
-    animation-delay: 1s;
-    z-index: 5;
-}
-
-@keyframes secondary-pulse {
-    0% {
-        left: 0;
-        transform: scale(0.5);
-        opacity: 1;
-    }
-
-    100% {
-        left: 100%;
-        transform: scale(2);
-        opacity: 0;
-    }
-}
-
-.secondary-pulse2 {
-    position: absolute;
-    width: 2px;
-    /* Size of the secondary pulse */
-    height: 2px;
-    background-color: var(--image-accentcolor);
-    /* Secondary pulse color */
-    border-radius: 50%;
-    opacity: 0;
-    /* Initially invisible */
-    animation: secondary-pulse 10s linear infinite;
-    ;
-    animation-delay: 3s;
-    z-index: 5;
-}
-
-
-
-.secondary-pulse3 {
-    position: absolute;
-    width: 2px;
-    /* Size of the secondary pulse */
-    height: 2px;
-    background-color: var(--image-accentcolor);
-    /* Secondary pulse color */
-    border-radius: 50%;
-    opacity: 0;
-    /* Initially invisible */
-    animation: secondary-pulse 10s linear infinite;
-    ;
-    animation-delay: 6s;
-    z-index: 5;
-}
-
-
+.secondary-pulse1,
+.secondary-pulse2,
+.secondary-pulse3,
 .secondary-pulse4 {
     position: absolute;
-    width: 2px;
-    /* Size of the secondary pulse */
-    height: 2px;
-    background-color: var(--image-accentcolor);
-    /* Secondary pulse color */
+    width: 5px;
+    height: 5px;
+    background-color: var(--image-darkcolor);
+        box-shadow: var(--image-darkcolor) 0 0 0 0px var(--image-darkcolor);
     border-radius: 50%;
     opacity: 0;
-    /* Initially invisible */
     animation: secondary-pulse 10s linear infinite;
-    ;
-    animation-delay: 9s;
-    z-index: 5;
 }
 
-
-/* Animation for pulse */
-@keyframes secondary-pulse  {
-    0% {
-        left: 0;
-        /* Start at the top */
-        /* Fully visible */
-        transform: scale(1);
-        /* Normal size */
-        box-shadow: 0 0 0 2px var(--image-accentcolor);
-    }
-
-    10% {
-        left: 10%;
-        /* Slightly faded */
-        transform: scale(0.90);
-        /* Bigger size */
-        box-shadow: 0 0 0 2px var(--image-lightcolor);
-    }
+.secondary-pulse1 { animation-delay: 0.2; }
+.secondary-pulse2 { animation-delay: 2.5s; }
+.secondary-pulse3 { animation-delay: 5s; }
+.secondary-pulse4 { animation-delay: 7.3s; }
 
 
 
-    20% {
-        left: 20%;
-        /* Slightly faded */
-        transform: scale(1);
-        /* Bigger size */
-        box-shadow: 0 0 0 0px var(--image-lightcolor);
-    }
-
-
-    30% {
-        left: 30%;
-        /* Slightly faded */
-        transform: scale(0.9);
-        /* Bigger size */
-        box-shadow: 0 0 0 2px var(--image-lightcolor);
-    }
-
-
-    40% {
-        left: 40%;
-        /* Slightly faded */
-        transform: scale(1);
-        /* Bigger size */
+/* Smooth horizontal secondary pulse */
+@keyframes secondary-pulse {
+    5% {
+        left: 5%;
+        transform: scale(0.8);
+        opacity: 0;
         box-shadow: 0 0 0 0px var(--image-darkcolor);
     }
-
-
     50% {
         left: 50%;
-        /* Fully visible */
-        transform: scale(0.9);
-        /* Normal size */
-        box-shadow: 0 0 0 2px var(--image-lightcolor);
+        transform: scale(1.2);
+        opacity: 0.4;
+        box-shadow: 0 0 4px var(--image-darkcolor);
     }
-
-    60% {
-        left: 60%;
-        /* Slightly faded */
-        transform: scale(1);
-        /* Bigger size */
-        box-shadow: 0 0 0 0px var(--image-darkcolor);
-    }
-
-
-
-    70% {
-        left: 70%;
-
-        /* Slightly faded */
-        transform: scale(0.9);
-        /* Bigger size */
-        box-shadow: 0 0 0 2px var(--image-lightcolor);
-    }
-
-
-
-    80% {
-        left: 80%;
-        /* Slightly faded */
-        transform: scale(1);
-        /* Bigger size */
-        box-shadow: 0 0 0 0px var(--image-lightcolor);
-    }
-
-
     90% {
-        left: 90%;
-        /* Slightly faded */
-        transform: scale(0.9);
-        /* Bigger size */
-        box-shadow: 0 0 0 2px var(--image-lightcolor);
-    }
-
-
-
-    100% {
         left: 100%;
-        /* End at the bottom */
-        opacity: 1;
-        /* Disappear */
-        transform: scale(1);
-        /* Normal size */
+        transform: scale(0.8);
+        opacity: 0;
         box-shadow: 0 0 0 0px var(--image-darkcolor);
     }
 }
 
-
-/* Animation for pulse */
+/* Smooth vertical main pulse */
 @keyframes pulse-move {
     0% {
-        top: 0;
-        /* Start at the top */
-        /* Fully visible */
-        transform: scale(1);
-        /* Normal size */
+        top: 0%;
+        transform: scale(0.8);
+        opacity: 0;
         box-shadow: 0 0 0 0px var(--image-darkcolor);
     }
-
-    10% {
-        top: 10%;
-        /* Slightly faded */
-        transform: scale(0.90);
-        /* Bigger size */
-        box-shadow: 0 0 0 2px var(--image-lightcolor);
+    15% {
+        top: 15%;
+        transform: scale(1.2);
+        opacity: 0.6;
+        box-shadow: 0 0 8px var(--image-darkcolor);
     }
-
-
-
-    20% {
-        top: 20%;
-        /* Slightly faded */
-        transform: scale(1);
-        /* Bigger size */
-        box-shadow: 0 0 0 0px var(--image-darkcolor);
-    }
-
-
-    30% {
-        top: 30%;
-        /* Slightly faded */
-        transform: scale(0.9);
-        /* Bigger size */
-        box-shadow: 0 0 0 2px var(--image-lightcolor);
-    }
-
-
     40% {
         top: 40%;
-        /* Slightly faded */
         transform: scale(1);
-        /* Bigger size */
-        box-shadow: 0 0 0 0px var(--image-darkcolor);
+        opacity: 0.4;
+        box-shadow: 0 0 6px var(--image-darkcolor);
     }
-
-
-    50% {
-        top: 50%;
-        /* Fully visible */
-        transform: scale(0.9);
-        /* Normal size */
-        box-shadow: 0 0 0 2px var(--image-lightcolor);
-    }
-
-    60% {
-        top: 60%;
-        /* Slightly faded */
-        transform: scale(1);
-        /* Bigger size */
-        box-shadow: 0 0 0 0px var(--image-accentcolor);
-    }
-
-
-
     70% {
         top: 70%;
-
-        /* Slightly faded */
-        transform: scale(0.9);
-        /* Bigger size */
-        box-shadow: 0 0 0 2px var(--image-lightcolor);
+        transform: scale(1.1);
+        opacity: 0.6;
+        box-shadow: 0 0 8px var(--image-darkcolor);
     }
-
-
-
-    80% {
-        top: 80%;
-        /* Slightly faded */
-        transform: scale(1);
-        /* Bigger size */
-        box-shadow: 0 0 0 0px var(--image-accentcolor);
-    }
-
-
-    90% {
-        top: 90%;
-        /* Slightly faded */
-        transform: scale(0.9);
-        /* Bigger size */
-        box-shadow: 0 0 0 2px var(--image-accentcolor);
-    }
-
-
-
     100% {
         top: 100%;
-        /* End at the bottom */
-        opacity: 1;
-        /* Disappear */
-        transform: scale(1);
-        /* Normal size */
-        box-shadow: 0 0 0 0px var(--image-darkcolor);
+        transform: scale(0.8);
+        opacity: 0;
+        box-shadow: 0 0 0 0px var(--image-d);
     }
 }
 
+/* Optional: smoother timing */
+.pulse, .secondary-pulse1, .secondary-pulse2, .secondary-pulse3, .secondary-pulse4 {
+    animation-timing-function: ease-in-out;
+}
 
 
 
@@ -461,8 +253,7 @@
     width: 8000%;
     /* Length of the horizontal lines */
     height: 0.1%;
-    /* Line thickness */
-    background-color: var(--image-darkcolor);
+
 }
 
 /* Positioning Individual Horizontal Lines */
@@ -502,6 +293,7 @@
     /* Full width of the container */
     gap: 20px;
     /* Space between logo and description */
+    
 
 }
 
@@ -528,13 +320,22 @@
     display: flex;
     position: relative;
     width: 60%;
-    height: 100%;
+    height: 70%;
     max-width: 100%;
     /* Adjust the max-width as needed */
     margin-left: 30%;
     margin-bottom: 10%;
     display: block;
     /* Ensure it's a block element for centering */
+    border: 1px solid var(--img-border);
+        padding: 10px;               /* space around image */
+    border-radius: 12px;         /* rounded corners for smooth blending */
+    background: radial-gradient(
+        circle,var(--image-accentcolor),   /* semi-transparent in center */
+        var(--img-bg) 140%             /* fades to page background */
+    );                            /* subtle gradient fade */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* soft shadow for depth */
+    transition: background 0.3s ease, box-shadow 0.3s ease; 
 }
 
 .LogoDescription {
@@ -555,7 +356,7 @@
     position: relative;
     /* Ensures the text is centered inside the element */
     border-radius: 8px;
-    background-color: var(--image-darkcolor);
+    background-color: var(--image-accentcolor);
     color: var(--text-color);
     /* Ensure text is visible */
     box-shadow: 0 0 10px var(--shadow-color);

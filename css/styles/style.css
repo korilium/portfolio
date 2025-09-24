@@ -3,27 +3,31 @@
 ----------------------------------- */
 /* Default: dark mode */
 :root {
-    --bg-color: black;
-    --text-color: #bdf7ea;
-    --header-bg: black;
+    --bg-color: #091210;
+    --text-color: #22443e;
+    --header-bg: 091210;
     --link-color: #bdf7ea;
     --link-hover: #f0a500;
-    --image-darkcolor: #79e0c8;
+    --image-darkcolor: #85edd5;
     --image-lightcolor: #bdf7ea;
-    --image-accentcolor: #93EAD6;
+    --image-accentcolor: #aef6e5;
+    --img-bg: #091210; /* dark mode */
 }
 
 /* Light mode overrides */
 body.light {
-    --bg-color: #bdf7ea;
-    --text-color: #199175;
-    --header-bg: #bdf7ea;
+    --bg-color: #91c8bb;
+    --text-color: #22443e;
+    --header-bg: #91c8bb;
     --link-color: #199175;
     --link-hover: #f0a500;
-    --image-darkcolor: #199175;
+    --image-darkcolor: #167a63;
     --image-lightcolor: #61b8a4;
-    --image-accentcolor: #49ab94;
+    --image-accentcolor: #73b5a6;
+    --img-bg: #062a19; /* light mode */
 }
+
+
 
 /* -----------------------------------
    RESET & GLOBAL

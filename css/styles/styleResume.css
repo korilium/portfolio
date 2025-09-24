@@ -51,16 +51,16 @@
   top: 0;
   bottom: 0;
   width: 3px;
-  background-color: #93EAD6;
+  background-color: var(--image-accentcolor);
   animation: pulse 5s infinite;
 }
 
 .timeline-content {
-  background-color: #c1ddd6;
-  color: #22443e; /* Ensure text is visible */
+  background-color: var(--bg-color);
+  color: var(--text-color); /* Ensure text is visible */
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(1, 22, 18, 0.1);
   font-size: 1rem;
   list-style-type: disc;
 }
@@ -93,12 +93,12 @@
 /* Pulse Effect */
 @keyframes pulse {
   0% {
-    background-color: #93EAD6;
+    background-color: var(--image-darkcolor);
   }
   50% {
-    background-color: #D5E2DF;
+    background-color: var(--image-lightcolor);
   }
   100% {
-    background-color: #79e0c8;
+    background-color: var(--image-accentcolor);
   }
 }

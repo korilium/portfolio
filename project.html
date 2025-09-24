@@ -28,10 +28,12 @@
         <button id="theme-toggle">Toggle Light/Dark</button>
 
     <script>
-    const toggle = document.getElementById("theme-toggle");
-    toggle.addEventListener("click", () => {
-        document.body.classList.toggle("light");
-    });
+      document.addEventListener("DOMContentLoaded", () => {
+        const toggle = document.getElementById("theme-toggle");
+        toggle.addEventListener("click", () => {
+          document.body.classList.toggle("light");
+        });
+      });
     </script>
   </div>
 

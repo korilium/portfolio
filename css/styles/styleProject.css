@@ -76,7 +76,7 @@
     /* Full height */
     font-size: 3em;
     /* Make dots large */
-    color: #D5E2DF;
+    color: var(--image-darkcolor);
     /* Dot color */
     margin-right: 20px;
     /* Space between dots and description */
@@ -88,7 +88,7 @@
     /* Add the dots */
     font-size: 2em;
     /* Make the dots larger */
-    color: #D5E2DF;
+    color: var(--image-darkcolor);
     /* Dot color */
     position: relative;
     left: 40%;
@@ -106,10 +106,10 @@
     text-align: center;
     /* Align text to the left */
     border-radius: 8px;
-    background-color: #c1ddd6;
-    color: #22443e;
+    background-color: var(--image-darkcolor);
+    color: var(--text-color);
     /* Ensure text is visible */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(1, 22, 18, 0.1);
     font-size: 1rem;
     padding: 20px;
 }
@@ -127,7 +127,7 @@
     /* Occupy full height of the parent container */
     width: 1%;
     /* Thickness of the vertical line */
-    background-color: #000000;
+    background-color: var(--image-accentcolor);
     /* Color of the vertical line */
     grid-column-start: 1;
     grid-row-start: 2;
@@ -148,8 +148,8 @@
     width: 2px;
     /* Size of the pulse */
     height: 2px;
-    background-color: #79e0c8;
-    box-shadow: #c1ddd6 0 0 0 0px #79e0c8;
+    background-color: var(--image-accentcolor);
+    box-shadow: var(--image-lightcolor) 0 0 0 0px var(--image-accentcolor);
     /* Pulse color */
     border-radius: 50%;
     transform: scale(1);
@@ -162,13 +162,12 @@
     width: 2px;
     /* Size of the secondary pulse */
     height: 2px;
-    background-color: #79e0c8;
+    background-color: var(--image-accentcolor);
     /* Secondary pulse color */
     border-radius: 50%;
     opacity: 0;
     /* Initially invisible */
     animation: secondary-pulse 10s linear infinite;
-    ;
     animation-delay: 1s;
     z-index: 5;
 }
@@ -192,7 +191,7 @@
     width: 2px;
     /* Size of the secondary pulse */
     height: 2px;
-    background-color: #79e0c8;
+    background-color: var(--image-accentcolor);
     /* Secondary pulse color */
     border-radius: 50%;
     opacity: 0;
@@ -210,7 +209,7 @@
     width: 2px;
     /* Size of the secondary pulse */
     height: 2px;
-    background-color: #79e0c8;
+    background-color: var(--image-accentcolor);
     /* Secondary pulse color */
     border-radius: 50%;
     opacity: 0;
@@ -227,7 +226,7 @@
     width: 2px;
     /* Size of the secondary pulse */
     height: 2px;
-    background-color: #79e0c8;
+    background-color: var(--image-accentcolor);
     /* Secondary pulse color */
     border-radius: 50%;
     opacity: 0;
@@ -247,7 +246,7 @@
         /* Fully visible */
         transform: scale(1);
         /* Normal size */
-        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 2px var(--image-accentcolor);
     }
 
     10% {
@@ -255,7 +254,7 @@
         /* Slightly faded */
         transform: scale(0.90);
         /* Bigger size */
-        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 2px var(--image-lightcolor);
     }
 
 
@@ -265,7 +264,7 @@
         /* Slightly faded */
         transform: scale(1);
         /* Bigger size */
-        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 0px var(--image-lightcolor);
     }
 
 
@@ -274,7 +273,7 @@
         /* Slightly faded */
         transform: scale(0.9);
         /* Bigger size */
-        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 2px var(--image-lightcolor);
     }
 
 
@@ -283,7 +282,7 @@
         /* Slightly faded */
         transform: scale(1);
         /* Bigger size */
-        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 0px var(--image-darkcolor);
     }
 
 
@@ -292,7 +291,7 @@
         /* Fully visible */
         transform: scale(0.9);
         /* Normal size */
-        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 2px var(--image-lightcolor);
     }
 
     60% {
@@ -300,7 +299,7 @@
         /* Slightly faded */
         transform: scale(1);
         /* Bigger size */
-        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 0px var(--image-darkcolor);
     }
 
 
@@ -311,7 +310,7 @@
         /* Slightly faded */
         transform: scale(0.9);
         /* Bigger size */
-        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 2px var(--image-lightcolor);
     }
 
 
@@ -321,7 +320,7 @@
         /* Slightly faded */
         transform: scale(1);
         /* Bigger size */
-        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 0px var(--image-lightcolor);
     }
 
 
@@ -330,7 +329,7 @@
         /* Slightly faded */
         transform: scale(0.9);
         /* Bigger size */
-        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 2px var(--image-lightcolor);
     }
 
 
@@ -342,7 +341,7 @@
         /* Disappear */
         transform: scale(1);
         /* Normal size */
-        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 0px var(--image-darkcolor);
     }
 }
 
@@ -355,7 +354,7 @@
         /* Fully visible */
         transform: scale(1);
         /* Normal size */
-        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 0px var(--image-darkcolor);
     }
 
     10% {
@@ -363,7 +362,7 @@
         /* Slightly faded */
         transform: scale(0.90);
         /* Bigger size */
-        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 2px var(--image-lightcolor);
     }
 
 
@@ -373,7 +372,7 @@
         /* Slightly faded */
         transform: scale(1);
         /* Bigger size */
-        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 0px var(--image-darkcolor);
     }
 
 
@@ -382,7 +381,7 @@
         /* Slightly faded */
         transform: scale(0.9);
         /* Bigger size */
-        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 2px var(--image-lightcolor);
     }
 
 
@@ -391,7 +390,7 @@
         /* Slightly faded */
         transform: scale(1);
         /* Bigger size */
-        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 0px var(--image-darkcolor);
     }
 
 
@@ -400,7 +399,7 @@
         /* Fully visible */
         transform: scale(0.9);
         /* Normal size */
-        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 2px var(--image-lightcolor);
     }
 
     60% {
@@ -408,7 +407,7 @@
         /* Slightly faded */
         transform: scale(1);
         /* Bigger size */
-        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 0px var(--image-accentcolor);
     }
 
 
@@ -419,7 +418,7 @@
         /* Slightly faded */
         transform: scale(0.9);
         /* Bigger size */
-        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 2px var(--image-lightcolor);
     }
 
 
@@ -429,7 +428,7 @@
         /* Slightly faded */
         transform: scale(1);
         /* Bigger size */
-        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 0px var(--image-accentcolor);
     }
 
 
@@ -438,7 +437,7 @@
         /* Slightly faded */
         transform: scale(0.9);
         /* Bigger size */
-        box-shadow: 0 0 0 2px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 2px var(--image-accentcolor);
     }
 
 
@@ -450,7 +449,7 @@
         /* Disappear */
         transform: scale(1);
         /* Normal size */
-        box-shadow: 0 0 0 0px rgba(121, 222, 200, 0.5);
+        box-shadow: 0 0 0 0px var(--image-darkcolor);
     }
 }
 
@@ -463,7 +462,7 @@
     /* Length of the horizontal lines */
     height: 0.1%;
     /* Line thickness */
-    background-color: rgba(69, 126, 113, 0.192);
+    background-color: var(--image-darkcolor);
 }
 
 /* Positioning Individual Horizontal Lines */
@@ -556,10 +555,11 @@
     position: relative;
     /* Ensures the text is centered inside the element */
     border-radius: 8px;
-    background-color: #c1ddd6;
-    color: #22443e;
+    background-color: var(--image-darkcolor);
+    color: var(--text-color);
     /* Ensure text is visible */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px var(--shadow-color);
     font-size: 1rem;
     padding: 20px;
+
 }

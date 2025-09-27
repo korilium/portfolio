@@ -15,20 +15,17 @@
     svg: { fontCache: 'global' }
     };
   </script>
-      </div>
-        <button id="theme-toggle">Toggle Light/Dark</button>  
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const toggle = document.getElementById("theme-toggle");
-        toggle.addEventListener("click", () => {
-
-          document.body.classList.toggle("light");
-        });
-      });
-    </script>
-  </div>
-
+  <script>
+    // Immediately set theme before rendering
+    (function() {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light") {
+        document.documentElement.classList.add("light");
+      }
+    })();
+  </script>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+
 
 </head>
 <body>
@@ -40,6 +37,29 @@
     </ul>
   </aside>
   <main>
+      <label class="theme-switch">
+      <input type="checkbox" id="theme-toggle">
+      <span class="slider"></span>
+    </label>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const toggle = document.getElementById("theme-toggle");
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "light") {
+          document.body.classList.add("light");
+          toggle.checked = true; // if using a checkbox toggle
+        }
+        toggle.addEventListener("click", () => {
+          document.body.classList.toggle("light");
+          // Save preference
+          if (document.body.classList.contains("light")) {
+            localStorage.setItem("theme", "light");
+          } else {
+            localStorage.setItem("theme", "dark");
+          }
+        });
+      });
+    </script>
     <article>
       <h1>Blackjack With RL</h1>
 <p><em>Date: 2025-01-01</em></p>

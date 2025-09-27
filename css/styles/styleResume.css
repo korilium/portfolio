@@ -59,6 +59,8 @@
   background-color: var(--bg-color);
   color: var(--text-color); /* Ensure text is visible */
   padding: 20px;
+      background-color: var(--image-accentcolor);
+    color: var(--text-colorBox);
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(1, 22, 18, 0.1);
   font-size: 1rem;

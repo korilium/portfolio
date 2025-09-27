@@ -44,8 +44,17 @@ html_page = raw"""
     svg: { fontCache: 'global' }
     };
   </script>
-
+  <script>
+    // Immediately set theme before rendering
+    (function() {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light") {
+        document.documentElement.classList.add("light");
+      }
+    })();
+  </script>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+
 
 </head>
 <body>
@@ -57,6 +66,29 @@ html_page = raw"""
     </ul>
   </aside>
   <main>
+      <label class="theme-switch">
+      <input type="checkbox" id="theme-toggle">
+      <span class="slider"></span>
+    </label>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const toggle = document.getElementById("theme-toggle");
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "light") {
+          document.body.classList.add("light");
+          toggle.checked = true; // if using a checkbox toggle
+        }
+        toggle.addEventListener("click", () => {
+          document.body.classList.toggle("light");
+          // Save preference
+          if (document.body.classList.contains("light")) {
+            localStorage.setItem("theme", "light");
+          } else {
+            localStorage.setItem("theme", "dark");
+          }
+        });
+      });
+    </script>
     <article>
       {{html_body}}
     </article>
@@ -75,6 +107,15 @@ index_template = raw"""
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blog Index</title>
   <link rel="icon" href="../../../img/favicon.svg">
+    <script>
+    // Immediately set theme before rendering
+    (function() {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light") {
+        document.documentElement.classList.add("light");
+      }
+    })();
+  </script>
   <link href="../../../css/styles/styleBlog.css" rel="stylesheet">
 </head>
   <body class="index" id="page-top" data-spy="scroll" data-target=".side-menu">
@@ -82,21 +123,34 @@ index_template = raw"""
     <div class="header">
         <div class="menu-container">
             <ul class="menu">
-                <li><a href="index.html">Home</a></li>
+                <li><a href="../../../index.html">Home</a></li>
                 <li><a href="../../../blog/index.html">Blog</a></li>
                 <li><a href="../../../resume.html">Curriculum</a></li>
                 <li><a href="../../../project.html">Peccon</a></li>
             </ul>
         </div>
             </div>
-        <button id="theme-toggle">Toggle Light/Dark</button>  
+    <label class="theme-switch">
+      <input type="checkbox" id="theme-toggle">
+      <span class="slider"></span>
+    </label>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         const toggle = document.getElementById("theme-toggle");
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "light") {
+          document.body.classList.add("light");
+          toggle.checked = true; // if using a checkbox toggle
+        }
         toggle.addEventListener("click", () => {
-
           document.body.classList.toggle("light");
-        });
+          // Save preference
+          if (document.body.classList.contains("light")) {
+            localStorage.setItem("theme", "light");
+          } else {
+            localStorage.setItem("theme", "dark");
+          }
+       });
       });
     </script>
   </div>

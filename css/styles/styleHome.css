@@ -22,7 +22,12 @@
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
     color: transparent; /* Make the text itself invisible */
-    background: linear-gradient(90deg, var(--image-darkcolor), var(--image-lightcolor), var(--image-accentcolor)); /* Gradient glow */
+    background: linear-gradient(90deg,
+      var(--image-darkcolor) 0%,
+      var(--image-lightcolor) 33%,
+      var(--image-accentcolor) 66%,
+      var(--image-darkcolor) 100%
+    ); /* Gradient glow */
     background-size: 200% auto; /* Double the size for animation */
     background-clip: text; /* Clip the gradient to the text */
     text-fill-color: transparent; /* Ensure text color is transparent */
@@ -33,40 +38,25 @@
   .division-line {
     width: 150px;
     height: 5px;
-    background: linear-gradient(90deg, var(--image-darkcolor), var(--image-lightcolor), var(--image-accentcolor));
+    background: linear-gradient(90deg,
+    var(--image-darkcolor) 0%,
+    var(--image-lightcolor) 33%,
+    var(--image-accentcolor) 66%,
+    var(--image-darkcolor) 100%);
     background-size: 200% auto;
     margin: 1rem auto;
     border-radius: 10px; /* Smooth edges for the line */
     animation: flowGlow 20s linear infinite; /* Sync with text animation */
     /*box-shadow: 0 0 15px #D5E2DF, 0 0 10px #93EAD6; /* Subtle glow effect */
   }
-  
-  /* Flowing Glow Animation */
-  @keyframes flowGlow {
-    0% {
-      background-position: 200% 0;
-    }
-    100% {
-      background-position: -200% 0;
-    }
-  }
-  
-  /* Hover Glow Effect */
-  .delta:hover, .time:hover {
-    animation: flowHover 20s ease-in-out infinite;
-  }
-  
-  @keyframes flowHover {
-    0% {
-      background-position: 150% 0;
-    }
-    50% {
-      background-position: 0% 0;
-    }
-    100% {
-      background-position: -150% 0;
-    }
-  }
+
+
+@keyframes flowGlow {
+  0%   { background-position: 200% 50%; }
+  100% { background-position: -200% 50%; }
+}
+
+
 .background-picture {
     position: relative; /* Ensure the background image container is positioned relative */
     padding-bottom: 10%;

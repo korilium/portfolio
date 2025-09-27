@@ -3,31 +3,31 @@
 ----------------------------------- */
 /* Default: dark mode */
 :root {
-    --bg-color: #091210;
-    --text-color: #22443e;
-    --header-bg: 091210;
+    --bg-color: #1b392d;
+    --text-color: #6a8d7e;
+    --text-colorBox:#22443e ; 
+    --header-bg: #1b392d;
     --link-color: #bdf7ea;
     --link-hover: #f0a500;
-    --image-darkcolor: #85edd5;
-    --image-lightcolor: #bdf7ea;
-    --image-accentcolor: #aef6e5;
+    --image-darkcolor: #055445;
+    --image-lightcolor: #80c3b7;
+    --image-accentcolor: #60987a;
     --img-bg: #091210; /* dark mode */
 }
 
 /* Light mode overrides */
 body.light {
-    --bg-color: #91c8bb;
-    --text-color: #22443e;
-    --header-bg: #91c8bb;
-    --link-color: #199175;
-    --link-hover: #f0a500;
-    --image-darkcolor: #167a63;
-    --image-lightcolor: #61b8a4;
-    --image-accentcolor: #73b5a6;
-    --img-bg: #062a19; /* light mode */
-}
-
-
+    --bg-color: #8fc1b4;           /* soft mint background */
+    --text-color: #0e4d44;         /* readable deep teal */
+    --text-colorBox: #184944;      /* slightly darker teal for emphasis */
+    --header-bg: #8fc1b4;          /* slightly darker mint header */
+    --link-color: #147665;         /* medium teal for links */
+    --link-hover: #e07b00;         /* warm orange for hover */
+    --image-darkcolor: #0a4a40;    /* darker teal accents */
+    --image-lightcolor: #64ab9f;   /* lighter teal accents */
+    --image-accentcolor: #57a287;  /* muted teal-green accent */
+    --img-bg: #cce6dd;             /* light minty background for images */
+}  
 
 /* -----------------------------------
    RESET & GLOBAL
@@ -56,7 +56,7 @@ body {
     display: flex;
     align-items: center;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
     gap: 30px;
     background-color: var(--header-bg);
 }
@@ -102,6 +102,64 @@ body {
     }
 }
 
+
+/* button 
+
+/* Theme toggle button pinned right */
+.theme-switch {
+  position: fixed;
+  right: 2%;
+  top: 2%;
+  transform: none;
+  
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+/* Hide the checkbox */
+.theme-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0; /* shorthand for top/right/bottom/left:0 */
+  background-color: var(--bg-color);
+  border: 2px solid var(--link-color);
+  border-radius: 34px;
+  transition: all 0.4s ease;
+}
+
+/* The circle inside the slider */
+.slider:before {
+  content: "";
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 2px;
+  background-color: var(--link-color);
+  border-radius: 50%;
+  transition: all 0.4s ease;
+}
+
+/* Checked = moved circle */
+.theme-switch input:checked + .slider {
+  background-color: var(--link-color);
+  border-color: var(--bg-color);
+}
+
+.theme-switch input:checked + .slider:before {
+  transform: translateX(22px);
+  background-color: var(--bg-color);
+}
+
+
 /* -----------------------------------
    PAGE & BLOG
 ----------------------------------- */
@@ -143,32 +201,4 @@ body {
     margin-bottom: 15px;
 }
 
-/*button 
-/* -----------------------------------
-   THEME TOGGLE BUTTON
------------------------------------ */
-#theme-toggle {
-    position: relative;
-    padding: 8px 16px;
-    font-size: 0.9rem;
-    font-weight: bold;
-    border: 2px solid var(--link-color);
-    border-radius: 8px;
-    background-color: var(--bg-color);
-    color: var(--link-color);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-left: 20px; /* adjust if needed */
-}
 
-#theme-toggle:hover {
-    background-color: var(--link-color);
-    color: var(--bg-color);
-    transform: scale(1.05);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-#theme-toggle:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(240, 165, 0, 0.5);
-}

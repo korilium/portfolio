@@ -36,6 +36,14 @@ html_page = raw"""
   <title>{{TITLE}}</title>
   <!-- Favicon -->
   <link rel="icon" href="../../../img/favicon.svg">
+    <script>
+  (function () {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+      document.documentElement.setAttribute("data-theme", savedTheme);
+    }
+  })();
+</script>
   <!-- Stylesheet -->
   <link href="../../../css/styles/styleBlog.css" rel="stylesheet">
   <script>
@@ -94,6 +102,7 @@ html_page = raw"""
     </article>
   </main>
 </body>
+<script src="../../../js/toggleTheme.js"></script>
 </html>
 """
 
@@ -107,15 +116,14 @@ index_template = raw"""
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blog Index</title>
   <link rel="icon" href="../../../img/favicon.svg">
-    <script>
-    // Immediately set theme before rendering
-    (function() {
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme === "light") {
-        document.documentElement.classList.add("light");
-      }
-    })();
-  </script>
+      <script>
+  (function () {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+      document.documentElement.setAttribute("data-theme", savedTheme);
+    }
+  })();
+</script>
   <link href="../../../css/styles/styleBlog.css" rel="stylesheet">
 </head>
   <body class="index" id="page-top" data-spy="scroll" data-target=".side-menu">
@@ -164,6 +172,7 @@ index_template = raw"""
       </ul>
     </div>
 </body>
+<script src="../../../js/toggleTheme.js"></script>
 </html>
 """
 

@@ -1,7 +1,9 @@
 @import url("style.css");
 
 
-
+.page {
+    padding: 5%;
+}
 .menu a[href="project.html"] {
     text-decoration: underline;
     /* Underline the Home link */
@@ -22,8 +24,6 @@
 .grid {
     display: grid;
     grid-template-columns: 20% 1fr;
-    /* Four equal columns */
-    gap: 20px;
     /* Space between grid items */
     margin-top: 20px;
     /* Space above the grid */
@@ -132,7 +132,7 @@
     align-items: center;
     /* Center the lines horizontally */
     position: relative;
-    height: 88%;
+    height: 100%;
     /* Occupy full height of the parent container */
     width: 1%;
     /* Thickness of the vertical line */
@@ -227,7 +227,7 @@
         box-shadow: 0 0 6px var(--image-darkcolor);
     }
     70% {
-        top: 70%;
+        top: 65%;
         transform: scale(1.1);
         opacity: 0.6;
         box-shadow: 0 0 8px var(--image-darkcolor);
@@ -257,25 +257,25 @@
 
 /* Positioning Individual Horizontal Lines */
 .horizontal-line:nth-child(1) {
-    top: 15%;
+    top: 17%;
     /* Connect to the first logo */
     left: 50%;
 }
 
 .horizontal-line:nth-child(2) {
-    top: 40%;
+    top: 41.5%;
     /* Connect to the second logo */
     left: 50%;
 }
 
 .horizontal-line:nth-child(3) {
-    top: 70%;
+    top: 67%;
     /* Connect to the third logo */
     left: 50%;
 }
 
 .horizontal-line:nth-child(4) {
-    top: 100%;
+    top: 91%;
     /* Connect to the fourth logo */
     left: 50%;
 }

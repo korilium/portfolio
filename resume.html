@@ -6,19 +6,16 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Portfolio - Ignace Decocq</title>
-
-  <!-- Favicon -->
-  <link rel="icon" href="img/favicon.svg">
-    <script>
-    // Immediately set theme before rendering
-  (function() {
+  <script>
+  (function () {
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme === "light") {
-      document.documentElement.classList.add("light");
+      document.documentElement.setAttribute("data-theme", savedTheme);
     }
   })();
-  
-  </script>
+</script>
+  <!-- Favicon -->
+  <link rel="icon" href="img/favicon.svg">
   <!-- Stylesheet -->
   <link href="css/styles/styleResume.css" rel="stylesheet">
   
@@ -57,7 +54,7 @@
             <h2 class="subtitle">Education</h2>
             <ul>
               <li> 
-                <span class = "point-title"> Bachelor in Applied Economics - University of Hasselt </span>
+                <span class = "point-title">Applied Economics - University of Hasselt </span>
                 <span class = "date"> 2016 - 2019 </span>
               </li>
               <li>
@@ -65,7 +62,7 @@
                 <span class="date">2019</span>
                 </li>
               <li>
-                <span class="point-title">Master in Actuarial & Financial Engineering - Katholic University of Leuven </span>
+                <span class="point-title">Actuarial & Financial Engineering - Katholic University of Leuven </span>
                 <span class="date">2019 - 2021</span>
               </li>
               <li>
@@ -73,7 +70,7 @@
                 <span class="date">2023 - 2024</span>
               </li>
               <li>
-                <span class="point-title">Advanced Master in Artificial Intelligence - Katholic University of Leuven</span>
+                <span class="point-title">Artificial Intelligence - Katholic University of Leuven</span>
                 <span class="date">2025 - present</span>
             </ul>
           </div>
@@ -154,44 +151,6 @@
   </div>
 
 
-      <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const toggle = document.getElementById("theme-toggle");
-        const savedTheme = localStorage.getItem("theme");
-        if (savedTheme === "light") {
-          document.body.classList.add("light");
-          toggle.checked = true; // if using a checkbox toggle
-        }
-        toggle.addEventListener("click", () => {
-          document.body.classList.toggle("light");
-          // Save preference
-          if (document.body.classList.contains("light")) {
-            localStorage.setItem("theme", "light");
-          } else {
-            localStorage.setItem("theme", "dark");
-          }
-        });
-      });
-
-      document.addEventListener("DOMContentLoaded", () => {
-  const toggle = document.getElementById("theme-toggle");
-
-  // Initialize toggle state based on saved theme
-  if (localStorage.getItem("theme") === "light") {
-    toggle.checked = true;
-  }
-
-  toggle.addEventListener("change", () => {
-    if (toggle.checked) {
-      document.documentElement.classList.add("light");
-      localStorage.setItem("theme", "light");
-    } else {
-      document.documentElement.classList.remove("light");
-      localStorage.setItem("theme", "dark");
-    }
-  });
-});
-    </script>
 </body>
-
+<script src="js/toggleTheme.js"></script>
 </html>

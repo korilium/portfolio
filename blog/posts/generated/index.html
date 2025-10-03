@@ -5,15 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blog Index</title>
   <link rel="icon" href="../../../img/favicon.svg">
-    <script>
-    // Immediately set theme before rendering
-    (function() {
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme === "light") {
-        document.documentElement.classList.add("light");
-      }
-    })();
-  </script>
+      <script>
+  (function () {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+      document.documentElement.setAttribute("data-theme", savedTheme);
+    }
+  })();
+</script>
   <link href="../../../css/styles/styleBlog.css" rel="stylesheet">
 </head>
   <body class="index" id="page-top" data-spy="scroll" data-target=".side-menu">
@@ -54,12 +53,35 @@
   </div>
 
     </div>
-
-    <div class="blog">
       <h1>The Peccon Blog</h1>
-      <ul>
-        <li><a href="BlackjackWithRL.html">BlackjackWithRL</a></li>
-      </ul>
+<div class="blog-overview">
+  <div class="blog-card">
+    <div class="blog-content">
+      <h3>Understanding Financial Planning</h3>
+      <p>Discover how to manage your finances effectively and plan for a secure future...</p>
+      <span class="meta">Jan 5, 2025 • Personal Finance</span>
+      <a href="blog/posts/post1.html" class="read-more">Read more →</a>
     </div>
+  </div>
+
+  <div class="blog-card">
+    <div class="blog-content">
+      <h3>Investing in 2025: Trends and Tips</h3>
+      <p>Learn the latest trends in the stock market and how to make smart investment choices...</p>
+      <span class="meta">Feb 12, 2025 • Investment</span>
+      <a href="blog/posts/post2.html" class="read-more">Read more →</a>
+    </div>
+  </div>
+
+  <div class="blog-card">
+    <div class="blog-content">
+      <h3>Balancing Time and Money</h3>
+      <p>Time is money, but how can we balance both effectively in our fast-paced world?...</p>
+      <span class="meta">Mar 20, 2025 • Personal Development</span>
+      <a href="blog/posts/post3.html" class="read-more">Read more →</a>
+    </div>
+  </div>
+</div>
 </body>
+<script src="../../../js/toggleTheme.js"></script>
 </html>

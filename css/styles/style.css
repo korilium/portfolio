@@ -16,7 +16,7 @@
 }
 
 /* Light mode overrides */
-body.light {
+:root[data-theme="light"]  {
     --bg-color: #8fc1b4;           /* soft mint background */
     --text-color: #0e4d44;         /* readable deep teal */
     --text-colorBox: #184944;      /* slightly darker teal for emphasis */
@@ -66,7 +66,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 30px;
     font-size: large;
 }
 
@@ -75,8 +74,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 30px;
-    margin-top: 50px;
     list-style-type: none;
     padding-bottom: 5px;
 }
@@ -124,41 +121,83 @@ body {
   height: 0;
 }
 
-/* The slider */
+/* Container */
+.theme-switch {
+  position: fixed;
+  right: 2%;
+  top: 2%;
+  width: 55px;
+  height: 28px;
+  display: inline-block;
+}
+
+/* Hide the checkbox */
+.theme-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Slider track */
 .slider {
   position: absolute;
   cursor: pointer;
-  inset: 0; /* shorthand for top/right/bottom/left:0 */
+  inset: 0;
   background-color: var(--bg-color);
   border: 2px solid var(--link-color);
   border-radius: 34px;
-  transition: all 0.4s ease;
+  transition: background-color 0.4s ease, border-color 0.4s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+  font-size: 14px;
 }
 
-/* The circle inside the slider */
-.slider:before {
-  content: "";
+/* Icons inside slider */
+.slider::before {
+  content: "🌙";
+  color: var(--link-color);
+  transition: opacity 0.3s ease;
+}
+
+.slider::after {
+  content: "☀️";
+  color: var(--link-color);
+  transition: opacity 0.3s ease;
+}
+
+/* The circle knob */
+.knob {
   position: absolute;
-  height: 20px;
-  width: 20px;
+  height: 22px;
+  width: 22px;
   left: 3px;
   bottom: 2px;
   background-color: var(--link-color);
   border-radius: 50%;
-  transition: all 0.4s ease;
+  transition: transform 0.4s ease, background-color 0.4s ease;
+  z-index: 1;
 }
 
-/* Checked = moved circle */
+/* Checked state */
 .theme-switch input:checked + .slider {
   background-color: var(--link-color);
   border-color: var(--bg-color);
 }
 
-.theme-switch input:checked + .slider:before {
-  transform: translateX(22px);
+.theme-switch input:checked + .slider .knob {
+  transform: translateX(27px);
   background-color: var(--bg-color);
 }
 
+/* Dim inactive icon */
+.theme-switch input:checked + .slider::before {
+  opacity: 0.4; /* moon fades */
+}
+.theme-switch input:not(:checked) + .slider::after {
+  opacity: 0.4; /* sun fades */
+}
 
 /* -----------------------------------
    PAGE & BLOG
@@ -166,7 +205,7 @@ body {
 .page {
     max-width: 1800px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 2%;
 }
 
 /* -----------------------------------

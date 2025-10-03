@@ -1,5 +1,8 @@
 @import url("style.css");
 
+.page {
+  padding: 0px;
+}
 
 .menu a[href="resume.html"] {
     text-decoration: underline; /* Underline the Home link */
@@ -42,12 +45,11 @@
 /* Timeline Item */
 .timeline-item {
   position: relative;
-  padding-left: 40px;
 }
 
 .timeline-line {
   position: absolute;
-  left: 20px;
+  left: -10px;
   top: 0;
   bottom: 0;
   width: 3px;

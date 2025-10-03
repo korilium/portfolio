@@ -7,6 +7,14 @@
   <title>BlackjackWithRL</title>
   <!-- Favicon -->
   <link rel="icon" href="../../../img/favicon.svg">
+    <script>
+  (function () {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+      document.documentElement.setAttribute("data-theme", savedTheme);
+    }
+  })();
+</script>
   <!-- Stylesheet -->
   <link href="../../../css/styles/styleBlog.css" rel="stylesheet">
   <script>
@@ -79,4 +87,5 @@
     </article>
   </main>
 </body>
+<script src="../../../js/toggleTheme.js"></script>
 </html>

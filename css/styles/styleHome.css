@@ -80,14 +80,25 @@
 }
 
 .profile-picture-container {
-  display: flex; /* Flexbox for consistent alignment */
-  flex-direction: column; /* Stack the description below the picture */
-  align-items: center; /* Center-align the picture and text */
+  padding-left: 7%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   position: absolute;
-  bottom: 20px; /* Position relative to the background */
-  left: 20px; /* Position relative to the background */
-  z-index: 4; /* Ensure it appears above other elements */
+  bottom: 20px;
+  left: 5px;
+  z-index: 4;
+
+  /* Scale the entire container slightly */
+  transform: scale(1.3); /* Makes it 30% bigger than default */
+  transition: transform 0.3s ease; /* Smooth scaling if needed */
 }
+
+/* Optionally, scale on hover for interactive effect */
+.profile-picture-container:hover {
+  transform: scale(1.4); /* Grow more on hover */
+}
+
 
 .profile-picture {
   border-radius: 50%; /* Keep the circular shape */

@@ -1,87 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blog Index</title>
   <link rel="icon" href="../../../img/favicon.svg">
-      <script>
-  (function () {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "light") {
-      document.documentElement.setAttribute("data-theme", savedTheme);
-    }
-  })();
-</script>
+  <script>
+    (function () {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light") {
+        document.documentElement.setAttribute("data-theme", savedTheme);
+      }
+    })();
+  </script>
   <link href="../../../css/styles/styleBlog.css" rel="stylesheet">
 </head>
-  <body class="index" id="page-top" data-spy="scroll" data-target=".side-menu">
-    <!-- Header -->
-    <div class="header">
-        <div class="menu-container">
-            <ul class="menu">
-                <li><a href="../../../index.html">Home</a></li>
-                <li><a href="../../../blog/index.html">Blog</a></li>
-                <li><a href="../../../resume.html">Curriculum</a></li>
-                <li><a href="../../../project.html">Peccon</a></li>
-            </ul>
-        </div>
-            </div>
-    <label class="theme-switch">
-      <input type="checkbox" id="theme-toggle">
-      <span class="slider"></span>
-    </label>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const toggle = document.getElementById("theme-toggle");
-        const savedTheme = localStorage.getItem("theme");
-        if (savedTheme === "light") {
-          document.body.classList.add("light");
-          toggle.checked = true; // if using a checkbox toggle
+
+<body class="index" id="page-top" data-spy="scroll" data-target=".side-menu">
+  <!-- Header -->
+  <div class="header">
+    <div class="menu-container">
+      <ul class="menu">
+        <li><a href="../../../index.html">Home</a></li>
+        <li><a href="../../../blog/index.html">Blog</a></li>
+        <li><a href="../../../resume.html">Curriculum</a></li>
+        <li><a href="../../../project.html">Peccon</a></li>
+      </ul>
+    </div>
+  </div>
+  <label class="theme-switch">
+    <input type="checkbox" id="theme-toggle">
+    <span class="slider"></span>
+  </label>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const toggle = document.getElementById("theme-toggle");
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light") {
+        document.body.classList.add("light");
+        toggle.checked = true; // if using a checkbox toggle
+      }
+      toggle.addEventListener("click", () => {
+        document.body.classList.toggle("light");
+        // Save preference
+        if (document.body.classList.contains("light")) {
+          localStorage.setItem("theme", "light");
+        } else {
+          localStorage.setItem("theme", "dark");
         }
-        toggle.addEventListener("click", () => {
-          document.body.classList.toggle("light");
-          // Save preference
-          if (document.body.classList.contains("light")) {
-            localStorage.setItem("theme", "light");
-          } else {
-            localStorage.setItem("theme", "dark");
-          }
-       });
       });
-    </script>
+    });
+  </script>
   </div>
 
+  <div>
+    <div class="title-description">
+      <div class="title">
+        <h1>The Peccon Blog</h1>
+      </div>
+      <div class="description">
+        <p>Welcome to the Peccon blog, where we explore the intersection of time and money. Dive into articles that
+          unravel the complexities of financial planning, investment strategies, and personal growth. Our mission is to
+          empower you with knowledge and insights to make informed decisions in a fast-paced world. Join us on this
+          journey to master the art of balancing time and money effectively.</p>
+      </div>
     </div>
-      <h1>The Peccon Blog</h1>
-<div class="blog-overview">
-  <div class="blog-card">
-    <div class="blog-content">
-      <h3>Understanding Financial Planning</h3>
-      <p>Discover how to manage your finances effectively and plan for a secure future...</p>
-      <span class="meta">Jan 5, 2025 • Personal Finance</span>
-      <a href="blog/posts/post1.html" class="read-more">Read more →</a>
+    <div class="blog-overview">
+      <a href="BlackjackWithRL.html" class="blog-card-link">
+        <div class="blog-card">
+          <div class="blog-content">
+            <h3>Blackjack with Reinforcement Learning</h3>
+            <p>Discover how reinforcement learning can be applied to playing blackjack...</p>
+            <span class="meta">Jan 5, 2025 • Personal Finance</span>
+          </div>
+        </div>
+      </a>
     </div>
   </div>
 
-  <div class="blog-card">
-    <div class="blog-content">
-      <h3>Investing in 2025: Trends and Tips</h3>
-      <p>Learn the latest trends in the stock market and how to make smart investment choices...</p>
-      <span class="meta">Feb 12, 2025 • Investment</span>
-      <a href="blog/posts/post2.html" class="read-more">Read more →</a>
-    </div>
-  </div>
 
-  <div class="blog-card">
-    <div class="blog-content">
-      <h3>Balancing Time and Money</h3>
-      <p>Time is money, but how can we balance both effectively in our fast-paced world?...</p>
-      <span class="meta">Mar 20, 2025 • Personal Development</span>
-      <a href="blog/posts/post3.html" class="read-more">Read more →</a>
-    </div>
-  </div>
-</div>
 </body>
 <script src="../../../js/toggleTheme.js"></script>
+
 </html>

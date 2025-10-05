@@ -1,3 +1,5 @@
+
+
 @import url("style.css");
 
 body {
@@ -6,73 +8,6 @@ body {
   margin: 0;
 }
 
-aside {
-  width: 220px;
-  background: #f5f5f5;
-  padding: 1rem;
-  border-right: 1px solid #ddd;
-  height: 100vh;
-  position: sticky;
-  top: 0;
-}
-
-aside h2 {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-}
-
-aside ul {
-  list-style: none;
-  padding: 0;
-}
-
-aside li {
-  margin: 0.5rem 0;
-}
-
-aside a {
-  text-decoration: none;
-  color: #333;
-}
-
-aside a.current {
-  font-weight: bold;
-  color: #007acc;
-}
-
-main {
-  flex: 1;
-  padding: 2rem;
-}
-
-aside h2 {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-}
-
-aside ul {
-  list-style: none;
-  padding: 0;
-}
-
-aside li {
-  margin: 0.5rem 0;
-}
-
-aside a {
-  text-decoration: none;
-  color: #333;
-}
-
-aside a.current {
-  font-weight: bold;
-  color: #007acc;
-}
-
-main {
-  flex: 1;
-  padding: 2rem;
-}
 
 /* Blog content */
 /* Blog content inside main */

@@ -78,25 +78,7 @@ html_page = raw"""
       <input type="checkbox" id="theme-toggle">
       <span class="slider"></span>
     </label>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const toggle = document.getElementById("theme-toggle");
-        const savedTheme = localStorage.getItem("theme");
-        if (savedTheme === "light") {
-          document.body.classList.add("light");
-          toggle.checked = true; // if using a checkbox toggle
-        }
-        toggle.addEventListener("click", () => {
-          document.body.classList.toggle("light");
-          // Save preference
-          if (document.body.classList.contains("light")) {
-            localStorage.setItem("theme", "light");
-          } else {
-            localStorage.setItem("theme", "dark");
-          }
-        });
-      });
-    </script>
+
     <article>
       {{html_body}}
     </article>
@@ -142,35 +124,34 @@ index_template = raw"""
       <input type="checkbox" id="theme-toggle">
       <span class="slider"></span>
     </label>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const toggle = document.getElementById("theme-toggle");
-        const savedTheme = localStorage.getItem("theme");
-        if (savedTheme === "light") {
-          document.body.classList.add("light");
-          toggle.checked = true; // if using a checkbox toggle
-        }
-        toggle.addEventListener("click", () => {
-          document.body.classList.toggle("light");
-          // Save preference
-          if (document.body.classList.contains("light")) {
-            localStorage.setItem("theme", "light");
-          } else {
-            localStorage.setItem("theme", "dark");
-          }
-       });
-      });
-    </script>
   </div>
 
     </div>
 
-    <div class="blog">
-      <h1>The Peccon Blog</h1>
-      <ul>
-        {{SIDEBAR}}
-      </ul>
+ <div>
+    <div class="title-description">
+      <div class="title">
+        <h1>The Peccon Blog</h1>
+      </div>
+      <div class="description">
+        <p>Welcome to the Peccon blog, where we explore the intersection of time and money. Dive into articles that
+          unravel the complexities of financial planning, investment strategies, and personal growth. Our mission is to
+          empower you with knowledge and insights to make informed decisions in a fast-paced world. Join us on this
+          journey to master the art of balancing time and money effectively.</p>
+      </div>
     </div>
+    <div class="blog-overview">
+      <a href="BlackjackWithRL.html" class="blog-card-link">
+        <div class="blog-card">
+          <div class="blog-content">
+            <h3>Blackjack with Reinforcement Learning</h3>
+            <p>Discover how reinforcement learning can be applied to playing blackjack...</p>
+            <span class="meta">Jan 5, 2025 • Personal Finance</span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
 </body>
 <script src="../../../js/toggleTheme.js"></script>
 </html>

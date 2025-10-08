@@ -66,7 +66,8 @@ html_page = raw"""
 
 </head>
 <body>
-  <aside>
+  <aside id="sidebar">
+      <button id="close-sidebar" aria-label="Close menu">&times;</button>
     <h2>The peccon blog </h2>
     <ul>
       <li><a href="index.html">Home</a></li>
@@ -74,17 +75,19 @@ html_page = raw"""
     </ul>
   </aside>
   <main>
-      <label class="theme-switch">
+    <button id="open-sidebar" aria-label="Open menu">&#9776;</button>
+
+    <label class="theme-switch">
       <input type="checkbox" id="theme-toggle">
       <span class="slider"></span>
     </label>
-
     <article>
       {{html_body}}
     </article>
   </main>
-</body>
 <script src="../../../js/toggleTheme.js"></script>
+<script src="../../../js/toggleSideBar.js"></script>
+</body>
 </html>
 """
 
@@ -106,7 +109,7 @@ index_template = raw"""
     }
   })();
 </script>
-  <link href="../../../css/styles/styleBlog.css" rel="stylesheet">
+  <link href="../../../css/styles/styleBlogIndex.css" rel="stylesheet">
 </head>
   <body class="index" id="page-top" data-spy="scroll" data-target=".side-menu">
     <!-- Header -->
@@ -164,8 +167,9 @@ index_template = raw"""
     </div>
   </div>
 
-</body>
 <script src="../../../js/toggleTheme.js"></script>
+<script src="../../../js/toggleSideBar.js"></script>
+</body>
 </html>
 """
 

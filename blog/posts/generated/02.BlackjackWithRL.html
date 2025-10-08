@@ -37,7 +37,8 @@
 
 </head>
 <body>
-  <aside>
+  <aside id="sidebar">
+      <button id="close-sidebar" aria-label="Close menu">&times;</button>
     <h2>The peccon blog </h2>
     <ul>
       <li><a href="index.html">Home</a></li>
@@ -46,11 +47,12 @@
     </ul>
   </aside>
   <main>
-      <label class="theme-switch">
+    <button id="open-sidebar" aria-label="Open menu">&#9776;</button>
+
+    <label class="theme-switch">
       <input type="checkbox" id="theme-toggle">
       <span class="slider"></span>
     </label>
-
     <article>
       <h1>Blackjack With RL</h1>
 <p><em>Date: 2025-01-01</em></p>
@@ -69,6 +71,7 @@
 
     </article>
   </main>
-</body>
 <script src="../../../js/toggleTheme.js"></script>
+<script src="../../../js/toggleSideBar.js"></script>
+</body>
 </html>

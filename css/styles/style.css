@@ -7,7 +7,7 @@
     --text-color: #6a8d7e;
     --text-colorBox:#22443e ; 
     --header-bg: #1b392d;
-    --link-color: #275647;
+    --link-color: #326756;
     --link-hover: #f0a500;
     --image-darkcolor: #055445;
     --image-lightcolor: #80c3b7;
@@ -21,7 +21,7 @@
     --text-color: #0e4d44;         /* readable deep teal */
     --text-colorBox: #184944;      /* slightly darker teal for emphasis */
     --header-bg: #8fc1b4;          /* slightly darker mint header */
-    --link-color: #147665;         /* medium teal for links */
+    --link-color: #226f63;         /* medium teal for links */
     --link-hover: #e07b00;         /* warm orange for hover */
     --image-darkcolor: #0a4a40;    /* darker teal accents */
     --image-lightcolor: #64ab9f;   /* lighter teal accents */
@@ -70,35 +70,109 @@ body {
 }
 
 .menu {
-    background-color: transparent;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    list-style-type: none;
-    padding-bottom: 5px;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* spacing and layout */
+  padding: 0.5rem 0;         /* breathing room around menu */
+  margin: 0;
+  list-style: none;
+  position: relative;
+  z-index: 1000;             /* sits above page content */
+  flex-wrap: wrap;           /* allows wrap on narrow widths */
 }
 
+
+
+
+/* link styling: readable, clickable, and theme-aware */
 .menu a {
-    text-decoration: none;
-    color: var(--link-color);
-    font-family: 'Courier New', Courier, monospace;
+  display: inline-block;            /* makes padding clickable */
+  padding: 0.45rem 0.75rem;
+  border-radius: 6px;
+
+  text-decoration: none;
+  color: var(--link-color);
+  font-family: inherit;             /* use page font for a cleaner, more professional look */
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  line-height: 1;
+
+  transition: color 180ms ease, background-color 180ms ease, transform 120ms ease;
+  -webkit-tap-highlight-color: transparent; /* improve mobile tap feeling */
+  position: relative;
+}
+.menu a::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 6px; /* default position */
+  height: 2px;
+  background: transparent;
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 180ms ease, background-color 180ms ease, bottom 160ms ease;
 }
 
-.menu a:hover {
-    color: var(--link-hover);
+.menu a:hover,
+.menu a:focus {
+  color: var(--link-hover);
+  background-color: rgba(255,255,255,0.03); /* subtle highlight in dark theme */
+  transform: translateY(1px);
+  outline: none;
+  
+}
+.menu a:hover::after,
+.menu a:focus::after {
+  transform: scaleX(1);
+  background: var(--link-hover);
+  bottom: 3px; /* moved a little lower when selected */
+}
+/* active/current item */
+.menu a.current,
+.menu a[aria-current="page"] {
+  color: var(--image-accentcolor);
+  background-color: rgba(96,152,122,0.08); /* faint tint using accent (keeps it subtle) */
+  box-shadow: inset 0 -3px 0 rgba(96,152,122,0.12);
 }
 
-.menu>li {
-    margin-right: 30px;
-    background-color: transparent;
+/* keyboard accessibility: visible but subtle */
+.menu a:focus-visible {
+  box-shadow: 0 0 0 3px rgba(50,103,86,0.12); /* uses a soft tint related to --link-color */
+  border-radius: 8px;
 }
 
-@media (max-width: 600px) {
-    .menu {
-        margin-top: 20px;
-    }
+/* Responsive: allow wrapping and slightly smaller spacing on narrow screens */
+@media (max-width: 900px) {
+  .menu {
+    gap: 14px;
+    padding: 2% 0;
+  }
+  .menu a {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.92rem;
+  }
 }
 
+/* Small screens: stack if extremely narrow while staying usable without extra markup */
+@media (max-width: 480px) {
+  .menu {
+    align-items: center;
+    gap: 2%;
+    padding: 0.6rem 0;
+  }
+  .menu a {
+    width: 100%;
+    text-align: center;
+    padding: 1rem 0.4rem 0;
+    margin-right: 5%; /* prevent edge-to-edge */
+  }
+}
 
 /* button 
 

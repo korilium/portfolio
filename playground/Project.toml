@@ -1,0 +1,4 @@
+[deps]
+Genie = "c43c736e-a2d1-11e8-161f-af95117fbd1e"
+SearchLight = "340e8cb6-72eb-11e8-37ce-c97ebeb32050"
+SearchLightMySQL = "1297d576-4826-11ea-035e-9995c721bad1"

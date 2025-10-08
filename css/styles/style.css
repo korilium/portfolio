@@ -7,7 +7,7 @@
     --text-color: #6a8d7e;
     --text-colorBox:#22443e ; 
     --header-bg: #1b392d;
-    --link-color: #bdf7ea;
+    --link-color: #275647;
     --link-hover: #f0a500;
     --image-darkcolor: #055445;
     --image-lightcolor: #80c3b7;
@@ -25,7 +25,7 @@
     --link-hover: #e07b00;         /* warm orange for hover */
     --image-darkcolor: #0a4a40;    /* darker teal accents */
     --image-lightcolor: #64ab9f;   /* lighter teal accents */
-    --image-accentcolor: #57a287;  /* muted teal-green accent */
+    --image-accentcolor: #60987a;  /* muted teal-green accent */
     --img-bg: #cce6dd;             /* light minty background for images */
 }  
 

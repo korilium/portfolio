@@ -7,6 +7,7 @@
   <title>01.MPT</title>
   <!-- Favicon -->
   <link rel="icon" href="../../../img/favicon.svg">
+    <!-- Theme setup before rendering -->
     <script>
   (function () {
     const savedTheme = localStorage.getItem("theme");
@@ -37,7 +38,8 @@
 
 </head>
 <body>
-  <aside>
+  <aside id="sidebar">
+      <button id="close-sidebar" aria-label="Close menu">&times;</button>
     <h2>The peccon blog </h2>
     <ul>
       <li><a href="index.html">Home</a></li>
@@ -46,29 +48,12 @@
     </ul>
   </aside>
   <main>
+        <button id="open-sidebar" aria-label="Open menu">&#9776;</button>
+
       <label class="theme-switch">
       <input type="checkbox" id="theme-toggle">
       <span class="slider"></span>
     </label>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const toggle = document.getElementById("theme-toggle");
-        const savedTheme = localStorage.getItem("theme");
-        if (savedTheme === "light") {
-          document.body.classList.add("light");
-          toggle.checked = true; // if using a checkbox toggle
-        }
-        toggle.addEventListener("click", () => {
-          document.body.classList.toggle("light");
-          // Save preference
-          if (document.body.classList.contains("light")) {
-            localStorage.setItem("theme", "light");
-          } else {
-            localStorage.setItem("theme", "dark");
-          }
-        });
-      });
-    </script>
     <article>
       <h2>Modern Portfolio Theory (MPT)</h2>
 <p>Modern Portfolio Theory is all about minimizing the variance of the portfolio while taking into account the return of the portfolio with some risk-preference. The first thing to do, is to calculate the returns of the portfolio and the covariance matrix of the portfolio.</p>
@@ -120,6 +105,8 @@ $$</p>
 
     </article>
   </main>
-</body>
 <script src="../../../js/toggleTheme.js"></script>
+<script src="../../../js/toggleSideBar.js"></script>
+</body>
+
 </html>

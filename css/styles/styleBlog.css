@@ -8,9 +8,8 @@ body {
 
 aside {
   width: 220px;
-  background: #f5f5f5;
+  background: var(--text-color);
   padding: 1rem;
-  border-right: 1px solid #ddd;
   height: 100vh;
   position: sticky;
   top: 0;
@@ -32,46 +31,77 @@ aside li {
 
 aside a {
   text-decoration: none;
-  color: #333;
+  color: var(--link-color);
+  /* theme-aware link color */
+  font-family: inherit;
+  /* use the page font (Arial from style.css) */
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+
+  display: block;
+  /* full-row hit area */
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  background: transparent;
+
+  transition: color 0.18s ease, background-color 0.18s ease, transform 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
-aside a.current {
-  font-weight: bold;
-  color: #007acc;
+/* Hover / focus (mouse + keyboard) */
+aside a:hover,
+aside a:focus {
+  color: var(--link-hover);
+  transform: translateX(3px);
+  background-color: rgba(255, 255, 255, 0.04);
+  /* subtle highlight in dark theme */
 }
+
+/* Slightly different contrast in light theme */
+:root[data-theme="light"] aside a:hover,
+:root[data-theme="light"] aside a:focus {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Current / active page link: visible accent without mixing colors */
+aside a.current {
+  font-weight: 700;
+  color: var(--image-accentcolor);
+  border-left: 3px solid var(--image-accentcolor);
+  padding-left: calc(0.6rem - 3px);
+  /* keep padding visually aligned after the border */
+  background: transparent;
+}
+
+/* Keyboard focus visible but not noisy */
+aside a:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--link-color);
+  /* uses theme-aware link color */
+  border-radius: 6px;
+}
+
+
 
 main {
   flex: 1;
   padding: 2rem;
 }
 
-aside h2 {
-  font-size: 1.2rem;
+/* Top bar (menu + theme toggle) */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1rem;
 }
 
-aside ul {
-  list-style: none;
-  padding: 0;
-}
-
-aside li {
-  margin: 0.5rem 0;
-}
-
-aside a {
-  text-decoration: none;
-  color: #333;
-}
-
-aside a.current {
-  font-weight: bold;
-  color: #007acc;
-}
-
-main {
-  flex: 1;
-  padding: 2rem;
+/* Hide buttons on desktop by default */
+#open-sidebar,
+#close-sidebar {
+  display: none;
 }
 
 /* Blog content */
@@ -84,127 +114,101 @@ body.index {
   margin: 0;
 }
 
-.title-description {
-  text-align: left;
-  /* Center horizontally */
-  /* Space above and below */
-  padding: 4% 4% 5px 5px;
-  padding-left: 4%;
-  /* Small padding for mobile */
+
+article p {
+  margin-bottom: 1.5rem;
+  /* more space between paragraphs */
+  line-height: 1.3;
+  /* easier to read */
 }
 
-.title-description h1 {
-  font-size: 2rem;
-  /* Large title font size */
-  margin-bottom: 2%;
-  /* Space below the title */
+
+/* --- Sidebar toggle --- */
+
+/* Responsive Sidebar (for small screens) */
+@media (max-width: 800px) {
+  body {
+    flex-direction: column;
+  }
+
+  aside {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 220px;
+    height: 100vh;
+    box-shadow: 4px 0 10px var(--shadow-color);
+    transition: left 0.3s ease;
+    z-index: 1000;
+  }
+
+  aside.active {
+    left: 0;
+  }
+
+  #open-sidebar {
+    display: inline-block;
+    font-size: 1.5rem;
+    background: none;
+    color: var(--link-color);
+    border: none;
+    cursor: pointer;
+  }
+
+  #close-sidebar {
+    display: block;
+    font-size: 2rem;
+    background: none;
+    color: var(--link-color);
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+  }
+
+  main {
+    padding: 1rem;
+  }
 }
 
-.description {
-  background-color: var(--image-accentcolor);
-  /* match blog cards */
-  border-radius: 16px;
-  padding: 3%;
-  margin: 0 auto 40px auto;
-  /* center and add space below */
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-  max-width: 1200px;
-  /* align with grid max width */
-  line-height: 1.6;
-  color: var(--text-colorBox);
-  font-size: 1.1rem;
-  transition: transform 0.3s ease;
-  text-align: center;
-  /* Center text */
+/* Paragraph spacing for readability */
+article p {
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
 }
 
-/* blog posts overview */
-/* Blog overview container */
-.blog-overview {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  grid-auto-rows: minmax(auto, auto);
-  /* each row height grows with content */
-  gap: 2rem;
-  padding: 2rem;
-  min-height: auto;
-  /* grow to fit all rows */
-}
 
-.blog-card-link {
-  text-decoration: none;
-  /* remove underline */
-  color: inherit;
-  /* inherit text color */
-  display: block;
-  /* ensure block for the card */
-}
-
-/* Individual blog card */
-.blog-card {
-  background-color: var(--image-accentcolor);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  cursor: pointer;
-  /* Ensure card height fits content */
-  height: auto;
-  max-height: none;
-  /* remove restrictive max-height */
-}
-
-/* Hover effect for card */
-.blog-card:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
-}
-
-/* Blog content */
-.blog-content {
-  padding: 15px;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-}
-
-/* Title */
-.blog-content h3 {
-  font-size: 1.4rem;
-  font-weight: bold;
-  margin-bottom: 10px;
-  background: var(--image-darkcolor) 0%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-/* Excerpt text */
-.blog-content p {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: var(--text-colorBox);
-  flex-grow: 1;
-}
-
-/* Meta info */
-.blog-content .meta {
-  font-size: 0.85rem;
-  color: var(--image-lightcolor);
-  margin-top: 8px;
-}
-
-/* Read more link */
-.blog-content .read-more {
-  text-decoration: none;
-  font-weight: bold;
+article a {
   color: var(--link-color);
-  margin-top: 10px;
+  text-decoration: none;
+  font-weight: 500;
+  position: relative;
   transition: color 0.3s ease;
 }
 
-.blog-content .read-more:hover {
+/* Subtle animated underline using ::after */
+article a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0%;
+  height: 2px;
+  background-color: var(--link-hover);
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+article a:hover {
   color: var(--link-hover);
+}
+
+article a:hover::after {
+  width: 100%;
+}
+
+/* Optional: better contrast for visited links */
+article a:visited {
+  color: var(--image-accentcolor);
 }

@@ -1,203 +1,293 @@
-
 @import url("style.css");
 
-
-.menu a[href="welcome.html"] {
-    text-decoration: underline; /* Underline the Home link */
-    text-underline-offset: 4px; /* Add some space between the text and the underline */
+/* -----------------------------------
+   COMPONENT VARIABLES
+----------------------------------- */
+:root {
+  --surface-soft: #c1ddd6;   /* box + question background */
+  --text-on-accent: #22443e; /* dark text used on light/accent surfaces */
+  --glow-accent: #93EAD6;    /* selected-box highlight + answer gradient */
+  --glow-soft: #d5e2df;      /* soft light tone in answer gradient */
 }
-  
+
+/* -----------------------------------
+   GLOBAL OVERRIDES
+----------------------------------- */
+
 .container {
-    padding-top: 5%; /* Space between the top of the page and the content */
-    text-align: center;
-    position: relative;
-    font-size: 3rem; /* Adjusted for better scaling */
-    margin: 0 auto;
-    min-height: 300px;
-  }
-  
-  /* Delta and Time Styling */
-  .delta, .time {
-    font-size: 5rem; /* Scalable and consistent unit */
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-    color: transparent; /* Make the text itself invisible */
-    background: linear-gradient(90deg,
-      var(--image-darkcolor) 0%,
-      var(--image-lightcolor) 33%,
-      var(--image-accentcolor) 66%,
-      var(--image-darkcolor) 100%
-    ); /* Gradient glow */
-    background-size: 200% auto; /* Double the size for animation */
-    background-clip: text; /* Clip the gradient to the text */
-    animation: flowGlow 20s linear infinite; /* Continuous flowing animation */
-  }
-  
-  /* Division Line Styling */
-  .division-line {
-    width: 150px;
-    height: 5px;
-    background: linear-gradient(90deg,
+  padding-top: 5%;
+  text-align: center;
+  position: relative;
+  font-size: 3rem;
+}
+
+/* Delta and Time Styling */
+.delta,
+.time {
+  font-size: 5rem;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  color: transparent; /* Make the text itself invisible */
+  background: linear-gradient(90deg,
+    var(--image-darkcolor) 0%,
+    var(--image-lightcolor) 33%,
+    var(--image-accentcolor) 66%,
+    var(--image-darkcolor) 100%
+  ); /* Gradient glow */
+  background-size: 200% auto; /* Double the size for animation */
+  background-clip: text;
+  -webkit-background-clip: text; /* Safari/Chrome need the prefixed version */
+  animation: flowGlow 20s linear infinite;
+}
+
+/* Division Line Styling */
+.division-line {
+  width: 150px;
+  height: 5px;
+  background: linear-gradient(90deg,
     var(--image-darkcolor) 0%,
     var(--image-lightcolor) 33%,
     var(--image-accentcolor) 66%,
     var(--image-darkcolor) 100%);
-    background-size: 200% auto;
-    margin: 1rem auto;
-    border-radius: 10px; /* Smooth edges for the line */
-    animation: flowGlow 20s linear infinite; /* Sync with text animation */
-    /*box-shadow: 0 0 15px #D5E2DF, 0 0 10px #93EAD6; /* Subtle glow effect */
-  }
-
+  background-size: 200% auto;
+  margin: 1rem auto;
+  border-radius: 10px;
+  animation: flowGlow 20s linear infinite; /* Sync with text animation */
+}
 
 @keyframes flowGlow {
   0%   { background-position: 200% 50%; }
   100% { background-position: -200% 50%; }
 }
 
-
 .background-picture {
-    position: relative; /* Ensure the background image container is positioned relative */
-    padding-bottom: 10%;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: auto;
-    max-height: 350px; /* Ensure the background image respects the max height */
-    overflow: hidden; /* Prevent overflow of child elements *//* Ensure the background image respects the max height */
-    z-index: 1; /* Ensure the background image is behind the profile picture */
+  position: relative;
+  padding-bottom: 10%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  overflow: hidden; /* Prevent overflow of child elements */
+  z-index: 1; /* Behind the profile picture */
+  background-color: rgba(96, 152, 122, 0.1);
 }
 
-
-
 .background-picture img {
-  
-    width: 100%;
-    height: auto;
-    max-height: 350px; /* Ensure the image height maxes out at 250px */
-    object-fit: cover;
+  width: 100%;
+  height: auto;
+  max-height: 350px;
+  object-fit: cover;
+}
+
+.hero-copy {
+  width: 100%;
+  max-width: 1040px;
+  padding: 1.5rem 1rem 0;
+  text-align: left;
+  color: var(--text-color);
+}
+
+.hero-label {
+  display: block;
+  width: 100%;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-bottom: 1rem;
+  color: var(--image-lightcolor);
+}
+
+.hero-copy h1 {
+  font-size: clamp(2.2rem, 3.2vw, 4rem);
+  line-height: 1.05;
+  max-width: 12ch;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+.hero-description {
+  max-width: 34rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  color: var(--text-color);
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.9rem 1.6rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.button:hover,
+.button:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 18px rgba(0, 0, 0, 0.12);
+}
+
+.button-primary {
+  background-color: var(--image-accentcolor);
+  color: var(--bg-color);
+}
+
+.button-secondary {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--text-color);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.highlights {
+  padding: 20px 20px 40px;
+}
+
+/*
+  Fluid grid: fits as many columns as will hold at >=260px, sharing space
+  equally. Collapses from multi-column to single-column on its own, so no
+  media-query override is needed for it.
+*/
+.highlight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.highlight-card {
+  background-color: rgba(96, 152, 122, 0.1);
+  border: 1px solid rgba(96, 152, 122, 0.18);
+  border-radius: 20px;
+  padding: 24px;
+  min-height: 180px;
+}
+
+.highlight-card h3 {
+  margin-bottom: 0.8rem;
+  color: var(--text-color);
+}
+
+.highlight-card p {
+  line-height: 1.75;
+  color: var(--text-color);
+}
+
+.story-text {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--text-on-accent);
+  padding: 20px;
+  background-color: var(--image-accentcolor);
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  margin: 0 auto;
 }
 
 .profile-picture-container {
   max-height: fit-content;
   padding-left: 7%;
+  padding-right: 7%;
   padding-bottom: 3%;
   padding-top: 3%;
   display: flex;
   flex-direction: column;
   align-items: center;
   position: absolute;
-  bottom: 20px;
-  left: 5px;
+  bottom: 7%;
   z-index: 4;
-
-  /* Scale the entire container slightly */
-  /*transform: scale(1); /* Makes it 30% bigger than default */
-  transition: transform 0.3s ease; /* Smooth scaling if needed */
+  transition: transform 0.3s ease;
 }
 
-
-
-
+/*
+  Fluid circular avatar: clamp() replaces the separate width/min/max trio.
+  Floor 100px, scales with viewport, capped at 250px.
+*/
 .profile-picture {
-  border-radius: 50%; /* Keep the circular shape */
-  overflow: hidden; /* Ensure the image stays within the circular boundary */
-  width: 15vw; /* Use viewport width for responsiveness */
-  height: 15vw; /* Maintain a perfect square for circular cropping */
-  max-width: 250px; /* Set a maximum size for larger screens */
-  max-height: 250px; /* Maintain a consistent aspect ratio */
-  min-width: 100px; /* Set a minimum size for smaller screens */
-  min-height: 100px; /* Maintain the aspect ratio */
-  border: 2px solid var(--image-darkcolor); /* Add a border for emphasis */
-  display: flex; /* Flexbox ensures the content inside aligns correctly */
-  align-items: center; /* Center the image vertically */
-  justify-content: center; /* Center the image horizontally */
-  background-color: #000; /* Fallback background color to avoid blank areas */
-  z-index: 4; /* Ensure it appears above other elements */
+  border-radius: 50%;
+  overflow: hidden;
+  width: clamp(100px, 15vw, 250px);
+  height: clamp(100px, 15vw, 250px);
+  border: 2px solid var(--image-darkcolor);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000; /* Fallback to avoid blank areas while image loads */
+  z-index: 4;
 }
 
 .profile-picture img {
-  width: 100%; /* Ensure the image fills the container */
-  height: 100%; /* Ensure the image fills the container */
-  border-radius: 50%; /* Creates the circular effect */
-  object-fit: cover; /* Ensures the image is cropped perfectly to fill the circle */
-  object-position: center; /* Centers the image content within the circle */
-  display: block; /* Removes inline-block spacing issues */
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;     /* Crop to fill the circle */
+  object-position: center;
+  display: block;
 }
 
 .profile-description {
-  margin-top: 10px; /* Spacing between the image and text */
-  font-size: 1rem; /* Set a responsive font size */
-  color: var(--text-color); /* Text color */
-  text-align: center; /* Center the text under the picture */
-  font-weight: bold; /* Make the text bold */
+  margin-top: 10px;
+  font-size: 1rem;
+  color: var(--text-color);
+  text-align: center;
+  font-weight: bold;
 }
 
 .story {
-    padding: 20px;
+  padding: 20px;
 }
 
 .story p {
-    padding-right: 20px;
+  margin-bottom: 1rem;
 }
 
 .story h1 {
-    padding-top: 40px; /* Adds padding between the title and the background image */
-    padding-bottom: 20px; /* Adds padding between the title and the content */
-    padding-left: 30px; /* Adds padding between the title and the left side */
-    font-size: 2rem; /* Adjusted for better scaling */
-}
-
-.story-text {
-  font-family: Arial, Helvetica, sans-serif; /* Ensure consistent font with other elements */
-  font-size: 1rem; /* Match a readable font size */
-  line-height: 1.8; /* Improve text spacing for readability */
-  color: #22443e; /* Ensure text is visible */
-  padding: 20px; /* Maintain consistent padding */
-  background-color: var(--image-accentcolor);
-  border-radius: 16px; /* Match the rounded corners */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-  text-align: center; /* Keep text alignment consistent */
-}
-
-.story-text p {
-  margin-bottom: 1rem; /* Spacing between paragraphs */
-  word-wrap: break-word; /* Break long words for proper wrapping */
-  word-break: break-word; /* Ensure proper wrapping for lengthy text */
-  background-color: transparent; 
+  padding-top: 40px;
+  padding-bottom: 20px;
+  padding-left: 30px;
+  font-size: 2rem;
 }
 
 .marquee {
   display: flex;
-  justify-content: center;  /* Center the panel inside the marquee */
+  justify-content: center;
   align-items: center;
   width: 100%;
-  overflow-x: hidden;  /* Enable horizontal scrolling if necessary */
-  padding: 20px;  /* Optional: adds spacing around the boxes */
+  overflow-x: hidden;
+  padding: 20px;
   box-sizing: border-box;
 }
 
-
 .panel {
   display: flex;
-  flex-wrap: nowrap; /* Prevent wrapping, keep all boxes in one line */
-  justify-content: flex-center; /* Align boxes to the left */
+  flex-wrap: nowrap; /* Keep all boxes on one line */
+  justify-content: center; /* was the invalid "flex-center" */
   align-items: center;
-  gap: 20px; /* Space between boxes */
+  gap: 20px;
   width: 100%;
-  max-width: 100%; /* Ensure it doesn’t stretch beyond the screen width */
-  margin: 0 auto; /* Center the panel */
+  max-width: 100%;
+  margin: 0 auto;
   transition: transform 0.3s ease;
 }
 
+/*
+  Fluid box width via clamp() (replaces the calc(20vw) + min/max trio).
+*/
 .box {
-  flex: 0 0 auto; /* Do not shrink or grow, maintain original size */
-  width: calc(20vw); /* Width is set to 20% of the viewport width */
-  max-width: 250px; /* Set max width to avoid boxes getting too large */
-  min-width: 180px; /* Set a minimum width for boxes */
-  background-color: #c1ddd6;
+  flex: 0 0 auto; /* Don't shrink or grow */
+  width: clamp(180px, 20vw, 250px);
+  background-color: var(--surface-soft);
   border-radius: 16px;
-  height: 180px; /* Fixed height for boxes */
+  height: 180px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -206,25 +296,26 @@
   transition: transform 0.3s ease-in-out, border 0.3s ease-in-out;
   text-align: center;
   cursor: pointer;
-  padding: 10px; /* Padding for better content spacing */
+  padding: 10px;
 }
+
 .box.selected {
-  border: 3px solid #93EAD6;
+  border: 3px solid var(--glow-accent);
   transform: scale(1.3); /* Make selected box larger */
-  background: linear-gradient(180deg, transparent, #93EAD6);
+  background: linear-gradient(180deg, transparent, var(--glow-accent));
 }
+
 .box.fade {
-  opacity: 0.7; /* Fade out the second box before and after */
+  opacity: 0.7; /* Fade neighbors of the selected box */
 }
 
 .box:hover {
   transform: scale(1.15);
 }
 
-
 .question {
-  background-color: #c1ddd6;
-  color: #22443e; /* Ensure text is visible */
+  background-color: var(--surface-soft);
+  color: var(--text-on-accent);
   font-size: 1.2rem;
   font-weight: bold;
   margin: 0;
@@ -232,13 +323,13 @@
   position: absolute;
   text-align: center;
   opacity: 1;
-  white-space: normal; /* Allow text to wrap */
-  word-wrap: break-word; /* Break long words */
-  word-break: break-word; /* Ensure proper wrapping for very long words */
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-word;
   transition: opacity 0.3s ease-in-out;
 }
 
-/* Styling for answer text */
+/* Answer text */
 .answer {
   font-size: 1.1rem;
   font-weight: 500;
@@ -246,20 +337,49 @@
   padding: 8px;
   position: absolute;
   text-align: center;
-  background: linear-gradient(90deg, #93EAD6, #D5E2DF, #93EAD6);
-  color: #D5E2DF,; /* Ensure text is initially invisible */
-  white-space: normal; /* Allow text to wrap */
-  word-wrap: break-word; /* Break long words */
-  word-break: break-word; /* Ensure proper wrapping for very long words */
-  opacity: 0; /* Initially hidden */
+  background: linear-gradient(90deg, var(--glow-accent), var(--glow-soft), var(--glow-accent));
+  color: var(--text-on-accent); /* fixed: was an invalid value ("#D5E2DF,;") */
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-word;
+  opacity: 0; /* Hidden until the box is selected */
   transition: opacity 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
-/* Selected box styling */
 .box.selected .question {
   opacity: 0; /* Hide the question when selected */
 }
 
 .box.selected .answer {
-  opacity: 1; /* Show the answer when selected */
+  opacity: 1; /* Reveal the answer when selected */
+}
+
+/* ----------  Responsive overrides (desktop-first)  ---------- */
+
+@media (max-width: 900px) {
+  .hero-copy {
+    padding: 1rem;
+  }
+  /* .highlight-grid no longer needs an override — auto-fit handles it. */
+}
+
+@media (max-width: 650px) {
+  .hero-copy h1 {
+    font-size: 2.4rem;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .button {
+    width: 100%;
+  }
+
+  /* Pull the avatar back into normal flow so it can't overlap text on phones */
+  .profile-picture-container {
+    position: static;
+    padding-top: 1rem;
+  }
 }

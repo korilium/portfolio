@@ -4,9 +4,6 @@
   padding: 0px;
 }
 
-.menu a[href="resume.html"] {
-    text-underline-offset: 4px; /* Add some space between the text and the underline */
-}
 
 .resume{
   margin-left: 10%;

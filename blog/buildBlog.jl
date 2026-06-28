@@ -20,7 +20,8 @@ end
 sidebarLinks = make_side_links(posts) # Create sidebar HTML
 
 parser = CommonMark.Parser() # Create a parser instance
-
+CommonMark.enable!(parser, CommonMark.TableRule())
+CommonMark.enable!(parser, CommonMark.DollarMathRule())
 
 
 

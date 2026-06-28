@@ -200,6 +200,39 @@ article a::after {
   border-radius: 2px;
 }
 
+article table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.5em 0;
+  font-size: 0.95em;
+  border-radius: 8px;
+  overflow: hidden;                /* clips the corners of inner cells */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+article thead th {
+  background: var(--accent, var(--shadow-color));   /* your Peccon purple as default */
+  color: var(--text-color);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.65em 0.9em;
+  letter-spacing: 0.02em;
+}
+
+article td {
+  padding: 0.55em 0.9em;
+  border-top: 1px solid var(--border, var(--text-color));
+  vertical-align: top;
+}
+
+/* zebra striping for readability on wide tables */
+article tbody tr:nth-child(even) {
+  background: var(--row-alt, rgba(0, 0, 0, 0.025));
+}
+
+article tbody tr:hover {
+  background: var(--row-hover, rgba(119, 41, 83, 0.06));
+}
 article a:hover {
   color: var(--link-hover);
 }

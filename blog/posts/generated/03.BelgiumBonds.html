@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>03.BelgiumBonds</title>
+  <!-- Favicon -->
+  <link rel="icon" href="../../../img/favicon.svg">
+    <script>
+  (function () {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+      document.documentElement.setAttribute("data-theme", savedTheme);
+    }
+  })();
+</script>
+  <!-- Stylesheet -->
+  <link href="../../../css/styles/styleBlog.css" rel="stylesheet">
+  <script>
+    MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+    svg: { fontCache: 'global' }
+    };
+  </script>
+  <script>
+    // Immediately set theme before rendering
+    (function() {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light") {
+        document.documentElement.classList.add("light");
+      }
+    })();
+  </script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+
+
+</head>
+<body>
+  <aside id="sidebar">
+      <button id="close-sidebar" aria-label="Close menu">&times;</button>
+    <h2>The peccon blog </h2>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="01.MPT.html">01.MPT</a></li>
+<li><a href="02.BlackjackWithRL.html">02.BlackjackWithRL</a></li>
+<li><a href="03.BelgiumBonds.html">03.BelgiumBonds</a></li>
+    </ul>
+  </aside>
+  <main>
+    <button id="open-sidebar" aria-label="Open menu">&#9776;</button>
+
+    <label class="theme-switch">
+      <input type="checkbox" id="theme-toggle">
+      <span class="slider"></span>
+    </label>
+    <article>
+      <h1>Belgium Government Bonds</h1>
+<h2>what is a bond?</h2>
+<p>A bond is a debt instrument representing a loan extended by a creditor (the lender) to a debtor (the borrower, or <em>issuer</em>). The bond is held by the creditor; the issuer is obliged to repay the principal plus the interest — the <em>coupon</em> — owed on the debt. An entity in need of capital can raise it on the financial markets by issuing a bond. Prospective buyers assess the issuer's creditworthiness, and this determines the cost of the debt, or more precisely the interest the issuer must pay: the more creditworthy the issuer, the lower the interest demanded. Market conditions also affect the rate, since prevailing interest rates reflect the opportunity cost of capital — money lent to one borrower could have been deployed elsewhere.</p>
+<p>There are different types of bonds on the market and bonds are defined by their chracteristics. Below you can find an overview of the different chracateristic of  bonds:</p>
+<table><thead><tr><th align="left">Characteristic</th><th align="left">Examples</th></tr></thead><tbody><tr><td align="left">Issuer</td><td align="left">government, supranational, corporate, municipal, financial institution</td></tr><tr><td align="left">Coupon structure</td><td align="left">zero-coupon, fixed-rate, floating-rate; paid annually or semi-annually</td></tr><tr><td align="left">Maturity</td><td align="left">short, medium, long-dated, perpetual</td></tr><tr><td align="left">Embedded options</td><td align="left">callable, putable, convertible</td></tr><tr><td align="left">Seniority / security</td><td align="left">seniority — rank of the claim in the capital structure; security — whether the claim is backed by specific collateral</td></tr><tr><td align="left">Principal / indexation</td><td align="left">inflation-linked bonds (e.g. TIPS, OATi)</td></tr></tbody></table>
+<h2>Bonds issued by the Belgium Government</h2>
+<p>Measured by total value of securities outstanding, the global bond market is the largest securities market, exceeding the global equity market. I will therefore focus only on <em>Obligation Linéaire Ordinaire</em> / <em>Lineaire Obligatie</em> (OLO) of the Belgium Federal government. This is a fixed coupon, bullet maturity with no option bond (plain-vanilla).[^staatsbon] The description of the OLOs can be found on the <a href="https://www.debtagency.be/en/productoloinfo">Belgium Debt Agency</a> (BDA). The OLOs are demateralized, meaning that there is no physical note linking to the bond. It purely lives on security account system managed by Clearstream and Euroclear. The name of the OLOs comes from the fact that a single bond is a line defined by a fixed coupon [^floating-rate_security] and fixed maturity date and one OLO is issued in successive tranches. Meaning that the outstanding debt from one OLO grows with each successive tranche.  This creates liquidity in the market as the capital is funneled into a few very large standardized lines which are actively traded. The lineair property of the bond is derived by the fact that each line/OLO carries the nominal coupon rate and redemption date, regardless of which tranch or auction it came from. More precisily the contractual terms are identical accross tranchess and auctions, only prices will differ and mainly depends on market conditions. Another convenient property of this structure is fungibility. More precisily that all securities in one line/OLO are contractually identical and therefore any unit within the OLO is interchangable with any other.The last property of the OLOs is that its components (each coupon and the principal) can be seperated into their a zero-coupn security. This is called strippable securities or separate Trading of Registered Interest and Principal Securities (STRIP) and therefore you have coupon STRIP and a principal STRIP.</p>
+<p>In the picture below you can find a visual example of the lifecycle of such an OLO.</p>
+<!-- ![Lifecycle of an OLO](../img/olo_bond_lifecycle.svg) -->
+<div align="center">
+  <img src="../img/olo_bond_lifecycle.svg" alt="Mountain view" width="700">
+</div>
+<h3>Market mechanics of the OLO</h3>
+<p>[^staatsbon]:  The staatsbon is the retail-facing sibling of the OLO, but is a different financial instrument the goverment uses for raising capital.</p>
+<p>[^floating-rate_security]: OLO can have fixed or floating rate. The majority has fixed coupon rates, but the BDA allows for floating coupon rate based on a reference rate Euro Interbank Offered Rate (Euribor). As these marginally traded will not cover these.</p>
+<p>A bond's yield can therefore be decomposed into a risk-free base rate plus a credit spread that compensates for default risk. Assessing this risk is frequently delegated to a third party — a rating agency — which evaluates issuers and assigns a credit rating reflecting their relative default risk.</p>
+
+    </article>
+  </main>
+<script src="../../../js/toggleTheme.js"></script>
+<script src="../../../js/toggleSideBar.js"></script>
+</body>
+</html>

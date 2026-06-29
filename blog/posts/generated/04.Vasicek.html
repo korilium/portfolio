@@ -58,7 +58,13 @@
     </label>
     <article>
       <h2>Modelling the yield curve</h2>
-<p>In our previous blog post on the OLO of belgium Debt; We introduced the yield curve which</p>
+<p>In our previous blog post on the OLOs of belgium Debt, we introduced the yield curve which dictates the prices for bonds with different maturities. More precisely the yield curve dictates how a euro paid at horizon <span class="math tex">\(\tau\)</span> is worth today. This is what we call the discount factor <span class="math tex">\(D(\tau)\)</span>. As the yield curve moves over time due to factors described in our previous blog, we need a formal theory that enables us to model these shifts in the yield curve. We do this not by modelling the yield curve directly as this would be a complicated endeavour, but rather we model the short rate <span class="math tex">\(r\)</span> and assume the no-arbitrage system holds. we can affectively reconstruct the yield curve by modelling the short rate <span class="math tex">\(r\)</span> as we can derive the discounting to time <span class="math tex">\(\tau\)</span> by compounding the short rate:</p>
+<div class="display-math tex">\[D = e^{-\int_t^Tr(s) ds }\]</div>
+<p>But we do not know how the short rate <span class="math tex">\(r\)</span> will behave in the future so we therefore need to model the price of a bond as the average over all possible paths:</p>
+<div class="display-math tex">\[P(t, T) = \mathbb{E}[ e^{-\int_t^Tr(s) ds}]\]</div>
+<p>Also, the stochastic process can vary depending on the approach. In this blog post we will focus on the Vacisek stochastic differential equation (SDE):</p>
+<div class="display-math tex">\[dr = \kappa( \theta - r(t)) dt + \sigma dW\]</div>
+<p>Where <span class="math tex">\(\kappa\)</span> is the mean reversion speed, <span class="math tex">\(\theta\)</span> is the long run level, <span class="math tex">\(r(t)\)</span> is the state of the current short rate <span class="math tex">\(r\)</span>, <span class="math tex">\(\sigma\)</span> is the volatility.</p>
 
     </article>
   </main>

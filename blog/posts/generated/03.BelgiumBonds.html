@@ -45,6 +45,8 @@
       <li><a href="01.MPT.html">01.MPT</a></li>
 <li><a href="02.BlackjackWithRL.html">02.BlackjackWithRL</a></li>
 <li><a href="03.BelgiumBonds.html">03.BelgiumBonds</a></li>
+<li><a href="04.Vasicek.html">04.Vasicek</a></li>
+<li><a href="05.Hull-White.html">05.Hull-White</a></li>
     </ul>
   </aside>
   <main>
@@ -77,7 +79,7 @@ embedded options.<a href="#footnote-1" class="footnote">1</a> The full descripti
 <h3>Secondary Markets for OLO</h3>
 <p>Once primary dealers have acquired bonds at auction, those bonds trade on three secondary venues. By far the largest is the <em>over-the-counter</em> (OTC) dealer market, where transactions take place bilaterally, away from any trading venue. The second venue is a set of electronic platforms split by counterparty: dealer-to-dealer (B2B) platforms such as MTS Belgium and BrokerTec, and dealer-to-customer (B2C) platforms such as Tradeweb, BondVision and Bloomberg. The third is the listed exchange, Euronext Brussels, which carries the smallest share of volume and mainly serves retail investors trading through their bank.
 Price formation is <em>quote-driven</em>, which differs from the <em>order-driven</em> equity markets most people are used to. In an order-driven market, a central limit order book matches anonymous buy and sell orders, and the price is whatever the last match cleared at. In a quote-driven market, designated dealers — here, the OLO primary dealers — continuously quote a price at which they will buy (the <em>bid</em>) and a price at which they will sell (the <em>ask</em>), and you trade against the dealer's balance sheet rather than against another investor's order. The dealer warehouses the bond as inventory and earns the bid-ask spread. Liquidity is ensured by the primary dealers as a contractual obligation in the specifications they sign with the Belgian State, which requires them to quote negotiable prices to their clients and on selected electronic platforms. The purpose is to guarantee that a price exists at all times.</p>
-<h3>the yield curve of the OLOs</h3>
+<h3>The yield curve of OLO</h3>
 <p>On the bond market, prices are not compared directly, because price is a poor unit of comparison: each bond has its own coupon, maturity and principal. Instead the market uses the bond's yield. The relationship between price and yield is given by:</p>
 <div class="display-math tex">\[P = \sum_{t=1}^{T} \frac{C}{(1+y)^{t}} + \frac{F}{(1+y)^T}\]</div>
 <p>where <span class="math tex">\(P\)</span> is the price, <span class="math tex">\(C\)</span> is the coupon payment per period, <span class="math tex">\(F\)</span> is the principal repaid at maturity, <span class="math tex">\(T\)</span> is the number of periods, and <span class="math tex">\(y\)</span> is the yield. Because an OLO's coupon and principal are fixed, price and yield are two expressions of the same fact: given one, the other is determined. Crucially, they move inversely — since the cash flows are fixed, paying a higher price for them means earning a lower return, and vice versa. The interactive graph below shows this lock: changing the yield directly moves the price.</p>

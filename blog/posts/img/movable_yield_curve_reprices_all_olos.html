@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>01.MPT</title>
+  <!-- Favicon -->
+  <link rel="icon" href="../../../img/favicon.svg">
+    <script>
+  (function () {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+      document.documentElement.setAttribute("data-theme", savedTheme);
+    }
+  })();
+</script>
+  <!-- Stylesheet -->
+
+  <link href="../../../css/styles/style.css" rel="stylesheet">  
+  <script>
+    MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+    svg: { fontCache: 'global' }
+    };
+  </script>
+  <script>
+    // Immediately set theme before rendering
+    (function() {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light") {
+        document.documentElement.classList.add("light");
+      }
+    })();
+  </script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+
+
+</head>
+
+
+
+
+<h4 class="sr-only">Interactive yield curve: shifting the curve's level or slope reprices six real OLO lines at once, with longer maturities moving more.</h4>
+
+<div style="display:flex; align-items:center; gap:12px; margin:0 0 0.75rem;">
+  <label style="font-size:14px; color:var(--text-secondary); min-width:150px;">Curve level (ECB impulse)</label>
+  <input type="range" min="-1.5" max="1.5" step="0.05" value="0" id="lvl" style="flex:1;">
+  <span style="font-size:15px; font-weight:500; min-width:64px; text-align:right;" id="lvlout">+0.00%</span>
+</div>
+<div style="display:flex; align-items:center; gap:12px; margin:0 0 1rem;">
+  <label style="font-size:14px; color:var(--text-secondary); min-width:150px;">Curve slope (steepen ↔ flatten)</label>
+  <input type="range" min="-1" max="1" step="0.05" value="0" id="slp" style="flex:1;">
+  <span style="font-size:15px; font-weight:500; min-width:64px; text-align:right;" id="slpout">0.00</span>
+</div>
+
+<div style="display:flex; gap:12px; margin:0 0 1.25rem; align-items:center;">
+  <button id="reset" style="font-size:13px;">Reset curve</button>
+  <span style="font-size:13px; color:var(--text-muted);" id="summary">curve flat to baseline</span>
+</div>
+
+<div style="position:relative; height:240px; margin:0 0 1.25rem;">
+  <canvas id="curve"></canvas>
+</div>
+
+<div style="display:grid; grid-template-columns:1.1fr 0.8fr 0.9fr 0.9fr 1fr 1.1fr; gap:6px 10px; font-size:13px; align-items:center;">
+  <div style="color:var(--text-muted);">Line</div>
+  <div style="color:var(--text-muted); text-align:right;">Mat.</div>
+  <div style="color:var(--text-muted); text-align:right;">Coupon</div>
+  <div style="color:var(--text-muted); text-align:right;">Yield</div>
+  <div style="color:var(--text-muted); text-align:right;">Price</div>
+  <div style="color:var(--text-muted); text-align:right;">Δ vs base</div>
+  <div id="rows" style="display:contents;"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const anchors = [[1,2.6],[2,2.78],[3,2.92],[5,3.12],[7,3.3],[10,3.5],[15,3.8],[20,4.05],[30,4.4]];
+function interp(m){
+  if(m<=anchors[0][0]) return anchors[0][1];
+  if(m>=anchors[anchors.length-1][0]) return anchors[anchors.length-1][1];
+  for(let i=0;i<anchors.length-1;i++){
+    const [x0,y0]=anchors[i],[x1,y1]=anchors[i+1];
+    if(m>=x0 && m<=x1){ return y0+(y1-y0)*(m-x0)/(x1-x0); }
+  }
+  return 3.5;
+}
+function curveYield(m,L,S){ return interp(m)+L+S*(m-10)/20; }
+function price(C,n,y){ const r=y/100; let p=0; for(let t=1;t<=n;t++){ p+=C/Math.pow(1+r,t); } p+=100/Math.pow(1+r,n); return p; }
+
+const bonds=[
+  {name:'OLO108', n:5,  C:3.10},
+  {name:'OLO97',  n:7,  C:3.00},
+  {name:'OLO100', n:8,  C:2.85},
+  {name:'OLO106', n:10, C:3.40},
+  {name:'OLO99',  n:17, C:3.45},
+  {name:'OLO107', n:30, C:4.35},
+];
+const base = bonds.map(b=>price(b.C,b.n,curveYield(b.n,0,0)));
+
+const grid=[]; for(let m=1;m<=30;m++) grid.push(m);
+let chart;
+function curveData(L,S){ return grid.map(m=>({x:m,y:curveYield(m,L,S)})); }
+function bondPts(L,S){ return bonds.map(b=>({x:b.n,y:curveYield(b.n,L,S)})); }
+
+function render(L,S){
+  if(!chart){
+    chart=new Chart(document.getElementById('curve'),{
+      type:'line',
+      data:{ datasets:[
+        {label:'curve',data:curveData(L,S),borderColor:'#378ADD',borderWidth:2,tension:0.4,pointRadius:0,fill:false},
+        {label:'OLO lines',data:bondPts(L,S),type:'scatter',borderColor:'#0F6E56',backgroundColor:'#0F6E56',pointRadius:6}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,animation:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed.x}y: ${c.parsed.y.toFixed(2)}%`}}},
+        scales:{
+          x:{type:'linear',min:0,max:31,title:{display:true,text:'maturity (years)',color:'#888780'},grid:{color:'#e1e0d9'},ticks:{color:'#888780',stepSize:5}},
+          y:{min:1,max:6,title:{display:true,text:'yield (%)',color:'#888780'},grid:{color:'#e1e0d9'},ticks:{color:'#888780',callback:v=>v.toFixed(1)+'%'}}
+        }}
+    });
+  } else {
+    chart.data.datasets[0].data=curveData(L,S);
+    chart.data.datasets[1].data=bondPts(L,S);
+    chart.update('none');
+  }
+}
+
+function update(){
+  const L=parseFloat(document.getElementById('lvl').value);
+  const S=parseFloat(document.getElementById('slp').value);
+  document.getElementById('lvlout').textContent=(L>=0?'+':'')+L.toFixed(2)+'%';
+  document.getElementById('slpout').textContent=(S>=0?'+':'')+S.toFixed(2);
+  let fell=0;
+  const rows=bonds.map((b,i)=>{
+    const y=curveYield(b.n,L,S);
+    const p=price(b.C,b.n,y);
+    const d=p-base[i];
+    if(d<-0.005) fell++;
+    const col = d<-0.005?'var(--text-danger)':(d>0.005?'var(--text-success)':'var(--text-muted)');
+    const dtxt = (d>=0?'+':'')+d.toFixed(2);
+    return `<div>${b.name}</div>
+      <div style="text-align:right;">${b.n}y</div>
+      <div style="text-align:right;">${b.C.toFixed(2)}%</div>
+      <div style="text-align:right;">${y.toFixed(2)}%</div>
+      <div style="text-align:right;">€${p.toFixed(2)}</div>
+      <div style="text-align:right; color:${col};">${dtxt}</div>`;
+  }).join('');
+  document.getElementById('rows').innerHTML=rows;
+  const s=document.getElementById('summary');
+  if(Math.abs(L)<0.005 && Math.abs(S)<0.005){ s.textContent='curve flat to baseline'; }
+  else if(L>0.005){ s.textContent=fell+' of 6 prices fell — longer maturities fall most'; }
+  else if(L<-0.005){ s.textContent=(6-fell)+' of 6 prices rose — longer maturities rise most'; }
+  else { s.textContent='slope changed — front and long ends diverge'; }
+  render(L,S);
+}
+document.getElementById('lvl').addEventListener('input',update);
+document.getElementById('slp').addEventListener('input',update);
+document.getElementById('reset').addEventListener('click',()=>{
+  document.getElementById('lvl').value=0; document.getElementById('slp').value=0; update();
+});
+update();
+</script>

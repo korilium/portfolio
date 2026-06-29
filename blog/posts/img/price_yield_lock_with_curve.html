@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>01.MPT</title>
+  <!-- Favicon -->
+  <link rel="icon" href="../../../img/favicon.svg">
+    <script>
+  (function () {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+      document.documentElement.setAttribute("data-theme", savedTheme);
+    }
+  })();
+</script>
+  <!-- Stylesheet -->
+
+  <link href="../../../css/styles/style.css" rel="stylesheet">  
+  <script>
+    MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+    svg: { fontCache: 'global' }
+    };
+  </script>
+  <script>
+    // Immediately set theme before rendering
+    (function() {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light") {
+        document.documentElement.classList.add("light");
+      }
+    })();
+  </script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+
+
+</head>
+
+
+<h4 class="sr-only">Interactive showing that as the required yield rises, a fixed-cash-flow bond's price falls, and the bond sits at its maturity point on the yield curve.</h4>
+
+
+
+
+<div style="display:flex; align-items:center; gap:12px; margin:0 0 1.25rem;">
+  <label style="font-size:14px; color:var(--text-secondary); min-width:120px;">Required yield</label>
+  <input type="range" min="1" max="6" step="0.05" value="3.4" id="y" style="flex:1;">
+  <span style="font-size:16px; font-weight:500; min-width:52px; text-align:right;" id="yout">3.40%</span>
+</div>
+
+<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin:0 0 1.25rem;">
+  <div style="background:var(--surface-1); border-radius:var(--radius); padding:1rem;">
+    <div style="font-size:13px; color:var(--text-secondary);">Required yield</div>
+    <div style="font-size:24px; font-weight:500;" id="ycard">3.40%</div>
+  </div>
+  <div style="background:var(--surface-1); border-radius:var(--radius); padding:1rem;">
+    <div style="font-size:13px; color:var(--text-secondary);">Price you pay</div>
+    <div style="font-size:24px; font-weight:500;" id="pcard">€100.00</div>
+  </div>
+  <div style="background:var(--surface-1); border-radius:var(--radius); padding:1rem;">
+    <div style="font-size:13px; color:var(--text-secondary);">vs par (100)</div>
+    <div style="font-size:24px; font-weight:500;" id="dcard">at par</div>
+  </div>
+</div>
+
+<div style="font-size:13px; color:var(--text-muted); margin:0 0 1.25rem; line-height:1.6;">
+  The bond always pays €3.40 a year plus €100 at year 10 — that never changes. Only what you pay for that fixed stream moves.
+</div>
+
+<div style="position:relative; height:240px; margin:0 0 0.5rem;">
+  <canvas id="curve"></canvas>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const C = 3.4, F = 100, N = 10;
+function price(y){ const r=y/100; let p=0; for(let t=1;t<=N;t++){ p += C/Math.pow(1+r,t); } p += F/Math.pow(1+r,N); return p; }
+const baseCurve = [[1,2.6],[2,2.78],[3,2.92],[5,3.12],[7,3.3],[10,3.5],[15,3.8],[20,4.05],[30,4.4]];
+let chart;
+function pointAt(y){ return [{x:N, y:parseFloat(y)}]; }
+function render(y){
+  const data = {
+    datasets:[
+      { label:'curve', data: baseCurve.map(d=>({x:d[0],y:d[1]})), borderColor:'#888780', borderWidth:1.5, tension:0.4, pointRadius:0, fill:false },
+      { label:'this bond (10y)', data: pointAt(y), type:'scatter', borderColor:'#378ADD', backgroundColor:'#378ADD', pointRadius:7 }
+    ]
+  };
+  if(chart){ chart.data.datasets[1].data = pointAt(y); chart.update('none'); return; }
+  chart = new Chart(document.getElementById('curve'), {
+    type:'line', data,
+    options:{ responsive:true, maintainAspectRatio:false, animation:false,
+      plugins:{ legend:{display:false},
+        tooltip:{ callbacks:{ label:(c)=>`${c.parsed.x}y: ${c.parsed.y.toFixed(2)}%` } } },
+      scales:{
+        x:{ type:'linear', min:0, max:31, title:{display:true,text:'maturity (years)',color:'#888780'}, grid:{color:'#e1e0d9'}, ticks:{color:'#888780',stepSize:5} },
+        y:{ min:1, max:6, title:{display:true,text:'yield (%)',color:'#888780'}, grid:{color:'#e1e0d9'}, ticks:{color:'#888780',callback:v=>v.toFixed(1)+'%'} }
+      } }
+  });
+}
+const slider = document.getElementById('y');
+function update(){
+  const y = parseFloat(slider.value);
+  const p = price(y);
+  document.getElementById('yout').textContent = y.toFixed(2)+'%';
+  document.getElementById('ycard').textContent = y.toFixed(2)+'%';
+  document.getElementById('pcard').textContent = '€'+p.toFixed(2);
+  const diff = p-100;
+  const dc = document.getElementById('dcard');
+  if(Math.abs(diff)<0.005){ dc.textContent='at par'; }
+  else if(diff>0){ dc.textContent='+'+diff.toFixed(2)+' (premium)'; }
+  else { dc.textContent=diff.toFixed(2)+' (discount)'; }
+  render(y);
+}
+slider.addEventListener('input', update);
+update();
+</script>

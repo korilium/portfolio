@@ -123,7 +123,6 @@ index_template = raw"""
                 <li><a href="../../../index.html">Home</a></li>
                 <li><a href="index.html">Blog</a></li>
                 <li><a href="../../../playGround.html">Play Ground</a></li>
-                <li><a href="../../../resume.html">CV</a></li>
                 <li><a href="../../../project.html">Peccon</a></li>
             </ul>
         </div>
@@ -155,19 +154,38 @@ index_template = raw"""
           <div class="blog-content">
             <h3>Modern Portfolio Theory</h3>
             <p>Explore the principles of Modern Portfolio Theory (MPT) and learn how to optimize your investment portfolio by balancing risk and return...</p>
-            <span class="meta">Jan 10, 2025 • Finance</span>
+            <span class="meta">Jan 2025 • Financial Modelling</span>
           </div>
         </div>
       </a>
-      <a href="02.BlackjackWithRL.html" class="blog-card-link">
+      <a href="02.BelgiumBonds.html" class="blog-card-link">
         <div class="blog-card">
           <div class="blog-content">
-            <h3>Blackjack with Reinforcement Learning</h3>
-            <p>Discover how reinforcement learning can be applied to playing blackjack...</p>
-            <span class="meta">Jan 5, 2025 • Personal Finance</span>
+            <h3>Belgium Goverment Bonds</h3>
+            <p>Discover how Belgium Goverment Bonds get priced in the market and how their yield curve is derived.</p>
+            <span class="meta">July, 2026 • Financial Market</span>
           </div>
         </div>
       </a>
+      <a href="03.Vasicek.html" class="blog-card-link">
+        <div class="blog-card">
+          <div class="blog-content">
+            <h3>Modelling bond prices with the Vasicek model</h3>
+            <p>a first principle approach in modelling bond prices.</p>
+            <span class="meta">July, 2026 • Financial Modelling</span>
+          </div>
+        </div>
+      </a>
+      <a href="05.optimalPensionDesign_I.html" class="blog-card-link">
+        <div class="blog-card">
+          <div class="blog-content">
+            <h3>Optimal pension plan design - toy example</h3>
+            <p>A simplistic environment in which a Monte Carlo RL agent learns whether contributing to a pension plan is optimal </p>
+            <span class="meta">July, 2026 • Financial Modelling</span>
+          </div>
+        </div>
+      </a>
+
     </div>
   </div>
 

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>03.BelgiumBonds</title>
+  <title>02.BelgiumBonds</title>
   <!-- Favicon -->
   <link rel="icon" href="../../../img/favicon.svg">
     <script>
@@ -43,10 +43,10 @@
     <ul>
       <li><a href="index.html">Home</a></li>
       <li><a href="01.MPT.html">01.MPT</a></li>
-<li><a href="02.BlackjackWithRL.html">02.BlackjackWithRL</a></li>
-<li><a href="03.BelgiumBonds.html">03.BelgiumBonds</a></li>
-<li><a href="04.Vasicek.html">04.Vasicek</a></li>
-<li><a href="05.Hull-White.html">05.Hull-White</a></li>
+<li><a href="02.BelgiumBonds.html">02.BelgiumBonds</a></li>
+<li><a href="03.Vasicek.html">03.Vasicek</a></li>
+<li><a href="04.Hull-White.html">04.Hull-White</a></li>
+<li><a href="05.optimalPensionDesign_I.html">05.optimalPensionDesign_I</a></li>
     </ul>
   </aside>
   <main>
@@ -72,7 +72,7 @@ embedded options.<a href="#footnote-1" class="footnote">1</a> The full descripti
   <img src="../img/olo_bond_lifecycle.svg" alt="Mountain view" width="700">
 </div>
 <h3>Primary Market mechanics of the OLO</h3>
-<p>The Belgian Debt Agency issues new OLOs and tranches according to a published <a href="https://www.debtagency.be/en/datafederalstateissues">calander</a>of auction dates. At an auction the Treasury either reopens an existing line or launches a new one, and bidding is open to its primary dealers. Each dealer submits <em>competitive bids</em>, where a bid is a pair: a <em>price</em> and the <em>quantity</em> the dealer will buy at that price. Because the line's coupon and maturity are fixed, dealers compete only on price, which maps directly (and inversely) to yield. The Treasury ranks the bids from highest price to lowest and fills from the top down until it has sold its target amount; the lowest price still accepted is the stop price. Because this is a <em>multiple-price</em> auction, each successful bidder pays the price it actually bid, so the weighted-average price paid sits above the stop price. Separately, primary dealers hold a privilege — a <em>non-competitive subscription</em> — that lets them take an additional allotment at the weighted-average price without bidding a specific price. Auction results are published on the <a href="https://www.debtagency.be/en/datafederalstateissues">BDA website</a> of the BDA.  An example of the process can be seen below.</p>
+<p>The Belgian Debt Agency issues new OLOs and tranches according to a published <a href="https://www.debtagency.be/en/datafederalstateissues">calander</a> of auction dates. At an auction the Treasury either reopens an existing line or launches a new one, and bidding is open to its primary dealers. Each dealer submits <em>competitive bids</em>, where a bid is a pair: a <em>price</em> and the <em>quantity</em> the dealer will buy at that price. Because the line's coupon and maturity are fixed, dealers compete only on price, which maps directly (and inversely) to yield. The Treasury ranks the bids from highest price to lowest and fills from the top down until it has sold its target amount; the lowest price still accepted is the stop price. Because this is a <em>multiple-price</em> auction, each successful bidder pays the price it actually bid, so the weighted-average price paid sits above the stop price. Separately, primary dealers hold a privilege — a <em>non-competitive subscription</em> — that lets them take an additional allotment at the weighted-average price without bidding a specific price. Auction results are published on the <a href="https://www.debtagency.be/en/datafederalstateissues">BDA website</a>.  An example of the process can be seen below.</p>
 <div align="center">
   <img src="../img/multiple_price_auction_bid_ladder.svg" alt="Mountain view" width="700">
 </div>
@@ -92,7 +92,7 @@ Price formation is <em>quote-driven</em>, which differs from the <em>order-drive
 <div class="footnote" id="footnote-1"><p class="footnote-title">1</p>
 <p>The staatsbon is the retail-facing sibling of the OLO, but is a different financial instrument the goverment uses for raising capital.</p>
 </div><div class="footnote" id="footnote-2"><p class="footnote-title">2</p>
-<p>OLO can have fixed or floating rate. The majority has fixed coupon rates, but the BDA allows for floating coupon rate based on a reference rate Euro Interbank Offered Rate (Euribor). As these marginally traded will not cover these.</p>
+<p>OLO can have fixed or floating rate. The majority has fixed coupon rates, but the BDA allows for floating coupon rate based on a reference rate Euro Interbank Offered Rate (Euribor). As these are marginally traded and we will therefore not cover these.</p>
 </div>
     </article>
   </main>

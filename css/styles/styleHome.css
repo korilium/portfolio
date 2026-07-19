@@ -257,6 +257,31 @@
   font-size: 2rem;
 }
 
+.story-quote {
+  max-width: 700px;
+  margin: 1.5rem auto 1.5rem;
+  padding: 0.2rem 1.5rem;
+  border-left: 3px solid var(--image-lightcolor);
+  text-align: left;
+  font-style: italic;
+  color: var(--text-color);
+}
+
+.story-quote footer {
+  margin-top: 0.5rem;
+  font-style: normal;
+  font-size: 0.9rem;
+  color: var(--image-lightcolor);
+}
+
+.story-quote cite {
+  font-style: normal;
+}
+
+.story-quote p {
+  margin-bottom: 0;
+}
+
 .marquee {
   display: flex;
   justify-content: center;

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>05.optimalPensionDesign I</title>
+  <!-- Favicon -->
+  <link rel="icon" href="../../../img/favicon.svg">
+    <script>
+  (function () {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+      document.documentElement.setAttribute("data-theme", savedTheme);
+    }
+  })();
+</script>
+  <!-- Stylesheet -->
+  <link href="../../../css/styles/styleBlog.css" rel="stylesheet">
+  <script>
+    MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+    svg: { fontCache: 'global' }
+    };
+  </script>
+  <script>
+    // Immediately set theme before rendering
+    (function() {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light") {
+        document.documentElement.classList.add("light");
+      }
+    })();
+  </script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+
+
+</head>
+<body>
+  <aside id="sidebar">
+      <button id="close-sidebar" aria-label="Close menu">&times;</button>
+    <h2>The peccon blog </h2>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="01.MPT.html">01.MPT</a></li>
+<li><a href="02.BelgiumBonds.html">02.BelgiumBonds</a></li>
+<li><a href="03.Vasicek.html">03.Vasicek</a></li>
+<li><a href="04.Hull-White.html">04.Hull-White</a></li>
+<li><a href="05.optimalPensionDesign_I.html">05.optimalPensionDesign_I</a></li>
+    </ul>
+  </aside>
+  <main>
+    <button id="open-sidebar" aria-label="Open menu">&#9776;</button>
+
+    <label class="theme-switch">
+      <input type="checkbox" id="theme-toggle">
+      <span class="slider"></span>
+    </label>
+    <article>
+      
+    </article>
+  </main>
+<script src="../../../js/toggleTheme.js"></script>
+<script src="../../../js/toggleSideBar.js"></script>
+</body>
+</html>

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>04.Vasicek</title>
+  <title>03.Vasicek</title>
   <!-- Favicon -->
   <link rel="icon" href="../../../img/favicon.svg">
     <script>
@@ -43,10 +43,10 @@
     <ul>
       <li><a href="index.html">Home</a></li>
       <li><a href="01.MPT.html">01.MPT</a></li>
-<li><a href="02.BlackjackWithRL.html">02.BlackjackWithRL</a></li>
-<li><a href="03.BelgiumBonds.html">03.BelgiumBonds</a></li>
-<li><a href="04.Vasicek.html">04.Vasicek</a></li>
-<li><a href="05.Hull-White.html">05.Hull-White</a></li>
+<li><a href="02.BelgiumBonds.html">02.BelgiumBonds</a></li>
+<li><a href="03.Vasicek.html">03.Vasicek</a></li>
+<li><a href="04.Hull-White.html">04.Hull-White</a></li>
+<li><a href="05.optimalPensionDesign_I.html">05.optimalPensionDesign_I</a></li>
     </ul>
   </aside>
   <main>
@@ -64,8 +64,16 @@
 <div class="display-math tex">\[P(t, T) = \mathbb{E}[ e^{-\int_t^Tr(s) ds}]\]</div>
 <p>Also, the stochastic process can vary depending on the approach. In this blog post we will focus on the Vacisek stochastic differential equation (SDE):</p>
 <div class="display-math tex">\[dr = \kappa( \theta - r(t)) dt + \sigma dW\]</div>
-<p>Where <span class="math tex">\(\kappa\)</span> is the mean reversion speed, <span class="math tex">\(\theta\)</span> is the long run level, <span class="math tex">\(r(t)\)</span> is the state of the current short rate <span class="math tex">\(r\)</span>, <span class="math tex">\(\sigma\)</span> is the volatility.</p>
-
+<p>There is a lot to unpack here and let us begin with the two time varying blocks called the noise <span class="math tex">\(\sigma dW\)</span> and the drift <span class="math tex">\(\kappa (\theta - r(t))\)</span>. The drift is multiplied with <span class="math tex">\(dt\)</span> which is the infinitesimal slice of clock time. it's deterministic.  <span class="math tex">\(\kappa\)</span> is the mean reversion speed, <span class="math tex">\(\theta\)</span> is the long run level, <span class="math tex">\(r(t)\)</span> is the state of the current short rate <span class="math tex">\(r\)</span>. The noise has a volatilty term <span class="math tex">\(\sigma\)</span> and an infinitesimal increment <span class="math tex">\(dW\)</span> of a Wiener process (Brownian motion) <span class="math tex">\(W(t)\)</span> in it.<br />
+This discretizes in:</p>
+<div class="display-math tex">\[\begin{aligned}
+\Delta r = \underbrace{\kappa(\theta - r)\,\Delta t}_{\text{drift } \propto\,\Delta t, } + \underbrace{\sigma\sqrt{\Delta t}\,Z}_{\text{noise }\propto\,\sqrt{\Delta t}}
+\end{aligned}\]</div>
+<p><span class="math tex">\(\sigma\)</span> is the volatility. <a href="#footnote-1" class="footnote">1</a></p>
+<h4>Footnotes</h4>
+<div class="footnote" id="footnote-1"><p class="footnote-title">1</p>
+<p>Brownian motion is continuous but nowhere differentiable. There's no smooth function hiding inside <span class="math tex">\(dW\)</span>; it's an irreducibly separate object, which is exactly why stochastic calculus exists as its own thing.The deterministic piece scales like   <span class="math tex">\(\Delta t\)</span>;  the random piece scales like <span class="math tex">\(\sqrt{\Delta t}\)</span>​. Those are not the same, and the gap explodes as you zoom in. Take <span class="math tex">\(\Delta t=0.01\)</span>: the drift scale is <span class="math tex">\(0.01\)</span>, the noise scale is <span class="math tex">\(\sqrt{0.01}=0.1\)</span> — the randomness is ten times larger. Shrink the step further and the ratio gets worse. So on very short timescales an SDE path is essentially all noise; the drift is invisible. Zoom out instead, and drift accumulates linearly in time while noise only accumulates as the square root — so over long horizons the drift eventually wins. That crossover between <span class="math tex">\(\Delta t\)</span> and <span class="math tex">\(\sqrt{\Delta t}\)</span> is the entire personality of a stochastic process.</p>
+</div>
     </article>
   </main>
 <script src="../../../js/toggleTheme.js"></script>

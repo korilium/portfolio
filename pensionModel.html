@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pension Contribution Model - Ignace Decocq</title>
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem("theme");
+            if (savedTheme === "light") {
+                document.documentElement.setAttribute("data-theme", savedTheme);
+            }
+        })();
+    </script>
+    <!-- Favicon -->
+    <link rel="icon" href="img/favicon.svg">
+    <!-- Stylesheet -->
+    <link href="css/styles/stylePlayground.css" rel="stylesheet">
+
+</head>
+
+
+<body id="page-top" data-spy="scroll" data-target=".side-menu">
+    <!-- Header -->
+    <header class="header">
+        <nav class="menu-container" aria-label="Main Navigation">
+            <ul class="menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="blog/posts/generated/index.html">Blog</a></li>
+                <li><a href="playGround.html" aria-current="page">Play Ground</a></li>
+                <li><a href="project.html">Peccon</a></li>
+            </ul>
+        </nav>
+        <label class="theme-switch" aria-label="Toggle light and dark theme">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider"></span>
+        </label>
+    </header>
+
+    <main class="page playground">
+        <p class="tool-breadcrumb"><a href="playGround.html">&larr; Play Ground</a></p>
+
+        <section class="playground-intro">
+            <h1 class="subtitles-short">Pension contribution model</h1>
+            <p>A tabular Monte Carlo control agent decides, year by year, whether it's worth contributing to a
+                pension plan. Pick a contribution rule and the economic assumptions, then run it and see what the
+                agent learns.</p>
+        </section>
+
+        <section class="playground-panel">
+            <form id="pension-form" class="playground-form">
+                <div class="field-group">
+                    <label for="plan-type">Contribution plan</label>
+                    <select id="plan-type" name="plan">
+                        <option value="fixed">Fixed rate</option>
+                        <option value="step">Step (tranche)</option>
+                        <option value="age">Age-banded</option>
+                    </select>
+                </div>
+
+                <fieldset class="plan-fields" data-plan="fixed">
+                    <legend>Fixed rate</legend>
+                    <label>Contribution rate
+                        <input type="number" step="0.01" min="0" max="1" name="rate" value="0.05">
+                    </label>
+                </fieldset>
+
+                <fieldset class="plan-fields" data-plan="step" hidden>
+                    <legend>Step (tranche)</legend>
+                    <label>Rate below ceiling
+                        <input type="number" step="0.01" min="0" max="1" name="rate_low" value="0.04">
+                    </label>
+                    <label>Rate above ceiling
+                        <input type="number" step="0.01" min="0" max="1" name="rate_high" value="0.10">
+                    </label>
+                    <label>Ceiling (x starting salary)
+                        <input type="number" step="0.1" min="0" name="ceiling" value="1.5">
+                    </label>
+                </fieldset>
+
+                <fieldset class="plan-fields" data-plan="age" hidden>
+                    <legend>Age-banded</legend>
+                    <label>Starting rate
+                        <input type="number" step="0.01" min="0" max="1" name="rate0" value="0.03">
+                    </label>
+                    <label>Step per band
+                        <input type="number" step="0.01" name="step" value="0.01">
+                    </label>
+                    <label>Band length (years)
+                        <input type="number" step="1" min="1" name="band" value="10">
+                    </label>
+                </fieldset>
+
+                <fieldset class="field-group economy-fields">
+                    <legend>Economic assumptions</legend>
+                    <label>Guarantee rate (G)
+                        <input type="number" step="any" name="G" value="0.0175">
+                    </label>
+                    <label>Tariff (MU)
+                        <input type="number" step="any" name="MU" value="0.01">
+                    </label>
+                    <label>Discount rate (DISC)
+                        <input type="number" step="any" name="DISC" value="0.01">
+                    </label>
+                    <label>Employer-cost weight (KAPPA)
+                        <input type="number" step="0.01" min="0" name="KAPPA" value="0.5">
+                    </label>
+                    <label>Credited-return volatility (SIGMA)
+                        <input type="number" step="0.01" min="0" name="SIGMA" value="0.05">
+                    </label>
+                </fieldset>
+
+                <button type="submit">Run</button>
+            </form>
+
+            <div id="playground-results" class="playground-results" aria-live="polite">
+                <p class="playground-placeholder">Run the model to see what the agent learns.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="socials">
+            <div class="socials-icon">
+                <a href="mailto:igance.decocq@hotmail.com" aria-label="Email"><img src="img/socials/Email.jpg"
+                        alt="Email"></a>
+            </div>
+            <div class="socials-icon">
+                <a href="https://www.linkedin.com/in/ignace-decocq-7a47472aa/" aria-label="LinkedIn"
+                    rel="noopener noreferrer" target="_blank"><img src="img/socials/linkedin.png"
+                        alt="LinkedIn"></a>
+            </div>
+            <div class="socials-icon">
+                <a href="https://github.com/korilium" aria-label="GitHub" rel="noopener noreferrer"
+                    target="_blank"><img src="img/socials/github.svg" alt="GitHub"></a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+<script src="js/toggleTheme.js"></script>
+<script src="js/apiConfig.js"></script>
+<script src="js/playground.js"></script>
+
+</html>

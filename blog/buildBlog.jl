@@ -142,10 +142,8 @@ index_template = raw"""
         <h1>The Peccon Blog</h1>
       </div>
       <div class="description">
-        <p>Welcome to the Peccon blog, where we explore the intersection of time and money. Dive into articles that
-          unravel the complexities of financial planning, investment strategies, and personal growth. Our mission is to
-          empower you with knowledge and insights to make informed decisions in a fast-paced world. Join us on this
-          journey to master the art of balancing time and money effectively.</p>
+        <p>Writing on time, money, and the decisions that connect them. I cover financial planning, investment, and the occasional detour into whatever 
+        I'm testing in the playground — always with an eye on how things behave in practice.</p>
       </div>
     </div>
     <div class="blog-overview">

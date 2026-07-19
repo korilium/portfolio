@@ -17,7 +17,7 @@
     <!-- Favicon -->
     <link rel="icon" href="img/favicon.svg">
     <!-- Stylesheet -->
-    <link href="css/styles/styleResume.css" rel="stylesheet">
+    <link href="css/styles/stylePlayground.css" rel="stylesheet">
 
 </head>
 
@@ -38,11 +38,40 @@
             <span class="slider"></span>
         </label>
     </header>
-    <div class="page">
 
-    </div>
+    <main class="page playground">
+        <section class="playground-intro">
+            <h1 class="subtitles-short">Play Ground</h1>
+            <p>Small interactive tools that run the models behind the blog — pick one, tweak the assumptions, and
+                see how it actually behaves.</p>
+        </section>
+
+        <section id="tools-grid" class="tools-grid" aria-live="polite">
+            <p class="playground-placeholder">Loading tools…</p>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="socials">
+            <div class="socials-icon">
+                <a href="mailto:igance.decocq@hotmail.com" aria-label="Email"><img src="img/socials/Email.jpg"
+                        alt="Email"></a>
+            </div>
+            <div class="socials-icon">
+                <a href="https://www.linkedin.com/in/ignace-decocq-7a47472aa/" aria-label="LinkedIn"
+                    rel="noopener noreferrer" target="_blank"><img src="img/socials/linkedin.png"
+                        alt="LinkedIn"></a>
+            </div>
+            <div class="socials-icon">
+                <a href="https://github.com/korilium" aria-label="GitHub" rel="noopener noreferrer"
+                    target="_blank"><img src="img/socials/github.svg" alt="GitHub"></a>
+            </div>
+        </div>
+    </footer>
 
 </body>
 <script src="js/toggleTheme.js"></script>
+<script src="js/apiConfig.js"></script>
+<script src="js/playgroundIndex.js"></script>
 
 </html>

@@ -18,13 +18,13 @@ using .Pension
     band::Int = 10                # plan_age
 
     T::Int = 45
-    G::Float64 = 0.0175
-    MU::Float64 = 0.01
+    G::Float64 = 0.0250
+    MU::Float64 = 0.025
     KAPPA::Float64 = 0.5
     S0::Float64 = 1.0
     W::Float64 = 0.025
-    DISC::Float64 = 0.01
-    SIGMA::Float64 = 0.05
+    DISC::Float64 = 0.03
+    SIGMA::Float64 = 0.02
 
     n_episodes::Int = 1_000_000   # matches basicEnv.py's own default; capped below regardless
     n_eval::Int = 2000

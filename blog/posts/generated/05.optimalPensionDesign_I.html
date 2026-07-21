@@ -57,7 +57,91 @@
       <span class="slider"></span>
     </label>
     <article>
-      
+      <h1>Optimal Pension Design: a Naive Approach</h1>
+<h2>The Need for a Pension Plan?</h2>
+<p>The honest answer is that most of us are bad at saving for a future self we have never met. Left alone, people under-save, retire into a consumption cliff, and lean on the state. A pension plan is the institutional fix: a contractual commitment, made while you are earning, to a version of you that no longer is.</p>
+<p>But there is a second, less obvious answer that motivates this whole project: a pension plan is a risk-sharing contract between three parties — employee, employer, and (through guarantees and regulation) the state. The employee wants a stable replacement income; the employer wants predictable, affordable costs; the regulator wants neither party to walk away holding an empty bag. These objectives conflict, and how a plan resolves that conflict is a design choice. Which raises the question this post is really about: can we make that design choice optimally, and what would &quot;optimal&quot; even mean?</p>
+<!-- TODO: maybe open with a concrete number — replacement rate gap in Belgium, or first-pillar sustainability stat -->
+<h2>Belgium Legal Framework: the Three pillars</h2>
+<p>Belgian retirement income rests on three pillars.</p>
+<p>The first pillar is the statutory state pension: pay-as-you-go, financed by today's workers for today's retirees, and demographically under pressure. For most private-sector careers it replaces a modest fraction of final salary.</p>
+<p>The second pillar is occupational: pension plans set up by employers (or sectors) for their employees, funded by contributions during the career. This is where this project lives. The governing law is the WAP (Wet op de Aanvullende Pensioenen), whose defining feature is a guaranteed minimum return on contributions. Since 2016, that guarantee is a single unified rate: 85% of the trailing 24-month average of the 10-year OLO yield, rounded to 25 basis points, floored at 1.75% and capped at 3.75%, applied separately to the employer and employee contribution legs. The employer underwrites this guarantee — if the plan's assets underperform it, the shortfall is the employer's problem. Alongside the return guarantee sit further hard constraints: the 80% rule capping total pension build-up relative to salary, and non-discrimination requirements.</p>
+<p>The third pillar is individual, tax-favoured saving — relevant to the employee's full picture,
+but outside this post.</p>
+<h2>Different types of Pension Plans</h2>
+<p>Within the second pillar the classic dichotomy is:</p>
+<p>Defined Benefit (DB): the plan promises an outcome — typically a formula on final or career-average salary — and the employer bears the full investment and longevity risk of delivering it. Increasingly rare, for exactly that reason.</p>
+<p>Defined Contribution (DC): the plan promises an input — a contribution rate — and the outcome depends on returns. In most countries this shifts all risk to the employee. Belgium is the interesting exception: the WAP guarantee makes Belgian DC a hybrid, sometimes called &quot;DC with a DB flavour&quot; — contributions are defined, but the employer still stands behind a minimum return.</p>
+<p>The insurance vehicle matters too. Branch 21 products credit a contractually guaranteed return (plus discretionary profit sharing) directly to the reserve — the reserve is a credited-return process, not a marked-to-market bond portfolio. Branch 23 products are unit-linked: the reserve tracks fund value, with more upside and no crediting cushion, leaving the WAP guarantee to bite harder in bad scenarios. Comparing how these two vehicles behave under the same contribution policy is one of the axes of the wider project.</p>
+<p>This post works with the simplest member of this family: a single-employee Belgian DC plan, Branch 21-style deterministic crediting — for reasons the next section makes clear.</p>
+<h2>What is Optimal?</h2>
+<p>&quot;Optimal&quot; is meaningless until you say for whom. A contribution policy that thrills the CFO can starve the employee's replacement rate; a generous one can make plan costs procyclical and painful. So the project's central object is a joint value function:</p>
+<h1>𝑉</h1>
+<p>𝜆
+⋅
+𝑉
+employee
++
+(
+1
+−
+𝜆
+)
+⋅
+𝑉
+employer
+V=λ⋅V
+employee
+​</p>
+<p>+(1−λ)⋅V
+employer
+​</p>
+<p>with the regulatory constraints — WAP minimum return, the 80% rule, non-discrimination — sitting outside the optimisation as hard constraints, not soft penalties. The employer side is the negative of a cost sensitivity index (expected cost, tail risk, procyclicality); the employee side is utility over retirement consumption anchored to a replacement-rate target. The weight
+𝜆
+λ is not something to optimise — it is the negotiation dial between the two parties, and sweeping it traces out the design frontier.</p>
+<p>That is the full framework. This post uses a radically stripped-down version of it, because before optimising anything real, the machinery itself has to be proven trustworthy.</p>
+<h3>The Reward Function</h3>
+<p>At this first rung, the reward is nothing more exotic than an actuarial present value: each cash flow, discounted at an explicit rate, emitted at the moment it occurs. Two design decisions here turn out to carry the whole post:</p>
+<h2>Reinforcement Learning a Basic Introduction</h2>
+<p>For readers whose last contact with RL was an elective: strip the jargon and RL is stochastic control where the strategy is learned rather than fixed at inception.</p>
+<p>A state
+𝑠
+s is what you know at a decision point (here: the year, and the accumulated reserve).
+An action
+𝑎
+a is a decision (here, brutally simple: contribute or don't, each year).
+A policy
+𝜋
+π maps states to actions — a dynamic contribution strategy rather than a fixed schedule.
+A value function
+𝑄
+(
+𝑠
+,
+𝑎
+)
+Q(s,a) is the expected sum of future rewards from taking action
+𝑎
+a in state
+𝑠
+s — which, given the reward design above, is literally an expected APV conditional on state and decision. You have computed thousands of these; RL estimates them by simulation and then improves the policy against them.</p>
+<p>The method at this rung is tabular Monte Carlo: simulate full episodes under the current policy, record the realised return for every state–action pair visited, and update a table of
+𝑄
+Q-estimates toward those realised returns. No neural network anywhere. The natural objection — &quot;this is solvable by backward induction, why bother with RL?&quot; — is entirely correct, and that is the point: a dynamic-programming-solvable environment is the calibration target. RL earns its keep later, when stochastic credited returns, a funding-ratio state, and a stochastic WAP rate make the transition kernel something you no longer want to enumerate.</p>
+<!-- TODO: decide depth here — this audience needs the mapping to stochastic control, not a full RL tutorial -->
+<h2>The Environement</h2>
+<p>The environment is deliberately an environment a spreadsheet could solve: one employee, a fixed career horizon, deterministic salary, deterministic crediting of the reserve, one binary decision per year. The employee-side reward uses a utility with risk-aversion parameter
+𝜅
+κ; contributions carry a burden term; the terminal reserve funds retirement consumption.</p>
+<p>Why start this stupid? Because a bug in a complex RL environment is invisible: the agent trains, the reward curve rises, the policy looks plausible — and the objective it optimised is not the one you wrote down. The methodology is a ladder: each rung adds exactly one new element, is validated against an independent benchmark, then frozen as a regression test before the next rung is added.</p>
+<h2>the RL Agent</h2>
+<p>The agent is as naive as the environment: an 𝜀 ε-greedy tabular Monte Carlo learner. It mostly follows the best action its
+𝑄Q-table currently suggests, occasionally explores at random, and after each episode nudges the visited
+𝑄Q-entries toward the realised discounted return.</p>
+<h2>Tuning the Learning Behaviour</h2>
+<h2>The Results</h2>
+<h2>Final Thoughts and Next Steps</h2>
+
     </article>
   </main>
 <script src="../../../js/toggleTheme.js"></script>

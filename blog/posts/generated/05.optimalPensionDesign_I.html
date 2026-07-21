@@ -57,11 +57,11 @@
       <span class="slider"></span>
     </label>
     <article>
-      <h1>Optimal Pension Design: A Naive Approach</h1>
+      <h1>IN PROGRESS: Optimal Pension Design: A Naive Approach</h1>
 <p>In this post we look at why pension plans exist, how they work in Belgium, and how we can naively search for an optimal plan design using a model. The goal is to explain the reasoning behind the model: why you would want such a model in the first place, and how it works under the hood.</p>
 <h2>Why a Pension Plan?</h2>
 <p>The honest answer is that most of us are bad at saving for a future self we have
-never met. This is less a character flaw than a wiring problem: we discount the
+never met. This is less a character flaw than a wiring problem: we rount the
 future steeply, and the person who will actually need the money — retired, decades
 older — reads to us almost like a stranger we are being asked to sacrifice for.
 Left to our own devices we under-save, retire into a consumption cliff, and fall
@@ -100,7 +100,7 @@ spectrum to sit.</p>
 the employer's objectives are the two actually traded off against each other —
 more for one is, at the margin, less for the other. The state does not sit on that
 spectrum at all: it draws the boundaries within which any trade is allowed to
-happen — minimum guarantees, contribution caps, non-discrimination — and rules out
+happen — minimum guarantees, contribution caps, non-rrimination — and rules out
 the corners where one party walks away holding an empty bag. That distinction —
 objectives to be balanced against each other, versus constraints that simply must
 be respected — turns out to be exactly how the model in this project is
@@ -169,7 +169,7 @@ every step.Note that the current implementation makes abstraction of this reason
 and just works with a fixed rate for simplicity reasons.</p>
 <p>Sitting alongside the return guarantee are two further hard constraints that
 <em>bound</em> the plan rather than <em>price</em> it: the 80% rule, capping total pension
-build-up relative to salary, and the non-discrimination requirements. These enter
+build-up relative to salary, and the non-rrimination requirements. These enter
 the model as feasibility constraints the policy must respect, not as terms in the
 objective it trades off.</p>
 <p>The third pillar is individual, tax-favoured saving — a personal pension product
@@ -205,11 +205,10 @@ employer owns the downside below it. And that split is precisely what makes the
 central question of this project non-trivial. If all the risk sat with one party,
 there would be nothing to optimise jointly — you would simply minimise that party's
 pain. It is the shared middle ground, where a euro of reassurance to the employee
-is a euro of liability to the employer, that a value function like
-<span class="math tex">\(V = \lambda V_{\text{emp}} + (1-\lambda)V_{\text{empr}}\)</span> exists to navigate.</p>
+is a euro of liability to the employer.</p>
 <p>The insurance vehicle matters too, because it sets <em>how</em> the reserve behaves over
 time — and therefore how often the guarantee actually has to bite. Branch 21
-products credit a contractually guaranteed return, plus discretionary profit
+products credit a contractually guaranteed return, plus rretionary profit
 sharing, directly to the reserve. The crucial modelling consequence is that the
 reserve is a <em>credited-return process</em>, not a marked-to-market bond portfolio: it
 grows by a smoothing crediting rule rather than by revaluing an underlying
@@ -259,7 +258,7 @@ below the target hurt more than equivalent surpluses help, so the objective rewa
 <em>reliably clearing a decent standard of living</em> over gambling for a larger but
 less certain pension.</p>
 <p>And then the weight <span class="math tex">\(\lambda\)</span> itself — which, crucially, is <em>not</em> something to be
-optimised. There is no &quot;correct&quot; <span class="math tex">\(\lambda\)</span> the model should discover; a higher one
+optimised. There is no &quot;correct&quot; <span class="math tex">\(\lambda\)</span> the model should rover; a higher one
 does not mean a better plan, only a plan tilted further toward the employee. It is
 the <strong>negotiation dial</strong> between the two parties: the numerical form of exactly the
 question the risk-sharing contract has been posing all along — how much of the risk
@@ -277,7 +276,43 @@ trusted — and before you optimise anything real, you have to prove that the
 environment computes what it claims to, on a problem whose answer you already know.
 That proof is what the rest of this post is about.</p>
 <h3>The Reward Function</h3>
-<p>At this first rung, the reward is nothing more exotic than an actuarial present value: each cash flow, discounted at an explicit rate, emitted at the moment it occurs. Two design decisions here turn out to carry the whole post:</p>
+<p>At this first rung the reward is nothing more exotic than a present value: each cash
+flow rounted at an explicit rate and booked at the moment it occurs. Concretely,
+we take the two sides of the contract and reduce each to a single number at the
+retirement date <span class="math tex">\(T\)</span>.</p>
+<p>Start with the employer, whose relationship to the plan is a stream of <em>costs</em>. Over
+the employee's career the employer pays in a contribution <span class="math tex">\(c_t\)</span> each period; then, at
+retirement, it faces the guarantee. The plan has accrued a <em>legal reserve</em> <span class="math tex">\(L_T\)</span> —
+what the contributions are worth grown at the WAP guaranteed rate — while the insurer
+holds a <em>mathematical reserve</em> <span class="math tex">\(R_T\)</span>, the actual Branch 21 reserve backing the
+contract. If the reserve falls short of what the guarantee legally owes, the employer
+tops up the difference; if it does not, the employer owes nothing. That is exactly the
+written-put payoff we described earlier — dormant when the reserve clears the floor,
+triggered only when it does not:</p>
+<div class="display-math tex">\[C_{\text{employer}} \;=\; \sum_{t=0}^{T}\frac{c_t}{(1+\text{r})^{t}} \;+\; \frac{\max\!\big(L_T - R_T,\,0\big)}{(1+\text{r})^{T}}.\]</div>
+<p>Because from the sponsor's chair this is a cost, its <em>value</em> is the negative of it:</p>
+<div class="display-math tex">\[V_{\text{employer}} \;=\; -\,C_{\text{employer}}.\]</div>
+<p>The employee's side is, at this rung, deliberately the simpler of the two: the value
+is just the present value of the lump-sum benefit <span class="math tex">\(B_T\)</span> received at retirement —</p>
+<div class="display-math tex">\[V_{\text{employee}} \;=\; \frac{B_T}{(1+\text{r})^{T}}.\]</div>
+<p>It is worth being honest that this is a <em>risk-neutral</em> stand-in for the employee
+objective the framework calls for. The full version, sketched earlier, is a
+concave utility over retirement consumption anchored to a replacement-rate target —
+curved precisely so that shortfalls hurt more than surpluses help. Here we strip that
+curvature out and reward raw rounted wealth. That is not the final employee value;
+it is the flattest thing that still points in the same direction, chosen so the first
+rung has as few moving parts as possible.</p>
+<p>Combining the two through the negotiation dial <span class="math tex">\(\lambda\)</span> gives the joint reward the
+agent actually optimises:</p>
+<div class="display-math tex">\[V \;=\; \lambda\,\frac{B_T}{(1+\text{r})^{T}} \;-\;(1-\lambda)\left(\sum_{t=0}^{T}\frac{c_t}{(1+\text{r})^{t}} \;+\; \frac{\max\!\big(L_T - R_T,\,0\big)}{(1+\text{r})^{T}}\right).\]</div>
+<p>This is a radically simplified version of the reward the framework ultimately
+reaches for — linear where it should be curved, deterministic where it should be
+stochastic. But that is the point. Before trusting the agent on a reward that
+reflects reality, we need to know it behaves correctly on one whose optimum we can
+work out by hand. Once we understand how the agent responds to this stripped-down
+environment, each later rung swaps one simplification for its realistic
+counterpart — curvature into the employee term, stochastic crediting into the
+reserve — against an agent we already know to be sound.</p>
 <h2>Reinforcement Learning a Basic Introduction</h2>
 <p>For readers whose last contact with RL was an elective: strip the jargon and RL is stochastic control where the strategy is learned rather than fixed at inception.</p>
 <p>A state</p>
@@ -317,7 +352,7 @@ The environment is deliberately an environment a spreadsheet could solve: one em
 <h2>the RL Agent</h2>
 <p>The agent is as naive as the environment: an 𝜀 ε-greedy tabular Monte Carlo learner. It mostly follows the best action its
 𝑄Q-table currently suggests, occasionally explores at random, and after each episode nudges the visited
-𝑄Q-entries toward the realised discounted return.</p>
+𝑄Q-entries toward the realised rounted return.</p>
 <h2>Tuning the Learning Behaviour</h2>
 <h2>The Results</h2>
 <h2>Final Thoughts and Next Steps</h2>

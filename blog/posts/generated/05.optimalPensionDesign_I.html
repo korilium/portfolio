@@ -181,15 +181,101 @@ outside the risk-sharing problem this project is about, and I leave it aside her
 relevant to an employee's full retirement picture, but not to the design question
 that follows.</p>
 <h2>Different types of Pension Plans</h2>
-<p>Within the second pillar the classic dichotomy is:</p>
-<p>Defined Benefit (DB): the plan promises an outcome — typically a formula on final or career-average salary — and the employer bears the full investment and longevity risk of delivering it. Increasingly rare, for exactly that reason.</p>
-<p>Defined Contribution (DC): the plan promises an input — a contribution rate — and the outcome depends on returns. In most countries this shifts all risk to the employee. Belgium is the interesting exception: the WAP guarantee makes Belgian DC a hybrid, sometimes called &quot;DC with a DB flavour&quot; — contributions are defined, but the employer still stands behind a minimum return.</p>
-<p>The insurance vehicle matters too. Branch 21 products credit a contractually guaranteed return (plus discretionary profit sharing) directly to the reserve — the reserve is a credited-return process, not a marked-to-market bond portfolio. Branch 23 products are unit-linked: the reserve tracks fund value, with more upside and no crediting cushion, leaving the WAP guarantee to bite harder in bad scenarios. Comparing how these two vehicles behave under the same contribution policy is one of the axes of the wider project.</p>
-<p>This post works with the simplest member of this family: a single-employee Belgian DC plan, Branch 21-style deterministic crediting — for reasons the next section makes clear.</p>
+<p>Within the second pillar the classic dichotomy is, at heart, about <em>who carries the
+risk</em> — which makes it the natural place to pin down exactly where this project sits.</p>
+<p><strong>Defined Benefit (DB):</strong> the plan promises an <em>outcome</em> — typically a formula on
+final or career-average salary — and the employer bears the full weight of
+delivering it. Both the investment risk (the backing assets may underperform) and
+the longevity risk (retirees may live longer than the plan funded for) land on the
+employer. That concentration is exactly why DB is increasingly rare: it is an
+open-ended liability sitting on the sponsor's balance sheet, and few employers
+still want to hold it.</p>
+<p><strong>Defined Contribution (DC):</strong> the plan promises an <em>input</em> — a contribution rate —
+and the retirement outcome is whatever those contributions happen to grow into. In
+most countries this is the mirror image of DB: fix the input, and every risk on the
+outcome side passes to the employee, who now carries the market and longevity
+exposure alone.</p>
+<p>Belgium is the interesting exception — and it is the reason a risk-<em>sharing</em> model
+has anything to chew on here at all. The WAP guarantee bolts a minimum return onto
+an otherwise DC structure, producing a hybrid sometimes called <em>&quot;DC with a DB
+flavour&quot;</em>: contributions are defined, but the employer still stands behind a floor.
+Risk here is neither fully concentrated (as in DB) nor fully offloaded (as in pure
+DC) — it is <em>split</em>. The employee keeps the upside above the guaranteed rate; the
+employer owns the downside below it. And that split is precisely what makes the
+central question of this project non-trivial. If all the risk sat with one party,
+there would be nothing to optimise jointly — you would simply minimise that party's
+pain. It is the shared middle ground, where a euro of reassurance to the employee
+is a euro of liability to the employer, that a value function like
+<span class="math tex">\(V = \lambda V_{\text{emp}} + (1-\lambda)V_{\text{empr}}\)</span> exists to navigate.</p>
+<p>The insurance vehicle matters too, because it sets <em>how</em> the reserve behaves over
+time — and therefore how often the guarantee actually has to bite. Branch 21
+products credit a contractually guaranteed return, plus discretionary profit
+sharing, directly to the reserve. The crucial modelling consequence is that the
+reserve is a <em>credited-return process</em>, not a marked-to-market bond portfolio: it
+grows by a smoothing crediting rule rather than by revaluing an underlying
+portfolio day to day, so short-term market swings are absorbed rather than passed
+straight through. That smoothing is itself a cushion between the market and the
+guarantee. Branch 23 products are unit-linked: the reserve simply tracks fund
+value, with more upside and no crediting cushion. When markets fall, the fund falls
+with them — and with nothing to smooth the drop, the WAP floor is reached far more
+readily, forcing the employer's guarantee to make up the difference. In that sense
+the guarantee behaves like a put option the employer has written to the employee:
+dormant while the fund clears the floor, triggered precisely when it does not — and
+Branch 23 leaves it triggered more often. Comparing how these two vehicles behave
+under one and the same contribution policy is one of the axes of the wider project.</p>
+<p>This post works with the simplest member of the family: a single-employee Belgian
+DC plan with Branch 21-style <em>deterministic</em> crediting — the guarantee credited at a
+fixed rate, the put left dormant by construction. That is the same first-rung move
+as holding the WAP rate flat: strip out the stochastic crediting to get an
+environment whose behaviour you can check by hand, and switch it back on only once
+the mechanics are proven. The reasons for starting exactly here are what the next
+section makes precise.</p>
 <h2>What is Optimal?</h2>
-<p>&quot;Optimal&quot; is meaningless until you say for whom. A contribution policy that thrills the CFO can starve the employee's replacement rate; a generous one can make plan costs procyclical and painful. So the project's central object is a joint value function:</p>
-<p>with the regulatory constraints — WAP minimum return, the 80% rule, non-discrimination — sitting outside the optimisation as hard constraints, not soft penalties. The employer side is the negative of a cost sensitivity index (expected cost, tail risk, procyclicality); the employee side is utility over retirement consumption anchored to a replacement-rate target. The weight λ is not something to optimise — it is the negotiation dial between the two parties, and sweeping it traces out the design frontier.</p>
-<p>That is the full framework. This post uses a radically stripped-down version of it, because before optimising anything real, the machinery itself has to be proven trustworthy.</p>
+<p>&quot;Optimal&quot; is meaningless until you say <em>for whom</em>. The same contribution policy is
+a different thing seen from each side of the contract: one that thrills the CFO —
+low, predictable outlays — can quietly starve the employee's replacement rate,
+while one generous enough to delight the employee can make plan costs balloon
+exactly when the firm can least afford them, in a downturn. There is no policy that
+is optimal in the abstract; there is only optimal-for-a-chosen-balance. So rather
+than pick a side, the project's central object makes the balance itself explicit —
+a joint value function:</p>
+<div class="display-math tex">\[V \;=\; \lambda\, V_{\text{employee}} \;+\; (1-\lambda)\, V_{\text{employer}}.\]</div>
+<p>Read it as a single dial with the two parties at its ends. Each term encodes what
+that party is actually trying to get out of the plan.</p>
+<p>The employer side, <span class="math tex">\(V_{\text{employer}}\)</span>, is the <em>negative</em> of a cost sensitivity
+index — negative because from the sponsor's chair the plan is a cost, and value
+means having less of it to worry about. What goes into that index is not merely how
+large the cost is but how <em>unpleasant</em> its shape: its expected level, its tail risk
+(the rare, severe funding shortfalls that do real balance-sheet damage), and its
+procyclicality — whether the cost tends to spike in bad states of the world, when
+the firm is already under strain. A cost that is high but steady is easier to carry
+than one that is lower on average but lands its worst blows at the worst possible
+moment; the index is built to prefer the former.</p>
+<p>The employee side, <span class="math tex">\(V_{\text{employee}}\)</span>, is a utility over retirement consumption,
+anchored to a replacement-rate target — the very quantity introduced back at the
+first pillar, now doing formal work. Framing it as utility rather than raw expected
+wealth matters: it builds in that employees are risk-averse and that shortfalls
+below the target hurt more than equivalent surpluses help, so the objective rewards
+<em>reliably clearing a decent standard of living</em> over gambling for a larger but
+less certain pension.</p>
+<p>And then the weight <span class="math tex">\(\lambda\)</span> itself — which, crucially, is <em>not</em> something to be
+optimised. There is no &quot;correct&quot; <span class="math tex">\(\lambda\)</span> the model should discover; a higher one
+does not mean a better plan, only a plan tilted further toward the employee. It is
+the <strong>negotiation dial</strong> between the two parties: the numerical form of exactly the
+question the risk-sharing contract has been posing all along — how much of the risk
+does each side agree to carry? Fixing <span class="math tex">\(\lambda\)</span> is choosing a point on the
+shared-risk spectrum; <em>sweeping</em> it from one end to the other and re-optimising at
+each setting traces out the whole <strong>design frontier</strong> — the menu of
+employee-optimal-given-employer-cost trade-offs, every point on it Pareto-sensible,
+the choice between them a matter of negotiation rather than mathematics. The model
+does not tell you where to stand on that frontier. It tells you what the frontier
+<em>is</em> — which is the genuinely useful thing, because it turns a vague tug-of-war into
+an explicit, priced menu of options.</p>
+<p>That is the full framework. This post uses a radically stripped-down version of it,
+because the framework only means something if the machinery underneath it can be
+trusted — and before you optimise anything real, you have to prove that the
+environment computes what it claims to, on a problem whose answer you already know.
+That proof is what the rest of this post is about.</p>
 <h3>The Reward Function</h3>
 <p>At this first rung, the reward is nothing more exotic than an actuarial present value: each cash flow, discounted at an explicit rate, emitted at the moment it occurs. Two design decisions here turn out to carry the whole post:</p>
 <h2>Reinforcement Learning a Basic Introduction</h2>

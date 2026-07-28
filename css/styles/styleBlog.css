@@ -59,11 +59,7 @@ aside a:focus {
   /* subtle highlight in dark theme */
 }
 
-/* Slightly different contrast in light theme */
-:root[data-theme="light"] aside a:hover,
-:root[data-theme="light"] aside a:focus {
-  background-color: rgba(0, 0, 0, 0.04);
-}
+
 
 /* Current / active page link: visible accent without mixing colors */
 aside a.current {

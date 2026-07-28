@@ -122,7 +122,7 @@ index_template = raw"""
             <ul class="menu">
                 <li><a href="../../../index.html">Home</a></li>
                 <li><a href="index.html">Blog</a></li>
-                <li><a href="../../../playGround.html">Play Ground</a></li>
+                <li><a href="../../../playGround.html">Playground</a></li>
                 <li><a href="../../../project.html">Peccon</a></li>
             </ul>
         </div>
@@ -147,16 +147,7 @@ index_template = raw"""
       </div>
     </div>
     <div class="blog-overview">
-      <a href="01.MPT.html" class="blog-card-link">
-        <div class="blog-card">
-          <div class="blog-content">
-            <h3>Modern Portfolio Theory</h3>
-            <p>Explore the principles of Modern Portfolio Theory (MPT) and learn how to optimize your investment portfolio by balancing risk and return...</p>
-            <span class="meta">Jan 2025 • Financial Modelling</span>
-          </div>
-        </div>
-      </a>
-      <a href="02.BelgiumBonds.html" class="blog-card-link">
+      <a href="01.BelgiumBonds.html" class="blog-card-link">
         <div class="blog-card">
           <div class="blog-content">
             <h3>Belgium Goverment Bonds</h3>
@@ -165,7 +156,7 @@ index_template = raw"""
           </div>
         </div>
       </a>
-      <a href="03.Vasicek.html" class="blog-card-link">
+      <a href="02.Vasicek.html" class="blog-card-link">
         <div class="blog-card">
           <div class="blog-content">
             <h3>Modelling bond prices with the Vasicek model</h3>
@@ -174,7 +165,7 @@ index_template = raw"""
           </div>
         </div>
       </a>
-      <a href="05.optimalPensionDesign_I.html" class="blog-card-link">
+      <a href="04.optimalPensionDesign_I.html" class="blog-card-link">
         <div class="blog-card">
           <div class="blog-content">
             <h3>Optimal pension plan design - toy example</h3>
@@ -183,7 +174,15 @@ index_template = raw"""
           </div>
         </div>
       </a>
-
+      <a href="05.MPT.html" class="blog-card-link">
+        <div class="blog-card">
+          <div class="blog-content">
+            <h3>Modern Portfolio Theory</h3>
+            <p>Explore the principles of Modern Portfolio Theory (MPT) and learn how to optimize your investment portfolio by balancing risk and return...</p>
+            <span class="meta">Jan 2025 • Financial Modelling</span>
+          </div>
+        </div>
+      </a>
     </div>
   </div>
 

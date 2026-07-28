@@ -5,76 +5,62 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>01.MPT</title>
-  <!-- Favicon -->
   <link rel="icon" href="../../../img/favicon.svg">
-    <script>
-  (function () {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "light") {
-      document.documentElement.setAttribute("data-theme", savedTheme);
-    }
-  })();
-</script>
-  <!-- Stylesheet -->
-
-  <link href="../../../css/styles/style.css" rel="stylesheet">  
-  <script>
-    MathJax = {
-    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
-    svg: { fontCache: 'global' }
-    };
-  </script>
-  <script>
-    // Immediately set theme before rendering
-    (function() {
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme === "light") {
-        document.documentElement.classList.add("light");
-      }
-    })();
-  </script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
-
-
+  <script>(function(){const t=localStorage.getItem("theme");if(t==="light"){document.documentElement.setAttribute("data-theme",t);document.documentElement.classList.add("light");}})();</script>
+  <link href="../../../css/styles/style.css" rel="stylesheet">
+  <script>MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]},svg:{fontCache:'global'}};</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
 </head>
-
-
-
 
 <h3 class="sr-only">Interactive yield curve: shifting the curve's level or slope reprices six real OLO lines at once, with longer maturities moving more.</h3>
 
-<div style="display:flex; align-items:center; gap:12px; margin:0 0 0.75rem;">
-  <label style="font-size:14px; color:var(--text-secondary); min-width:150px;">Curve level (ECB impulse)</label>
-  <input type="range" min="-1.5" max="1.5" step="0.05" value="0" id="lvl" style="flex:1;">
-  <span style="font-size:15px; font-weight:500; min-width:64px; text-align:right;" id="lvlout">+0.00%</span>
-</div>
-<div style="display:flex; align-items:center; gap:12px; margin:0 0 1rem;">
-  <label style="font-size:14px; color:var(--text-secondary); min-width:150px;">Curve slope (steepen ↔ flatten)</label>
-  <input type="range" min="-1" max="1" step="0.05" value="0" id="slp" style="flex:1;">
-  <span style="font-size:15px; font-weight:500; min-width:64px; text-align:right;" id="slpout">0.00</span>
-</div>
+<div style="background:var(--img-bg,#091210); border-radius:12px; padding:1.25rem;">
 
-<div style="display:flex; gap:12px; margin:0 0 1.25rem; align-items:center;">
-  <button id="reset" style="font-size:13px;">Reset curve</button>
-  <span style="font-size:13px; color:var(--text-muted);" id="summary">curve flat to baseline</span>
-</div>
+  <div style="display:flex; align-items:center; gap:12px; margin:0 0 0.75rem;">
+    <label style="font-size:14px; color:var(--text-color,#6a8d7e); min-width:150px;">Curve level (ECB impulse)</label>
+    <input type="range" min="-1.5" max="1.5" step="0.05" value="0" id="lvl" style="flex:1; accent-color:var(--link-hover,#f0a500);">
+    <span style="font-size:15px; font-weight:500; min-width:64px; text-align:right; color:var(--text-color,#6a8d7e);" id="lvlout">+0.00%</span>
+  </div>
+  <div style="display:flex; align-items:center; gap:12px; margin:0 0 1rem;">
+    <label style="font-size:14px; color:var(--text-color,#6a8d7e); min-width:150px;">Curve slope (steepen &#8596; flatten)</label>
+    <input type="range" min="-1" max="1" step="0.05" value="0" id="slp" style="flex:1; accent-color:var(--link-hover,#f0a500);">
+    <span style="font-size:15px; font-weight:500; min-width:64px; text-align:right; color:var(--text-color,#6a8d7e);" id="slpout">0.00</span>
+  </div>
 
-<div style="position:relative; height:240px; margin:0 0 1.25rem;">
-  <canvas id="curve"></canvas>
-</div>
+  <div style="display:flex; gap:12px; margin:0 0 1.25rem; align-items:center;">
+    <button id="reset" style="font-size:13px; color:var(--text-colorBox,#22443e); background:var(--image-lightcolor,#80c3b7); border:none; border-radius:8px; padding:.35rem .7rem; cursor:pointer;">Reset curve</button>
+    <span style="font-size:13px; color:var(--text-color,#6a8d7e); opacity:.85;" id="summary">curve flat to baseline</span>
+  </div>
 
-<div style="display:grid; grid-template-columns:1.1fr 0.8fr 0.9fr 0.9fr 1fr 1.1fr; gap:6px 10px; font-size:13px; align-items:center;">
-  <div style="color:var(--text-muted);">Line</div>
-  <div style="color:var(--text-muted); text-align:right;">Mat.</div>
-  <div style="color:var(--text-muted); text-align:right;">Coupon</div>
-  <div style="color:var(--text-muted); text-align:right;">Yield</div>
-  <div style="color:var(--text-muted); text-align:right;">Price</div>
-  <div style="color:var(--text-muted); text-align:right;">Δ vs base</div>
-  <div id="rows" style="display:contents;"></div>
+  <div style="position:relative; height:240px; margin:0 0 1.25rem;">
+    <canvas id="curve"></canvas>
+  </div>
+
+  <div style="display:grid; grid-template-columns:1.1fr 0.8fr 0.9fr 0.9fr 1fr 1.1fr; gap:6px 10px; font-size:13px; align-items:center; color:var(--text-color,#6a8d7e);">
+    <div style="opacity:.7;">Line</div>
+    <div style="opacity:.7; text-align:right;">Mat.</div>
+    <div style="opacity:.7; text-align:right;">Coupon</div>
+    <div style="opacity:.7; text-align:right;">Yield</div>
+    <div style="opacity:.7; text-align:right;">Price</div>
+    <div style="opacity:.7; text-align:right;">&#916; vs base</div>
+    <div id="rows" style="display:contents;"></div>
+  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
+const cs = getComputedStyle(document.documentElement);
+const V = (n,f)=> (cs.getPropertyValue(n).trim() || f);
+const C = {
+  accent: V('--image-accentcolor','#60987a'),
+  light:  V('--image-lightcolor','#80c3b7'),
+  dark:   V('--image-darkcolor','#055445'),
+  hi:     V('--link-hover','#f0a500'),
+  text:   V('--text-color','#6a8d7e'),
+};
+const grid = C.text + '2b';
+const muted = C.text + 'b0';
+
 const anchors = [[1,2.6],[2,2.78],[3,2.92],[5,3.12],[7,3.3],[10,3.5],[15,3.8],[20,4.05],[30,4.4]];
 function interp(m){
   if(m<=anchors[0][0]) return anchors[0][1];
@@ -86,7 +72,7 @@ function interp(m){
   return 3.5;
 }
 function curveYield(m,L,S){ return interp(m)+L+S*(m-10)/20; }
-function price(C,n,y){ const r=y/100; let p=0; for(let t=1;t<=n;t++){ p+=C/Math.pow(1+r,t); } p+=100/Math.pow(1+r,n); return p; }
+function price(Cp,n,y){ const r=y/100; let p=0; for(let t=1;t<=n;t++){ p+=Cp/Math.pow(1+r,t); } p+=100/Math.pow(1+r,n); return p; }
 
 const bonds=[
   {name:'OLO108', n:5,  C:3.10},
@@ -98,9 +84,9 @@ const bonds=[
 ];
 const base = bonds.map(b=>price(b.C,b.n,curveYield(b.n,0,0)));
 
-const grid=[]; for(let m=1;m<=30;m++) grid.push(m);
+const gridX=[]; for(let m=1;m<=30;m++) gridX.push(m);
 let chart;
-function curveData(L,S){ return grid.map(m=>({x:m,y:curveYield(m,L,S)})); }
+function curveData(L,S){ return gridX.map(m=>({x:m,y:curveYield(m,L,S)})); }
 function bondPts(L,S){ return bonds.map(b=>({x:b.n,y:curveYield(b.n,L,S)})); }
 
 function render(L,S){
@@ -108,14 +94,14 @@ function render(L,S){
     chart=new Chart(document.getElementById('curve'),{
       type:'line',
       data:{ datasets:[
-        {label:'curve',data:curveData(L,S),borderColor:'#378ADD',borderWidth:2,tension:0.4,pointRadius:0,fill:false},
-        {label:'OLO lines',data:bondPts(L,S),type:'scatter',borderColor:'#0F6E56',backgroundColor:'#0F6E56',pointRadius:6}
+        {label:'curve',data:curveData(L,S),borderColor:C.accent,borderWidth:2,tension:0.4,pointRadius:0,fill:false},
+        {label:'OLO lines',data:bondPts(L,S),type:'scatter',borderColor:C.hi,backgroundColor:C.hi,pointRadius:6}
       ]},
       options:{responsive:true,maintainAspectRatio:false,animation:false,
         plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed.x}y: ${c.parsed.y.toFixed(2)}%`}}},
         scales:{
-          x:{type:'linear',min:0,max:31,title:{display:true,text:'maturity (years)',color:'#888780'},grid:{color:'#e1e0d9'},ticks:{color:'#888780',stepSize:5}},
-          y:{min:1,max:6,title:{display:true,text:'yield (%)',color:'#888780'},grid:{color:'#e1e0d9'},ticks:{color:'#888780',callback:v=>v.toFixed(1)+'%'}}
+          x:{type:'linear',min:0,max:31,title:{display:true,text:'maturity (years)',color:C.text},grid:{color:grid},ticks:{color:C.text,stepSize:5}},
+          y:{min:1,max:6,title:{display:true,text:'yield (%)',color:C.text},grid:{color:grid},ticks:{color:C.text,callback:v=>v.toFixed(1)+'%'}}
         }}
     });
   } else {
@@ -136,21 +122,21 @@ function update(){
     const p=price(b.C,b.n,y);
     const d=p-base[i];
     if(d<-0.005) fell++;
-    const col = d<-0.005?'var(--text-danger)':(d>0.005?'var(--text-success)':'var(--text-muted)');
+    const col = d<-0.005?C.hi:(d>0.005?C.accent:muted);
     const dtxt = (d>=0?'+':'')+d.toFixed(2);
     return `<div>${b.name}</div>
       <div style="text-align:right;">${b.n}y</div>
       <div style="text-align:right;">${b.C.toFixed(2)}%</div>
       <div style="text-align:right;">${y.toFixed(2)}%</div>
-      <div style="text-align:right;">€${p.toFixed(2)}</div>
+      <div style="text-align:right;">\u20AC${p.toFixed(2)}</div>
       <div style="text-align:right; color:${col};">${dtxt}</div>`;
   }).join('');
   document.getElementById('rows').innerHTML=rows;
   const s=document.getElementById('summary');
   if(Math.abs(L)<0.005 && Math.abs(S)<0.005){ s.textContent='curve flat to baseline'; }
-  else if(L>0.005){ s.textContent=fell+' of 6 prices fell — longer maturities fall most'; }
-  else if(L<-0.005){ s.textContent=(6-fell)+' of 6 prices rose — longer maturities rise most'; }
-  else { s.textContent='slope changed — front and long ends diverge'; }
+  else if(L>0.005){ s.textContent=fell+' of 6 prices fell \u2014 longer maturities fall most'; }
+  else if(L<-0.005){ s.textContent=(6-fell)+' of 6 prices rose \u2014 longer maturities rise most'; }
+  else { s.textContent='slope changed \u2014 front and long ends diverge'; }
   render(L,S);
 }
 document.getElementById('lvl').addEventListener('input',update);
@@ -160,3 +146,4 @@ document.getElementById('reset').addEventListener('click',()=>{
 });
 update();
 </script>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>01.BelgiumBonds</title>
+  <!-- Favicon -->
+  <link rel="icon" href="../../../img/favicon.svg">
+    <script>
+  (function () {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+      document.documentElement.setAttribute("data-theme", savedTheme);
+    }
+  })();
+</script>
+  <!-- Stylesheet -->
+  <link href="../../../css/styles/styleBlog.css" rel="stylesheet">
+  <script>
+    MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+    svg: { fontCache: 'global' }
+    };
+  </script>
+  <script>
+    // Immediately set theme before rendering
+    (function() {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light") {
+        document.documentElement.classList.add("light");
+      }
+    })();
+  </script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+
+
+</head>
+<body>
+  <aside id="sidebar">
+      <button id="close-sidebar" aria-label="Close menu">&times;</button>
+    <h2>The peccon blog </h2>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="01.BelgiumBonds.html">01.BelgiumBonds</a></li>
+<li><a href="02.Vasicek.html">02.Vasicek</a></li>
+<li><a href="03.Hull-White.html">03.Hull-White</a></li>
+<li><a href="04.optimalPensionDesign_I.html">04.optimalPensionDesign_I</a></li>
+<li><a href="05.MPT.html">05.MPT</a></li>
+    </ul>
+  </aside>
+  <main>
+    <button id="open-sidebar" aria-label="Open menu">&#9776;</button>
+
+    <label class="theme-switch">
+      <input type="checkbox" id="theme-toggle">
+      <span class="slider"></span>
+    </label>
+    <article>
+      <h1>Belgium Government Bonds</h1>
+<h2>what is a bond?</h2>
+<p>A bond is a debt instrument representing a loan extended by a creditor (the lender) to a debtor (the borrower, or issuer). The bond is held by the creditor as an asset; the issuer carries the liability and is obliged to repay the principal at maturity plus periodic interest — the coupon — over the life of the debt. An entity in need of capital can raise it on the financial markets by issuing a bond. Prospective buyers assess the issuer's creditworthiness, and this determines the cost of the debt — more precisely, the interest the issuer must pay: the more creditworthy the issuer, the lower the interest demanded. Market conditions also affect the rate, since prevailing interest rates reflect the opportunity cost of capital — money lent to one borrower could have been deployed elsewhere.</p>
+<p>There are different types of bonds on the market, and a bond is defined by its characteristics. Below is an overview of the main characteristics:</p>
+<table><thead><tr><th align="left">Characteristic</th><th align="left">Examples</th></tr></thead><tbody><tr><td align="left">Issuer</td><td align="left">government, supranational, corporate, municipal, financial institution</td></tr><tr><td align="left">Coupon structure</td><td align="left">zero-coupon, fixed-rate, floating-rate; paid annually or semi-annually</td></tr><tr><td align="left">Maturity</td><td align="left">short, medium, long-dated, perpetual</td></tr><tr><td align="left">Embedded options</td><td align="left">callable, putable, convertible</td></tr><tr><td align="left">Seniority / security</td><td align="left">seniority — rank of the claim in the capital structure; security — whether the claim is backed by specific collateral</td></tr><tr><td align="left">Principal / indexation</td><td align="left">inflation-linked bonds (e.g. TIPS, OATi)</td></tr></tbody></table>
+<h2>Bonds issued by the Belgium Government</h2>
+<p>Measured by total value of securities outstanding, the global bond market is the largest securities market, exceeding the global equity market. I will therefore focus on a single instrument: the <em>Obligation Linéaire Ordinaire</em> / <em>Lineaire Obligatie</em> (OLO) of the Belgian federal government, a plain-vanilla bond with a fixed coupon, a bullet maturity, and no
+embedded options.<a href="#footnote-1" class="footnote">1</a> The full description of OLOs can be found on the <a href="https://www.debtagency.be/en/productoloinfo">Belgium Debt Agency</a> (BDA) website.</p>
+<p>OLOs are dematerialised: there is no physical certificate representing the bond. Ownership exists purely as a book entry in an electronic securities-settlement system — the National Bank of Belgium's system, to which the international central securities depositories Euroclear and Clearstream have access. The name &quot;linear&quot; comes from the way the bond is built. A single OLO is a <em>line</em> defined by one fixed coupon.<a href="#footnote-2" class="footnote">2</a> and one fixed maturity date, and it is issued in successive tranches: the outstanding amount of a given line grows with each tranche. This is what creates liquidity — capital is funnelled into a few very large, standardised lines that are actively traded, rather than fragmented across many small bonds.</p>
+<p>The &quot;linear&quot; property follows from the fact that every security in a line carries the same nominal coupon rate and redemption date, regardless of which tranche or auction it came from. The contractual terms are identical across tranches; only the issue price differs from one auction to the next, depending mainly on market conditions. A closely related property is <em>fungibility</em>: because all securities in a line are contractually identical, any unit is interchangeable with any other, which is what allows tranches issued at different times to merge into one consolidated line. A final property is that an OLO's components — each coupon and the principal — can be separated and traded as individual zero-coupon securities. This is called stripping (Separate Trading of Registered Interest and Principal Securities, STRIPS), producing coupon strips and a principal strip. Only fixed-rate OLOs can be stripped, because each detached piece must be a known amount payable on a known date.</p>
+<p>The picture below shows the lifecycle of such an OLO.</p>
+<svg width="100%" viewBox="0 0 680 560" role="img" style="display:block; width:100%; height:auto; max-width:820px; margin:1.5rem auto;" xmlns="http://www.w3.org/2000/svg" >
+<title>Lifecycle of an OLO bond line</title>
+<desc>A diagram showing how a single OLO line is built from successive tranches, traded in the secondary market, pays coupons, and is redeemed at maturity.</desc>
+<style>
+  svg { font-family: inherit; }
+  text { font-family: inherit; }
+  .step { fill: var(--text-color, #6a8d7e); font-weight: 500; }
+  .h    { fill: var(--text-colorBox, #5dab9d); font-weight: 500; }
+  .sub  { fill: var(--text-colorBox, #22443e); opacity: .78; }
+  .arrow{ stroke: var(--image-accentcolor, #60987a); fill: none; }
+  .card { fill: var(--image-lightcolor, #80c3b7); stroke: var(--image-darkcolor, #055445); stroke-opacity: .4; stroke-width: 1; }
+  .rail { fill: var(--image-accentcolor, #60987a); }
+  .card-hi { fill: var(--image-lightcolor, #80c3b7); stroke: var(--link-hover, #f0a500); stroke-width: 1.5; }
+  .rail-hi { fill: var(--link-hover, #f0a500); }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="680" height="560" rx="10" fill="var(--img-bg, #122924)"/>
+<text class="step" x="40" y="34" font-size="14">1. Treasury creates a line</text>
+<rect class="card" x="40" y="46" width="600" height="50" rx="8"/>
+<rect class="rail" x="41.5" y="54" width="3.5" height="34" rx="1.75"/>
+<text class="h"   x="60" y="68" font-size="14">OLO line: coupon 3.0%, maturity 2034</text>
+<text class="sub" x="60" y="86" font-size="12">one bond, fixed coupon + fixed redemption date</text>
+<text class="step" x="40" y="138" font-size="14">2. Issued in successive tranches (primary market, by auction)</text>
+<g>
+  <rect class="card" x="40" y="150" width="180" height="56" rx="8"/>
+  <rect class="rail" x="41.5" y="158" width="3.5" height="40" rx="1.75"/>
+  <text class="h"   x="130" y="172" text-anchor="middle" font-size="14">Tranche 1</text>
+  <text class="sub" x="130" y="190" text-anchor="middle" font-size="12">2024 &#183; price 99.2</text>
+</g>
+<g>
+  <rect class="card" x="250" y="150" width="180" height="56" rx="8"/>
+  <rect class="rail" x="251.5" y="158" width="3.5" height="40" rx="1.75"/>
+  <text class="h"   x="340" y="172" text-anchor="middle" font-size="14">Tranche 2</text>
+  <text class="sub" x="340" y="190" text-anchor="middle" font-size="12">2025 &#183; price 101.5</text>
+</g>
+<g>
+  <rect class="card" x="460" y="150" width="180" height="56" rx="8"/>
+  <rect class="rail" x="461.5" y="158" width="3.5" height="40" rx="1.75"/>
+  <text class="h"   x="550" y="172" text-anchor="middle" font-size="14">Tranche 3</text>
+  <text class="sub" x="550" y="190" text-anchor="middle" font-size="12">2026 &#183; price 98.7</text>
+</g>
+<line class="arrow" x1="130" y1="206" x2="322" y2="244" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line class="arrow" x1="340" y1="206" x2="340" y2="244" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line class="arrow" x1="550" y1="206" x2="358" y2="244" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="step" x="40" y="278" font-size="14">3. Tranches merge &#8212; fungible, identical terms</text>
+<rect class="card-hi" x="180" y="288" width="320" height="56" rx="8"/>
+<rect class="rail-hi" x="181.5" y="296" width="3.5" height="40" rx="1.75"/>
+<text class="h"   x="342" y="310" text-anchor="middle" font-size="14">One large, liquid OLO line</text>
+<text class="sub" x="342" y="328" text-anchor="middle" font-size="12">deep pool of holders, easily traded</text>
+<line class="arrow" x1="340" y1="344" x2="340" y2="384" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="step" x="40" y="378" font-size="14">4. Life of the line</text>
+<rect class="card" x="40" y="390" width="285" height="56" rx="8"/>
+<rect class="rail" x="41.5" y="398" width="3.5" height="40" rx="1.75"/>
+<text class="h"   x="184" y="412" text-anchor="middle" font-size="14">Coupons paid periodically</text>
+<text class="sub" x="184" y="430" text-anchor="middle" font-size="12">3.0% of nominal, each year</text>
+<rect class="card" x="355" y="390" width="285" height="56" rx="8"/>
+<rect class="rail" x="356.5" y="398" width="3.5" height="40" rx="1.75"/>
+<text class="h"   x="499" y="412" text-anchor="middle" font-size="14">Secondary market trading</text>
+<text class="sub" x="499" y="430" text-anchor="middle" font-size="12">price moves inversely to yield</text>
+<line class="arrow" x1="184" y1="446" x2="322" y2="486" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line class="arrow" x1="499" y1="446" x2="358" y2="486" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="step" x="40" y="480" font-size="14">5. Maturity</text>
+<rect class="card" x="180" y="490" width="320" height="56" rx="8"/>
+<rect class="rail" x="181.5" y="498" width="3.5" height="40" rx="1.75"/>
+<text class="h"   x="342" y="512" text-anchor="middle" font-size="14">Redemption in 2034</text>
+<text class="sub" x="342" y="530" text-anchor="middle" font-size="12">principal repaid, line ceases to exist</text>
+</svg>
+<h3>Primary Market mechanics of the OLO</h3>
+<p>The Belgian Debt Agency issues new OLOs and tranches according to a published <a href="https://www.debtagency.be/en/datafederalstateissues">calander</a> of auction dates. At an auction the Treasury either reopens an existing line or launches a new one, and bidding is open to its primary dealers. Each dealer submits <em>competitive bids</em>, where a bid is a pair: a <em>price</em> and the <em>quantity</em> the dealer will buy at that price. Because the line's coupon and maturity are fixed, dealers compete only on price, which maps directly (and inversely) to yield. The Treasury ranks the bids from highest price to lowest and fills from the top down until it has sold its target amount; the lowest price still accepted is the stop price. Because this is a <em>multiple-price</em> auction, each successful bidder pays the price it actually bid, so the weighted-average price paid sits above the stop price. Separately, primary dealers hold a privilege — a <em>non-competitive subscription</em> — that lets them take an additional allotment at the weighted-average price without bidding a specific price. Auction results are published on the <a href="https://www.debtagency.be/en/datafederalstateissues">BDA website</a>.  An example of the process can be seen below.</p>
+<svg width="100%" viewBox="0 0 680 400" role="img" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%; height:auto; max-width:820px; margin:1.5rem auto;" >
+<title>Multiple-price auction bid ladder for an OLO reopening</title>
+<desc>Competitive bids sorted from highest price to lowest. The Treasury fills bids from the top down until the target amount is sold; the lowest accepted price is the stop price. Bids above are filled in full, the marginal bid is pro-rated, bids below are rejected.</desc>
+<style>
+  svg { font-family: inherit; }
+  text { font-family: inherit; }
+  .h    { fill: var(--text-color, #6a8d7e); font-weight: 500; }
+  .cap  { fill: var(--text-color, #6a8d7e); opacity: .82; }
+  .axis { stroke: var(--text-color, #6a8d7e); fill: none; }
+  .stop   { stroke: var(--link-hover, #f0a500); }
+  .stop-t { fill: var(--link-hover, #f0a500); }
+  .accept-t { fill: var(--image-accentcolor, #60987a); }
+  .reject-t { fill: var(--text-color, #6a8d7e); opacity: .7; }
+  .bar-fill { fill: var(--image-accentcolor, #60987a); stroke: var(--image-darkcolor, #055445); stroke-width: 1; }
+  .bar-open { fill: none; stroke: var(--text-color, #6a8d7e); stroke-opacity: .5; stroke-width: 1; }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="680" height="400" rx="10" fill="var(--img-bg, #091210)"/>
+<text class="cap" x="112" y="34" text-anchor="end" font-size="12">price</text>
+<text class="h" x="112" y="76"  text-anchor="end" font-size="14">101.74</text>
+<rect class="bar-fill" x="120" y="60" width="120" height="32" rx="4"/>
+<text class="cap" x="248" y="80" font-size="12">&#8364;300m</text>
+<text class="h" x="112" y="118" text-anchor="end" font-size="14">101.70</text>
+<rect class="bar-fill" x="120" y="102" width="160" height="32" rx="4"/>
+<text class="cap" x="288" y="122" font-size="12">&#8364;400m</text>
+<text class="h" x="112" y="160" text-anchor="end" font-size="14">101.65</text>
+<rect class="bar-fill" x="120" y="144" width="140" height="32" rx="4"/>
+<text class="cap" x="268" y="164" font-size="12">&#8364;350m</text>
+<text class="h" x="112" y="202" text-anchor="end" font-size="14">101.61</text>
+<rect class="bar-fill" x="120" y="186" width="147" height="32" rx="4"/>
+<rect class="bar-open" x="267" y="186" width="53" height="32" rx="4"/>
+<text class="cap" x="328" y="206" font-size="12">marginal: 73% filled</text>
+<line class="stop" x1="60" y1="230" x2="560" y2="230" stroke-width="1" stroke-dasharray="5 4"/>
+<text class="stop-t" x="566" y="234" font-size="12">stop price 101.61</text>
+<text class="h" x="112" y="258" text-anchor="end" font-size="14">101.50</text>
+<rect class="bar-open" x="120" y="242" width="120" height="32" rx="4"/>
+<text class="cap" x="248" y="262" font-size="12">&#8364;300m</text>
+<text class="h" x="112" y="300" text-anchor="end" font-size="14">101.18</text>
+<rect class="bar-open" x="120" y="284" width="100" height="32" rx="4"/>
+<text class="cap" x="228" y="304" font-size="12">&#8364;250m</text>
+<text class="accept-t" x="566" y="150" font-size="12" font-weight="500">accepted</text>
+<text class="reject-t" x="566" y="290" font-size="12">rejected</text>
+<line class="axis" x1="40" y1="340" x2="40" y2="60" stroke-width="1" marker-end="url(#arrow)"/>
+<text class="cap" x="141" y="356" text-anchor="end" font-size="12">higher price = lower yield</text>
+<text class="cap" x="320" y="356" font-size="12">&#8594; each accepted bidder pays their own bid price</text>
+</svg>
+<h3>Secondary Markets for OLO</h3>
+<p>Once primary dealers have acquired bonds at auction, those bonds trade on three secondary venues. By far the largest is the <em>over-the-counter</em> (OTC) dealer market, where transactions take place bilaterally, away from any trading venue. The second venue is a set of electronic platforms split by counterparty: dealer-to-dealer (B2B) platforms such as MTS Belgium and BrokerTec, and dealer-to-customer (B2C) platforms such as Tradeweb, BondVision and Bloomberg. The third is the listed exchange, Euronext Brussels, which carries the smallest share of volume and mainly serves retail investors trading through their bank.
+Price formation is <em>quote-driven</em>, which differs from the <em>order-driven</em> equity markets most people are used to. In an order-driven market, a central limit order book matches anonymous buy and sell orders, and the price is whatever the last match cleared at. In a quote-driven market, designated dealers — here, the OLO primary dealers — continuously quote a price at which they will buy (the <em>bid</em>) and a price at which they will sell (the <em>ask</em>), and you trade against the dealer's balance sheet rather than against another investor's order. The dealer warehouses the bond as inventory and earns the bid-ask spread. Liquidity is ensured by the primary dealers as a contractual obligation in the specifications they sign with the Belgian State, which requires them to quote negotiable prices to their clients and on selected electronic platforms. The purpose is to guarantee that a price exists at all times.</p>
+<h3>The yield curve of OLO</h3>
+<p>On the bond market, prices are not compared directly, because price is a poor unit of comparison: each bond has its own coupon, maturity and principal. Instead the market uses the bond's yield. The relationship between price and yield is given by:</p>
+<div class="display-math tex">\[P = \sum_{t=1}^{T} \frac{C}{(1+y)^{t}} + \frac{F}{(1+y)^T}\]</div>
+<p>where <span class="math tex">\(P\)</span> is the price, <span class="math tex">\(C\)</span> is the coupon payment per period, <span class="math tex">\(F\)</span> is the principal repaid at maturity, <span class="math tex">\(T\)</span> is the number of periods, and <span class="math tex">\(y\)</span> is the yield. Because an OLO's coupon and principal are fixed, price and yield are two expressions of the same fact: given one, the other is determined. Crucially, they move inversely — since the cash flows are fixed, paying a higher price for them means earning a lower return, and vice versa. The interactive graph below shows this lock: changing the yield directly moves the price.</p>
+<h2>2 &middot; Price / yield lock (inline fragment)</h2>
+<div class="fig-priceyield" style="background:var(--img-bg,#091210);border-radius:12px;padding:1.25rem;">
+  <div style="display:flex;align-items:center;gap:12px;margin:0 0 1.25rem;">
+    <label style="font-size:14px;color:var(--text-color,#6a8d7e);min-width:120px;">Required yield</label>
+    <input type="range" min="1" max="6" step="0.05" value="3.4" id="pyl-y" style="flex:1;accent-color:var(--link-hover,#f0a500);">
+    <span style="font-size:16px;font-weight:500;min-width:52px;text-align:right;color:var(--link-hover,#f0a500);" id="pyl-yout">3.40%</span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:0 0 1.25rem;">
+    <div style="background:var(--image-lightcolor,#80c3b7);border-radius:10px;padding:1rem;"><div style="font-size:13px;color:var(--text-colorBox,#22443e);opacity:.8;">Required yield</div><div style="font-size:24px;font-weight:500;color:var(--text-colorBox,#22443e);" id="pyl-ycard">3.40%</div></div>
+    <div style="background:var(--image-lightcolor,#80c3b7);border-radius:10px;padding:1rem;"><div style="font-size:13px;color:var(--text-colorBox,#22443e);opacity:.8;">Price you pay</div><div style="font-size:24px;font-weight:500;color:var(--text-colorBox,#22443e);" id="pyl-pcard">&#8364;100.00</div></div>
+    <div style="background:var(--image-lightcolor,#80c3b7);border-radius:10px;padding:1rem;"><div style="font-size:13px;color:var(--text-colorBox,#22443e);opacity:.8;">vs par (100)</div><div style="font-size:24px;font-weight:500;color:var(--text-colorBox,#22443e);" id="pyl-dcard">at par</div></div>
+  </div>
+  <div style="font-size:13px;color:var(--text-color,#6a8d7e);opacity:.85;margin:0 0 1.25rem;line-height:1.6;">The bond always pays &#8364;3.40 a year plus &#8364;100 at year 10 &#8212; that never changes. Only what you pay for that fixed stream moves.</div>
+  <div style="position:relative;height:240px;margin:0 0 0.5rem;"><canvas id="pyl-curve"></canvas></div>
+</div>
+<script>
+(function(){
+  var CDN='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js';
+  if(!window.__chartjsReq){window.__chartjsReq=true;var s=document.createElement('script');s.src=CDN;document.head.appendChild(s);}
+  function palette(){var cs=getComputedStyle(document.documentElement),V=function(n,f){return cs.getPropertyValue(n).trim()||f;};return{accent:V('--image-accentcolor','#60987a'),hi:V('--link-hover','#f0a500'),text:V('--text-color','#6a8d7e')};}
+  var Cp=3.4,F=100,N=10;
+  function price(y){var r=y/100,p=0;for(var t=1;t<=N;t++)p+=Cp/Math.pow(1+r,t);return p+F/Math.pow(1+r,N);}
+  var baseCurve=[[1,2.6],[2,2.78],[3,2.92],[5,3.12],[7,3.3],[10,3.5],[15,3.8],[20,4.05],[30,4.4]];
+  var chart,C;
+  function E(id){return document.getElementById(id);}
+  function pointAt(y){return [{x:N,y:parseFloat(y)}];}
+  function styleChart(){var g=C.text+'2b',o=chart.options.scales;chart.data.datasets[0].borderColor=C.accent;chart.data.datasets[1].borderColor=C.hi;chart.data.datasets[1].backgroundColor=C.hi;o.x.grid.color=g;o.y.grid.color=g;o.x.ticks.color=C.text;o.y.ticks.color=C.text;o.x.title.color=C.text;o.y.title.color=C.text;}
+  function build(y){chart=new Chart(E('pyl-curve'),{type:'line',data:{datasets:[{label:'curve',data:baseCurve.map(function(d){return{x:d[0],y:d[1]};}),borderWidth:1.5,tension:0.4,pointRadius:0,fill:false},{label:'bond',data:pointAt(y),type:'scatter',pointRadius:7}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.x+'y: '+c.parsed.y.toFixed(2)+'%';}}}},scales:{x:{type:'linear',min:0,max:31,title:{display:true,text:'maturity (years)'},grid:{},ticks:{stepSize:5}},y:{min:1,max:6,title:{display:true,text:'yield (%)'},grid:{},ticks:{callback:function(v){return v.toFixed(1)+'%';}}}}}});styleChart();}
+  function update(){var y=parseFloat(E('pyl-y').value),p=price(y);E('pyl-yout').textContent=y.toFixed(2)+'%';E('pyl-ycard').textContent=y.toFixed(2)+'%';E('pyl-pcard').textContent='\u20AC'+p.toFixed(2);var diff=p-100,dc=E('pyl-dcard');if(Math.abs(diff)<0.005)dc.textContent='at par';else if(diff>0)dc.textContent='+'+diff.toFixed(2)+' (premium)';else dc.textContent=diff.toFixed(2)+' (discount)';if(chart){chart.data.datasets[1].data=pointAt(y);chart.update('none');}}
+  function boot(){if(!window.Chart){return setTimeout(boot,30);}C=palette();build(3.4);update();E('pyl-y').addEventListener('input',update);new MutationObserver(function(){C=palette();styleChart();chart.update();}).observe(document.documentElement,{attributes:true,attributeFilter:['class','data-theme']});}
+  boot();
+})();
+</script>
+Because yield is the comparable unit, the market forms its view in yield terms — at every maturity at once. That set of required yields, maturity by maturity, is the yield curve. The question each investor is implicitly answering is: *what return do I demand to hold Belgian government risk for a given horizon?* The factors driving that answer include European Central Bank (ECB) policy, Euribor expectations, Belgium's credit standing, broad risk sentiment, and the supply of Belgian federal debt. Each affects the curve in its own way: if, for example, the ECB signals higher rates, required yields on OLOs rise and, as a direct consequence, their prices fall.
+<p>The interactive graph below shows how the curve shifts in response to such signals, and how those shifts reprice the individual bonds.</p>
+<h2>1 &middot; Movable yield curve (inline fragment)</h2>
+<div class="fig-yieldcurve" style="background:var(--img-bg,#091210);border-radius:12px;padding:1.25rem;">
+  <div style="display:flex;align-items:center;gap:12px;margin:0 0 .75rem;">
+    <label style="font-size:14px;color:var(--text-color,#6a8d7e);min-width:150px;">Curve level (ECB impulse)</label>
+    <input type="range" min="-1.5" max="1.5" step="0.05" value="0" id="myc-lvl" style="flex:1;accent-color:var(--link-hover,#f0a500);">
+    <span style="font-size:15px;font-weight:500;min-width:64px;text-align:right;color:var(--text-color,#6a8d7e);" id="myc-lvlout">+0.00%</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;margin:0 0 1rem;">
+    <label style="font-size:14px;color:var(--text-color,#6a8d7e);min-width:150px;">Curve slope (steepen &#8596; flatten)</label>
+    <input type="range" min="-1" max="1" step="0.05" value="0" id="myc-slp" style="flex:1;accent-color:var(--link-hover,#f0a500);">
+    <span style="font-size:15px;font-weight:500;min-width:64px;text-align:right;color:var(--text-color,#6a8d7e);" id="myc-slpout">0.00</span>
+  </div>
+  <div style="display:flex;gap:12px;margin:0 0 1.25rem;align-items:center;">
+    <button id="myc-reset" style="font-size:13px;color:var(--text-colorBox,#22443e);background:var(--image-lightcolor,#80c3b7);border:none;border-radius:8px;padding:.35rem .7rem;cursor:pointer;">Reset curve</button>
+    <span style="font-size:13px;color:var(--text-color,#6a8d7e);opacity:.85;" id="myc-summary">curve flat to baseline</span>
+  </div>
+  <div style="position:relative;height:240px;margin:0 0 1.25rem;"><canvas id="myc-curve"></canvas></div>
+  <div style="display:grid;grid-template-columns:1.1fr 0.8fr 0.9fr 0.9fr 1fr 1.1fr;gap:6px 10px;font-size:13px;align-items:center;color:var(--text-color,#6a8d7e);">
+    <div style="opacity:.7;">Line</div><div style="opacity:.7;text-align:right;">Mat.</div><div style="opacity:.7;text-align:right;">Coupon</div><div style="opacity:.7;text-align:right;">Yield</div><div style="opacity:.7;text-align:right;">Price</div><div style="opacity:.7;text-align:right;">&#916; vs base</div>
+    <div id="myc-rows" style="display:contents;"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var CDN='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js';
+  if(!window.__chartjsReq){window.__chartjsReq=true;var s=document.createElement('script');s.src=CDN;document.head.appendChild(s);}
+  function palette(){var cs=getComputedStyle(document.documentElement),V=function(n,f){return cs.getPropertyValue(n).trim()||f;};return{accent:V('--image-accentcolor','#60987a'),hi:V('--link-hover','#f0a500'),text:V('--text-color','#6a8d7e')};}
+  var anchors=[[1,2.6],[2,2.78],[3,2.92],[5,3.12],[7,3.3],[10,3.5],[15,3.8],[20,4.05],[30,4.4]];
+  function interp(m){if(m<=anchors[0][0])return anchors[0][1];if(m>=anchors[8][0])return anchors[8][1];for(var i=0;i<8;i++){var a=anchors[i],b=anchors[i+1];if(m>=a[0]&&m<=b[0])return a[1]+(b[1]-a[1])*(m-a[0])/(b[0]-a[0]);}return 3.5;}
+  function cy(m,L,S){return interp(m)+L+S*(m-10)/20;}
+  function price(Cp,n,y){var r=y/100,p=0;for(var t=1;t<=n;t++)p+=Cp/Math.pow(1+r,t);return p+100/Math.pow(1+r,n);}
+  var bonds=[{name:'OLO108',n:5,C:3.10},{name:'OLO97',n:7,C:3.00},{name:'OLO100',n:8,C:2.85},{name:'OLO106',n:10,C:3.40},{name:'OLO99',n:17,C:3.45},{name:'OLO107',n:30,C:4.35}];
+  var base=bonds.map(function(b){return price(b.C,b.n,cy(b.n,0,0));});
+  var gridX=[];for(var mm=1;mm<=30;mm++)gridX.push(mm);
+  function curveData(L,S){return gridX.map(function(m){return{x:m,y:cy(m,L,S)};});}
+  function bondPts(L,S){return bonds.map(function(b){return{x:b.n,y:cy(b.n,L,S)};});}
+  var chart,C;
+  function E(id){return document.getElementById(id);}
+  function styleChart(){var g=C.text+'2b',o=chart.options.scales;chart.data.datasets[0].borderColor=C.accent;chart.data.datasets[1].borderColor=C.hi;chart.data.datasets[1].backgroundColor=C.hi;o.x.grid.color=g;o.y.grid.color=g;o.x.ticks.color=C.text;o.y.ticks.color=C.text;o.x.title.color=C.text;o.y.title.color=C.text;}
+  function build(L,S){chart=new Chart(E('myc-curve'),{type:'line',data:{datasets:[{label:'curve',data:curveData(L,S),borderWidth:2,tension:0.4,pointRadius:0,fill:false},{label:'OLO',data:bondPts(L,S),type:'scatter',pointRadius:6}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.x+'y: '+c.parsed.y.toFixed(2)+'%';}}}},scales:{x:{type:'linear',min:0,max:31,title:{display:true,text:'maturity (years)'},grid:{},ticks:{stepSize:5}},y:{min:1,max:6,title:{display:true,text:'yield (%)'},grid:{},ticks:{callback:function(v){return v.toFixed(1)+'%';}}}}}});styleChart();}
+  function update(){var L=parseFloat(E('myc-lvl').value),S=parseFloat(E('myc-slp').value);E('myc-lvlout').textContent=(L>=0?'+':'')+L.toFixed(2)+'%';E('myc-slpout').textContent=(S>=0?'+':'')+S.toFixed(2);var fell=0,muted=C.text+'b0';var rows=bonds.map(function(b,i){var y=cy(b.n,L,S),p=price(b.C,b.n,y),d=p-base[i];if(d<-0.005)fell++;var col=d<-0.005?C.hi:(d>0.005?C.accent:muted),dt=(d>=0?'+':'')+d.toFixed(2);return '<div>'+b.name+'</div><div style="text-align:right;">'+b.n+'y</div><div style="text-align:right;">'+b.C.toFixed(2)+'%</div><div style="text-align:right;">'+y.toFixed(2)+'%</div><div style="text-align:right;">&#8364;'+p.toFixed(2)+'</div><div style="text-align:right;color:'+col+';">'+dt+'</div>';}).join('');E('myc-rows').innerHTML=rows;var sm=E('myc-summary');if(Math.abs(L)<0.005&&Math.abs(S)<0.005)sm.textContent='curve flat to baseline';else if(L>0.005)sm.textContent=fell+' of 6 prices fell \u2014 longer maturities fall most';else if(L<-0.005)sm.textContent=(6-fell)+' of 6 prices rose \u2014 longer maturities rise most';else sm.textContent='slope changed \u2014 front and long ends diverge';if(chart){chart.data.datasets[0].data=curveData(L,S);chart.data.datasets[1].data=bondPts(L,S);chart.update('none');}}
+  function boot(){if(!window.Chart){return setTimeout(boot,30);}C=palette();build(0,0);update();E('myc-lvl').addEventListener('input',update);E('myc-slp').addEventListener('input',update);E('myc-reset').addEventListener('click',function(){E('myc-lvl').value=0;E('myc-slp').value=0;update();});new MutationObserver(function(){C=palette();styleChart();update();chart.update();}).observe(document.documentElement,{attributes:true,attributeFilter:['class','data-theme']});}
+  boot();
+})();
+</script>
+<p>Why must all OLOs price off one common curve? The reason is the law of one price: two bundles of identical future cash flows must trade at the same price, or there is a riskless profit to be had. Recall the stripping insight — a coupon bond is a portfolio of single dated cash flows (zeros). Each dated euro of risk-free cash flow is an atomic building block with exactly one market price (its discount factor), and a bond is simply a particular bundle of these blocks, so its price is forced to equal the sum of its blocks' prices. The curve is nothing more than the price list for the atomic blocks; bonds sit on (or very close to) it because they are all assembled from the same blocks. The mechanism that enforces this is arbitrage: if a bond traded below the value of its stripped components, a dealer could buy the bond, strip it, and sell the pieces for more — and the act of doing so bids the bond's price back up. Strip-and-reconstitute therefore pins each OLO onto the curve from both sides.</p>
+<h4>footnotes</h4>
+<div class="footnote" id="footnote-1"><p class="footnote-title">1</p>
+<p>The staatsbon is the retail-facing sibling of the OLO, but is a different financial instrument the goverment uses for raising capital.</p>
+</div><div class="footnote" id="footnote-2"><p class="footnote-title">2</p>
+<p>OLO can have fixed or floating rate. The majority has fixed coupon rates, but the BDA allows for floating coupon rate based on a reference rate Euro Interbank Offered Rate (Euribor). As these are marginally traded and we will therefore not cover these.</p>
+</div>
+    </article>
+  </main>
+<script src="../../../js/toggleTheme.js"></script>
+<script src="../../../js/toggleSideBar.js"></script>
+</body>
+</html>

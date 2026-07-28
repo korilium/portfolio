@@ -110,7 +110,7 @@ body.index {
   font-size: 1.4rem;
   font-weight: bold;
   margin-bottom: 10px;
-  background: var(--image-darkcolor) 0%;
+  background: var(--image-darkcolor);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;

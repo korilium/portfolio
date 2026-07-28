@@ -11,23 +11,71 @@
     --image-darkcolor: #055445;
     --image-lightcolor: #80c3b7;
     --image-accentcolor: #60987a;
-    --img-bg: #091210;
+    --img-bg: #132a25;
     --nav-link: #a8d8cf;
+
+        /* surfaces */
+    --surface: rgba(96, 152, 122, 0.10);   /* cards, hero band */
+    --surface-border: rgba(96, 152, 122, 0.18);
+    --surface-soft: #c1ddd6;               /* boxes, question background */
+    --sidebar-bg: #16302a;
+    --divider: rgba(128, 195, 183, 0.12);
+    --hover-tint: rgba(255, 255, 255, 0.06);
+    --shadow-color: rgba(0, 0, 0, 0.35);
+
+    /* table rows */
+    --row-alt: rgba(255, 255, 255, 0.03);
+    --row-hover: rgba(128, 195, 183, 0.08);
+
+    /* on-accent text and glows */
+    --text-on-accent: #22443e;
+    --glow-accent: #93ead6;
+    --glow-soft: #d5e2df;
 }
 
 
 :root[data-theme="light"] {
-    --bg-color: #8fc1b4;
+    --bg-color: #c3ded6;
     --text-color: #0e4d44;
-    --text-colorBox: #184944;
-    --header-bg: #5ba792;
-    --link-color: #226f63;
-    --link-hover: #e07b00;
-    --image-darkcolor: #0a4a40;
-    --image-lightcolor: #64ab9f;
-    --image-accentcolor: #60987a;
-    --img-bg: #cce6dd;
-    --nav-link: #0c2e28;
+    --text-colorBox: #123f39;
+    --header-bg: #c3ded6;
+    --link-color: #217766;
+    --link-hover: #96450a;
+    --image-darkcolor: #0a4a40ef;
+    --image-lightcolor: #86c2af;
+    --image-accentcolor: hwb(169 1% 65% / 0.656);
+    --img-bg: #9fc9bd;
+    --nav-link: hwb(169 5% 82%);
+
+        /* surfaces */
+    --surface: rgba(10, 74, 64, 0.06);
+    --surface-border: rgba(10, 74, 64, 0.14);
+    --surface-soft: #e6f2ee;
+    --sidebar-bg: #a4cec2;
+    --divider: rgba(10, 74, 64, 0.15);
+    --hover-tint: rgba(0, 0, 0, 0.05);
+    --shadow-color: rgba(0, 0, 0, 0.12);
+
+    /* table rows */
+    --row-alt: rgba(0, 0, 0, 0.03);
+    --row-hover: rgba(10, 74, 64, 0.07);
+
+    /* on-accent text and glows */
+    --text-on-accent: #123b34;
+    --glow-accent: #5fbfa6;
+    --glow-soft: #cfe6df;
+}
+
+
+
+/* -----------------------------------
+   COMPONENT VARIABLES
+----------------------------------- */
+:root {
+  --surface-soft: #c1ddd6;   /* box + question background */
+  --text-on-accent: #22443e; /* dark text used on light/accent surfaces */
+  --glow-accent: #93EAD6;    /* selected-box highlight + answer gradient */
+  --glow-soft: #d5e2df;      /* soft light tone in answer gradient */
 }
 
 /* -----------------------------------

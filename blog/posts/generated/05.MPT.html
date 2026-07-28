@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>05.MPT</title>
+  <!-- Favicon -->
+  <link rel="icon" href="../../../img/favicon.svg">
+    <script>
+  (function () {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+      document.documentElement.setAttribute("data-theme", savedTheme);
+    }
+  })();
+</script>
+  <!-- Stylesheet -->
+  <link href="../../../css/styles/styleBlog.css" rel="stylesheet">
+  <script>
+    MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+    svg: { fontCache: 'global' }
+    };
+  </script>
+  <script>
+    // Immediately set theme before rendering
+    (function() {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light") {
+        document.documentElement.classList.add("light");
+      }
+    })();
+  </script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+
+
+</head>
+<body>
+  <aside id="sidebar">
+      <button id="close-sidebar" aria-label="Close menu">&times;</button>
+    <h2>The peccon blog </h2>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="01.BelgiumBonds.html">01.BelgiumBonds</a></li>
+<li><a href="02.Vasicek.html">02.Vasicek</a></li>
+<li><a href="03.Hull-White.html">03.Hull-White</a></li>
+<li><a href="04.optimalPensionDesign_I.html">04.optimalPensionDesign_I</a></li>
+<li><a href="05.MPT.html">05.MPT</a></li>
+    </ul>
+  </aside>
+  <main>
+    <button id="open-sidebar" aria-label="Open menu">&#9776;</button>
+
+    <label class="theme-switch">
+      <input type="checkbox" id="theme-toggle">
+      <span class="slider"></span>
+    </label>
+    <article>
+      <h2>Modern Portfolio Theory (MPT)</h2>
+<p>Modern Portfolio Theory is all about minimizing the variance of the portfolio while taking into account the return of the portfolio with some risk-preference. The first thing to do, is to calculate the returns of the portfolio and the covariance matrix of the portfolio.</p>
+<p>The expected return of the portfolio is calculated as follows:
+$$
+E(R_P) = \sum_iw_iE(R_i)
+$$</p>
+<p>where <span class="math tex">\(R_P\)</span> is the return of the portfolio, <span class="math tex">\(R_i\)</span> is the return of the asset <span class="math tex">\(i\)</span> and <span class="math tex">\(W_i\)</span> is the weight of asset <span class="math tex">\(i\)</span> in the portfolio. The sum of the weights should be equal to <span class="math tex">\(\sum_i w_i = 1\)</span>.<br />
+Next, we express the variance of the portfolio as follows :</p>
+<p>$$
+\sigma^2_P  = \sum_i\sum_j w_iw_j\sigma_i\sigma_j\rho_{ij}
+$$
+In matrix notation this becomes:</p>
+<div class="display-math tex">\[\sigma^2_P =  w'\Sigma w\]</div>
+<p>Remember, what we want to know is that for a given number of stocks which combinations gives us to lowest variance with the highest return. To achieve this we minimize the variance and take into account our risk-preference <span class="math tex">\(P\)</span> with respect to returns <em>based on some historic data</em>.
+We therefore minimize the following cost function:</p>
+<div class="display-math tex">\[Min(w'\Sigma w - P * E[R_p])\]</div>
+<p>given the following constraints:</p>
+<div class="display-math tex">\[w_1 + w_2 + ... + w_{n-1} + w_{n} =1\]</div><div class="display-math tex">\[0> w_i > 1\]</div>
+<p>We solve this optimal design problem using the <a href="https://en.wikipedia.org/wiki/Interior-point_method">Interior point Newton algorithm</a> from the <a href="https://julianlsolvers.github.io/Optim.jl/stable/#">Optim.jl package</a></p>
+<p>The only parameter is our risk-preference <span class="math tex">\(P\)</span>. For each risk-preference <span class="math tex">\(P\)</span> there is an optimal combination of stock that minimizes our cost function. This creates the efficient frontier</p>
+<h3>The efficient frontier</h3>
+<p>The upward-sloped portion of the hyperbola is the efficient frontier. It reflects the best <em>expected</em> level of return for its level of risk as you will get the maximum amount of return with the least amount of variance for your portfolio.</p>
+<svg width="100%" viewBox="0 0 680 500" role="img" xmlns="http://www.w3.org/2000/svg"  style="display:block; width:100%; height:auto; max-width:820px; margin:1.5rem auto;">
+<title>The efficient frontier and the capital allocation line</title>
+<desc>A cloud of individual assets sits inside the Markowitz bullet. The upper edge of the bullet is the efficient frontier. A straight line from the risk-free rate is tangent to that frontier at the maximum-Sharpe portfolio; that tangent is the capital allocation line.</desc>
+<style>
+  svg { font-family: inherit; }
+  text { font-family: inherit; }
+  .h    { fill: var(--text-color, #6a8d7e); font-weight: 500; }
+  .lbl  { fill: var(--text-color, #6a8d7e); }
+  .cap  { fill: var(--text-color, #6a8d7e); opacity: .8; }
+  .axis { stroke: var(--text-color, #6a8d7e); fill: none; }
+  .asset{ fill: var(--image-lightcolor, #80c3b7); fill-opacity: .5; }
+  .front{ stroke: var(--link-hover, #f0a500); fill: none; }
+  .ineff{ stroke: var(--text-color, #6a8d7e); stroke-opacity:.55; fill:none; }
+  .cal  { stroke: var(--image-accentcolor, #60987a); fill: none; }
+  .accent { fill: var(--image-accentcolor, #60987a); }
+  .hi   { fill: var(--link-hover, #f0a500); stroke: var(--link-hover, #f0a500); }
+</style>
+<defs>
+  <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="680" height="500" rx="10" fill="var(--img-bg, #091210)"/>
+<line class="axis" x1="78" y1="434.0" x2="78" y2="28" stroke-width="1" marker-end="url(#ah)"/>
+<line class="axis" x1="78" y1="434.0" x2="642.0" y2="434.0" stroke-width="1" marker-end="url(#ah)"/>
+<text class="cap" x="357.0" y="476" text-anchor="middle" font-size="13">standard deviation  (risk, &#963;)</text>
+<text class="cap" x="-234.0" y="26" text-anchor="middle" font-size="13" transform="rotate(-90)">expected return</text>
+<path class="ineff" d="M 256.9,416.2 L 255.2,414.0 L 253.5,411.8 L 251.8,409.6 L 250.1,407.3 L 248.4,405.1 L 246.8,402.9 L 245.1,400.7 L 243.4,398.4 L 241.8,396.2 L 240.1,394.0 L 238.5,391.8 L 236.9,389.6 L 235.3,387.3 L 233.7,385.1 L 232.1,382.9 L 230.5,380.7 L 228.9,378.4 L 227.3,376.2 L 225.8,374.0 L 224.3,371.8 L 222.7,369.6 L 221.2,367.3 L 219.7,365.1 L 218.2,362.9 L 216.8,360.7 L 215.3,358.4 L 213.9,356.2 L 212.4,354.0 L 211.0,351.8 L 209.6,349.6 L 208.2,347.3 L 206.9,345.1 L 205.5,342.9 L 204.2,340.7 L 202.9,338.4 L 201.6,336.2 L 200.4,334.0 L 199.1,331.8 L 197.9,329.6 L 196.7,327.3 L 195.5,325.1 L 194.4,322.9 L 193.2,320.7 L 192.1,318.4 L 191.0,316.2 L 190.0,314.0 L 189.0,311.8 L 188.0,309.6 L 187.0,307.3 L 186.1,305.1 L 185.2,302.9 L 184.3,300.7 L 183.5,298.4 L 182.6,296.2 L 181.9,294.0 L 181.1,291.8 L 180.4,289.6 L 179.7,287.3 L 179.1,285.1 L 178.5,282.9 L 178.0,280.7 L 177.4,278.4 L 177.0,276.2 L 176.5,274.0 L 176.1,271.8 L 175.8,269.6 L 175.4,267.3 L 175.2,265.1 L 174.9,262.9 L 174.7,260.7 L 174.6,258.4 L 174.5,256.2 L 174.4,254.0 L 174.4,251.8" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <circle cx="252.1" cy="288.6" r="3" class="asset"/>
+  <circle cx="313.6" cy="360.1" r="3" class="asset"/>
+  <circle cx="201.9" cy="228.2" r="3" class="asset"/>
+  <circle cx="202.7" cy="236.3" r="3" class="asset"/>
+  <circle cx="257.1" cy="370.0" r="3" class="asset"/>
+  <circle cx="232.3" cy="354.9" r="3" class="asset"/>
+  <circle cx="200.4" cy="259.9" r="3" class="asset"/>
+  <circle cx="233.8" cy="317.2" r="3" class="asset"/>
+  <circle cx="286.7" cy="202.2" r="3" class="asset"/>
+  <circle cx="215.3" cy="267.8" r="3" class="asset"/>
+  <circle cx="396.7" cy="103.0" r="3" class="asset"/>
+  <circle cx="234.4" cy="298.3" r="3" class="asset"/>
+  <circle cx="259.5" cy="339.6" r="3" class="asset"/>
+  <circle cx="264.8" cy="148.5" r="3" class="asset"/>
+  <circle cx="300.0" cy="329.3" r="3" class="asset"/>
+  <circle cx="237.5" cy="274.7" r="3" class="asset"/>
+  <circle cx="209.7" cy="224.9" r="3" class="asset"/>
+  <circle cx="211.8" cy="322.1" r="3" class="asset"/>
+  <circle cx="258.1" cy="187.1" r="3" class="asset"/>
+  <circle cx="217.0" cy="214.1" r="3" class="asset"/>
+  <circle cx="223.6" cy="251.8" r="3" class="asset"/>
+  <circle cx="330.1" cy="181.8" r="3" class="asset"/>
+  <circle cx="279.2" cy="311.2" r="3" class="asset"/>
+  <circle cx="273.8" cy="131.7" r="3" class="asset"/>
+  <circle cx="256.3" cy="173.2" r="3" class="asset"/>
+  <circle cx="422.8" cy="347.1" r="3" class="asset"/>
+  <circle cx="184.4" cy="261.7" r="3" class="asset"/>
+  <circle cx="226.1" cy="241.6" r="3" class="asset"/>
+  <circle cx="293.9" cy="369.5" r="3" class="asset"/>
+  <circle cx="299.6" cy="217.7" r="3" class="asset"/>
+  <circle cx="277.7" cy="131.6" r="3" class="asset"/>
+  <circle cx="296.8" cy="211.6" r="3" class="asset"/>
+  <circle cx="327.7" cy="215.7" r="3" class="asset"/>
+  <circle cx="285.6" cy="112.0" r="3" class="asset"/>
+  <circle cx="196.0" cy="245.8" r="3" class="asset"/>
+  <circle cx="224.8" cy="181.1" r="3" class="asset"/>
+  <circle cx="335.7" cy="196.6" r="3" class="asset"/>
+  <circle cx="197.7" cy="299.7" r="3" class="asset"/>
+  <circle cx="191.5" cy="270.9" r="3" class="asset"/>
+  <circle cx="196.2" cy="249.3" r="3" class="asset"/>
+  <circle cx="227.0" cy="332.9" r="3" class="asset"/>
+  <circle cx="230.1" cy="162.1" r="3" class="asset"/>
+  <circle cx="214.9" cy="343.9" r="3" class="asset"/>
+  <circle cx="306.9" cy="132.8" r="3" class="asset"/>
+  <circle cx="313.7" cy="357.7" r="3" class="asset"/>
+  <circle cx="263.7" cy="129.4" r="3" class="asset"/>
+<path class="cal" d="M 78.0,345.1 L 605.6,-424.4" stroke-width="2"/>
+<path class="front" d="M 174.4,251.8 L 174.4,249.6 L 174.5,247.3 L 174.6,245.1 L 174.7,242.9 L 174.9,240.7 L 175.2,238.4 L 175.4,236.2 L 175.8,234.0 L 176.1,231.8 L 176.5,229.6 L 177.0,227.3 L 177.4,225.1 L 178.0,222.9 L 178.5,220.7 L 179.1,218.4 L 179.7,216.2 L 180.4,214.0 L 181.1,211.8 L 181.9,209.6 L 182.6,207.3 L 183.5,205.1 L 184.3,202.9 L 185.2,200.7 L 186.1,198.4 L 187.0,196.2 L 188.0,194.0 L 189.0,191.8 L 190.0,189.6 L 191.0,187.3 L 192.1,185.1 L 193.2,182.9 L 194.4,180.7 L 195.5,178.4 L 196.7,176.2 L 197.9,174.0 L 199.1,171.8 L 200.4,169.6 L 201.6,167.3 L 202.9,165.1 L 204.2,162.9 L 205.5,160.7 L 206.9,158.4 L 208.2,156.2 L 209.6,154.0 L 211.0,151.8 L 212.4,149.6 L 213.9,147.3 L 215.3,145.1 L 216.8,142.9 L 218.2,140.7 L 219.7,138.4 L 221.2,136.2 L 222.7,134.0 L 224.3,131.8 L 225.8,129.6 L 227.3,127.3 L 228.9,125.1 L 230.5,122.9 L 232.1,120.7 L 233.7,118.4 L 235.3,116.2 L 236.9,114.0 L 238.5,111.8 L 240.1,109.6 L 241.8,107.3 L 243.4,105.1 L 245.1,102.9 L 246.8,100.7 L 248.4,98.4 L 250.1,96.2 L 251.8,94.0 L 253.5,91.8 L 255.2,89.6 L 256.9,87.3 L 258.7,85.1 L 260.4,82.9 L 262.1,80.7 L 263.9,78.4 L 265.6,76.2 L 267.3,74.0 L 269.1,71.8 L 270.9,69.6 L 272.6,67.3 L 274.4,65.1" stroke-width="2.5"/>
+<circle cx="78.0" cy="345.1" r="3.5" class="accent"/>
+<line class="axis" x1="73" y1="345.1" x2="78" y2="345.1" stroke-width="1"/>
+<text class="lbl" x="68.0" y="349.1" text-anchor="end" font-size="12.5">risk-free rate</text>
+<circle cx="223.2" cy="133.3" r="6.5" class="hi" fill="none" stroke-width="2"/>
+<circle cx="223.2" cy="133.3" r="2.5" class="hi"/>
+<line class="axis" x1="215.2" y1="125.3" x2="171.2" y2="93.3" stroke-width="1" opacity=".7"/>
+<text class="h"   x="167.2" y="85.3" text-anchor="middle" font-size="13">max-Sharpe portfolio</text>
+<text class="cap" x="167.2" y="100.3" text-anchor="middle" font-size="11.5">tangency point</text>
+<text x="263.5" y="95.8" font-size="13" font-weight="500" fill="var(--link-hover, #f0a500)">efficient frontier</text>
+<text x="529.5" y="-321.4" font-size="12.5" fill="var(--image-accentcolor, #60987a)" transform="rotate(-55.6 529.5 -313.4)">capital allocation line</text>
+</svg>
+<h3>Sharp ratio</h3>
+<p>We can use the sharp ratio to see how well the return of the portfolio/asset compensates you for the risk that you take. The sharp ratio does however not take into account all risks involved and has the same limitations as the MPT (see subsection limitations).</p>
+<div class="display-math tex">\[S_P = \frac{E[R_P - R_{b}]}{\sigma_P}\]</div>
+<p>where <span class="math tex">\(R_b\)</span> is the return of the baseline &quot;risk-free&quot; product.</p>
+<h3>Limitations</h3>
+<p>There are three main limitation to this tool. The first limitation is that the MPT is a historical measurement of the portfolio performance. It does not say anything about future performance of the portfolio. As consequence, different macro-economic situations might lead to total different end results for the MPT. The second issue is that the tool is based on the expected return and variance of the portfolio. This captures the risk-return relationship quite well but it does not take into account <a href="https://en.wikipedia.org/wiki/Skewness">skewness</a> and <a href="https://en.wikipedia.org/wiki/Tail_risk">tail risk</a>. It therefore gives rise to a reduced volatility and an inflated growth rate for a portfolio. Lastly, the risk measurement is probabilistic in nature. It does not reflect the structural roots of the risks taken. For example, the risk of a stock are off a total different nature then that of a commodity, but MPT still accounts them in the same way.</p>
+<h3>Adaptations</h3>
+<p>The cost function can be altered if the function stays convex. We can therefore adapt our cost function to account for more precise measurements of risk. One of the most popular adaptions is the Post-Modern Portfolio Theory (PMPT).</p>
+<p>The current tool only implements the MPT. Future work will enable PMPT and other adaptions to be made possible.</p>
+<h3>Recommended usage</h3>
+<p>Never use this tool for individual stock picking and never but then also never rely <em>only</em> on the MPT. Always do your due diligence before creating your portfolio and again this is no way or form financial advice.</p>
+<p>So why should you use this tool and for what purpose? It is highly recommended to use this tool with exchange traded funds (ETF) as these products are already substantially diversified and issue two of the MPT is therefore greatly diminished. Also, the structural risk that certain ETF are exposed is difficult the estimate and the MPT can help you gain insights into which ETF have less or more risk compared to the returns they offer. Lastly, MPT also works better if you invest in all assets classes as each class has risks of a different nature. MPT does not take that into account and you therefore have to de it yourself. You also are less exposed to one particular kind of risk.</p>
+<p>To know which portfolio weights you should apply, you have to understand your risk preference. If you do not want to take a lot of risk, it is beneficial to look at optimal portfolio's with low values in <span class="math tex">\(P\)</span>. The reverse is true for people who are risk seeking.</p>
+
+    </article>
+  </main>
+<script src="../../../js/toggleTheme.js"></script>
+<script src="../../../js/toggleSideBar.js"></script>
+</body>
+</html>

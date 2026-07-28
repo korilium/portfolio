@@ -1,14 +1,5 @@
 @import url("style.css");
 
-/* -----------------------------------
-   COMPONENT VARIABLES
------------------------------------ */
-:root {
-  --surface-soft: #c1ddd6;   /* box + question background */
-  --text-on-accent: #22443e; /* dark text used on light/accent surfaces */
-  --glow-accent: #93EAD6;    /* selected-box highlight + answer gradient */
-  --glow-soft: #d5e2df;      /* soft light tone in answer gradient */
-}
 
 /* -----------------------------------
    GLOBAL OVERRIDES

@@ -35,7 +35,7 @@
 
 
 :root[data-theme="light"] {
-    --bg-color: #c3ded6;
+    --bg-color: #c3ded6; 
     --text-color: #0e4d44;
     --text-colorBox: #123f39;
     --header-bg: #c3ded6;

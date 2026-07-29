@@ -47,7 +47,7 @@ end
 # --- single-episode and vectorized recursions ------------------------------
 
 function run_episode(choose_action, plan, shocks=nothing;
-                      T::Integer=45, G::Real=0.0175, MU::Real=0.01, KAPPA::Real=0.5,
+                      T::Integer=45, G::Real=0.0175, MU::Real=0.01, LAMBDA::Real=0.5,
                       S0::Real=1.0, W::Real=0.025, DISC::Real=0.01, SIGMA::Real=0.05)
     R = 0.0
     L = 0.0
@@ -58,7 +58,7 @@ function run_episode(choose_action, plan, shocks=nothing;
         a = choose_action(t)
         actions[t + 1] = a
         c = plan(t, S) * a
-        rewards[t + 1] = -KAPPA * c * exp(-DISC * t)
+        rewards[t + 1] = -(1.0 - LAMBDA)* c * exp(-DISC * t)
         z = shocks === nothing ? 0.0 : shocks[t + 1]
         R = (R + c) * exp(MU + SIGMA * z)
         L = (L + c) * exp(G)
@@ -66,14 +66,14 @@ function run_episode(choose_action, plan, shocks=nothing;
     end
     payout = max(R, L)
     shortfall = max(L - R, 0.0)
-    rewards[end] += (payout - KAPPA * shortfall) * exp(-DISC * T)
+    rewards[end] += (LAMBDA * payout - (1.0 - LAMBDA) * shortfall) * exp(-DISC * T)
     return actions, rewards
 end
 
 """All paths at once for a FIXED policy (length-T 0/1 vector).
 shocks: (n_paths, T). Returns a values vector of length n_paths."""
 function run_batch(policy::AbstractVector, plan, shocks::AbstractMatrix;
-                    T::Integer=45, G::Real=0.0175, MU::Real=0.01, KAPPA::Real=0.5,
+                    T::Integer=45, G::Real=0.0175, MU::Real=0.01, LAMBDA::Real=0.5,
                     S0::Real=1.0, W::Real=0.025, DISC::Real=0.01, SIGMA::Real=0.05)
     n = size(shocks, 1)
     R = zeros(Float64, n)
@@ -82,14 +82,14 @@ function run_batch(policy::AbstractVector, plan, shocks::AbstractMatrix;
     values = zeros(Float64, n)
     for t in 0:(T - 1)
         c = plan(t, S) * policy[t + 1]
-        values .-= KAPPA * c * exp(-DISC * t)
+        values .-= (1.0 - LAMBDA) * c * exp(-DISC * t) 
         @views R .= (R .+ c) .* exp.(MU .+ SIGMA .* shocks[:, t + 1])
         L = (L + c) * exp(G)
         S *= (1.0 + W)
     end
     payout = max.(R, L)
     shortfall = max.(L .- R, 0.0)
-    values .+= (payout .- KAPPA .* shortfall) .* exp(-DISC * T)
+    values .+=(LAMBDA .* payout .- (1.0 - LAMBDA) .* shortfall) .* exp(-DISC * T)
     return values
 end
 
@@ -109,7 +109,7 @@ end
 function mc_control(plan; T::Integer=45, n_episodes::Integer=100_000, seed::Integer=0,
                      epsStart::Real=1.0, epsEnd::Real=0.05, decay_frac::Real=0.25,
                      burn_in::Integer=30_000, n0::Real=500, ALPHA::Real=0.02,
-                     G::Real=0.0175, MU::Real=0.01, KAPPA::Real=0.5, S0::Real=1.0,
+                     G::Real=0.0175, MU::Real=0.01, LAMBDA::Real=0.5, S0::Real=1.0,
                      W::Real=0.025, DISC::Real=0.01, SIGMA::Real=0.05)
     rng = Xoshiro(seed)
     reward_trace = Vector{Float64}(undef, n_episodes)
@@ -118,7 +118,7 @@ function mc_control(plan; T::Integer=45, n_episodes::Integer=100_000, seed::Inte
     Q = zeros(Float64, T, 2)
     N = zeros(Float64, T, 2)
 
-    envkw = (; T, G, MU, KAPPA, S0, W, DISC, SIGMA)
+    envkw = (; T, G, MU, LAMBDA, S0, W, DISC, SIGMA)
 
     for ep in 0:(n_episodes - 1)
         frac = min(ep / decay_episodes, 1.0)

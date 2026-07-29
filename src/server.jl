@@ -20,7 +20,7 @@ using .Pension
     T::Int = 45
     G::Float64 = 0.0250
     MU::Float64 = 0.025
-    KAPPA::Float64 = 0.5
+    LAMBDA::Float64 = 0.5
     S0::Float64 = 1.0
     W::Float64 = 0.025
     DISC::Float64 = 0.03
@@ -65,7 +65,7 @@ function moving_average(v::AbstractVector, window::Integer)
 end
 
 """JSON has no NaN literal — JSON.jl throws rather than emit one. evaluate_policy
-returns NaN for efficiency/duration when pv_contrib is 0 (e.g. KAPPA large enough
+returns NaN for efficiency/duration when pv_contrib is 0 (e.g. LAMBDA large enough
 that never contributing is optimal), so this needs to become `null`, not crash
 the response."""
 nanToNull(x::Real) = isnan(x) ? nothing : x
@@ -118,7 +118,7 @@ end
     plan = get_plan(r.plan; rate=r.rate, rate_low=r.rate_low, rate_high=r.rate_high,
                      ceiling=r.ceiling, rate0=r.rate0, step=r.step, band=r.band)
 
-    envkw = (; T=r.T, G=r.G, MU=r.MU, KAPPA=r.KAPPA, S0=r.S0, W=r.W, DISC=r.DISC, SIGMA=r.SIGMA)
+    envkw = (; T=r.T, G=r.G, MU=r.MU, LAMBDA=r.LAMBDA, S0=r.S0, W=r.W, DISC=r.DISC, SIGMA=r.SIGMA)
     batch = draw_shock_batch(r.n_eval, r.T, r.SIGMA; seed=r.seed)
 
     bench = sweep_benchmark(plan; batch=batch, envkw...)

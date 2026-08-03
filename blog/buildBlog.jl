@@ -118,20 +118,21 @@ index_template = raw"""
   <body class="index" id="page-top" data-spy="scroll" data-target=".side-menu">
     <!-- Header -->
     <div class="header">
-        <div class="menu-container">
-            <ul class="menu">
-                <li><a href="../../../index.html">Home</a></li>
-                <li><a href="index.html">Blog</a></li>
-                <li><a href="../../../playGround.html">Playground</a></li>
-                <li><a href="../../../project.html">Peccon</a></li>
-            </ul>
-        </div>
-            </div>
-    <label class="theme-switch">
-      <input type="checkbox" id="theme-toggle">
-      <span class="slider"></span>
-    </label>
-  </div>
+      <div class="menu-container">
+        <ul class="menu">
+          <li><a href="../../../index.html">Home</a></li>
+          <li><a href="index.html" aria-current="page">Blog</a></li>
+          <li><a href="../../../playGround.html">Playground</a></li>
+          <li><a href="../../../project.html">Peccon</a></li>
+        </ul>
+      </div>
+      <label class="theme-switch">
+        <input type="checkbox" id="theme-toggle">
+        <span class="slider">
+          <span class="knob"></span>
+        </span>
+      </label>
+    </div>
 
     </div>
 

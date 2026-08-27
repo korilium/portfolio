@@ -169,13 +169,22 @@ index_template = raw"""
       <a href="04.optimalPensionDesign_I.html" class="blog-card-link">
         <div class="blog-card">
           <div class="blog-content">
-            <h3>Optimal pension plan design - toy example</h3>
+            <h3>Optimal pension plan design part one- toy example</h3>
             <p>A simplistic environment in which a Monte Carlo RL agent learns whether contributing to a pension plan is optimal </p>
             <span class="meta">July, 2026 • Financial Modelling</span>
           </div>
         </div>
       </a>
-      <a href="05.MPT.html" class="blog-card-link">
+      <a href="05.optimalPensionDesign_II.html" class="blog-card-link">
+        <div class="blog-card">
+          <div class="blog-content">
+            <h3>Optimal pension plan design part two- a high dimensional take away </h3>
+            <p> Introducing the inherent risk and variability of the valuation of a pension plan and how this effects valuation  </p>
+            <span class="meta">July, 2026 • Financial Modelling</span>
+          </div>
+        </div>
+      </a>
+      <a href="06.MPT.html" class="blog-card-link">
         <div class="blog-card">
           <div class="blog-content">
             <h3>Modern Portfolio Theory</h3>

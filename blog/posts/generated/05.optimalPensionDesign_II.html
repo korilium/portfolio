@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>05.optimalPensionDesign II</title>
+  <!-- Favicon -->
+  <link rel="icon" href="../../../img/favicon.svg">
+    <script>
+  (function () {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+      document.documentElement.setAttribute("data-theme", savedTheme);
+    }
+  })();
+</script>
+  <!-- Stylesheet -->
+  <link href="../../../css/styles/styleBlog.css" rel="stylesheet">
+  <script>
+    MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+    svg: { fontCache: 'global' }
+    };
+  </script>
+  <script>
+    // Immediately set theme before rendering
+    (function() {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light") {
+        document.documentElement.classList.add("light");
+      }
+    })();
+  </script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+
+
+</head>
+<body>
+  <aside id="sidebar">
+      <button id="close-sidebar" aria-label="Close menu">&times;</button>
+    <h2>The peccon blog </h2>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="01.BelgiumBonds.html">01.BelgiumBonds</a></li>
+<li><a href="02.Vasicek.html">02.Vasicek</a></li>
+<li><a href="03.Hull-White.html">03.Hull-White</a></li>
+<li><a href="04.optimalPensionDesign_I.html">04.optimalPensionDesign_I</a></li>
+<li><a href="05.optimalPensionDesign_II.html">05.optimalPensionDesign_II</a></li>
+<li><a href="06.MPT.html">06.MPT</a></li>
+    </ul>
+  </aside>
+  <main>
+    <button id="open-sidebar" aria-label="Open menu">&#9776;</button>
+
+    <label class="theme-switch">
+      <input type="checkbox" id="theme-toggle">
+      <span class="slider"></span>
+    </label>
+    <article>
+      <h1>Optimal Pension Design: A high dimensional take-away</h1>
+<p>In the following posts we will take the problem to the next level and consider the aspect of stochastichity and inherent risks a pension plan faces</p>
+<h2>issue at hand</h2>
+<p>In the previous post on optimal pension design, we looked at a deliberately naive
+setup: a Monte Carlo agent decides each year whether or not to fund the pension
+plan, optimizing that binary action against a predetermined value function. It
+worked — but only because we had quietly stripped the problem of the thing that
+makes pensions hard in the first place: risk.</p>
+<p>A real Belgian plan is stochastic on both sides of the balance sheet. On the asset
+side, a Branch 21 contract earns a guaranteed rate that the insurer resets over
+time, while a Branch 23 contract simply tracks the market return of its underlying
+investments. On the liability side sits the legal minimum return (WAP) — itself
+variable, pinned to the 10-year OLO rate. None of this moved in our naive model: we
+fixed the rates on both sides and let the agent optimize in a world without
+surprises.</p>
+<p>That simplification was not laziness — it was a modelling choice, and the reason has
+a name: the Markov property.</p>
+<h2>redefining the value function in high dimensional space</h2>
+<p>Start with what &quot;fixed rates&quot; actually bought us. In a world without shocks, if you
+tell me the calendar year, I can tell you everything else. The plan's assets, its
+liabilities, its funding position all follow a single deterministic path, so standing
+in year <span class="math tex">\(t\)</span> pins down the entire state of the world. The year <em>is</em> the state. That is
+why the naive agent could get away with a value function that depended on nothing but
+<span class="math tex">\(t\)</span>: <span class="math tex">\(V(t)\)</span> was genuinely all the information the decision needed.</p>
+<p>Turn on stochasticity and that convenience evaporates. Now two plans that both reach
+year 20 can sit in completely different places — one comfortably in surplus, the other
+underwater — because their asset returns diverged along the way. The year no longer
+tells you where you are. To describe the state you need a second number: how
+well-funded the plan is.</p>
+<p>The natural coordinate for &quot;how well-funded&quot; is the funding ratio,</p>
+<div class="display-math tex">\[F_t = \frac{R_t}{L_t},\]</div>
+<p>reserves divided by liabilities. And <span class="math tex">\(F\)</span> is not arbitrary bookkeeping — it is the one
+number the whole problem pivots on, because the employer's legal guarantee behaves
+exactly like a <em>put option</em> struck at <span class="math tex">\(F = 1\)</span>. Above 1 the plan is fine and the
+guarantee is worthless; below 1 the employer is on the hook for the shortfall. The
+optimal decision differs on the two sides of that line, so the moment <span class="math tex">\(F\)</span> can straddle
+it, <span class="math tex">\(F\)</span> has to be part of the state.</p>
+<p>Here is where the title earns its keep. The <em>true</em> state of the plan is really the
+triple <span class="math tex">\((R_t, L_t, S_t)\)</span> — reserves, liabilities, and salary — a three-dimensional
+object evolving at random. Solving a control problem over a 3-D continuous state is a
+different sport from solving one over a single integer <span class="math tex">\(t\)</span>. In one modelling step we
+have jumped from a one-dimensional problem to a genuinely high-dimensional one.</p>
+<p>TThe first thing we can claw back is a matter of scale: nothing in the decision cares
+about the absolute <em>size</em> of the plan. Double every salary and every reserve and you
+double the euros flowing through, but not the <em>fraction</em> of salary you should optimally
+contribute. Formally, the reward is homogeneous of degree one in the money level, which
+lets the value function split into a size part and a shape part,</p>
+<div class="display-math tex">\[V_t(R, L, S) = L_t \cdot v_t(F, \rho).\]</div>
+<p>The liability level <span class="math tex">\(L\)</span> just rescales the answer; it never changes which action is
+best, so it drops out of the <em>decision</em>. But notice what survives the split: not one
+ratio, but two. Alongside the funding ratio <span class="math tex">\(F = R/L\)</span> we are left with a second,</p>
+<div class="display-math tex">\[\rho_t = \frac{S_t}{L_t},\]</div>
+<p>the salary-to-liability ratio. Homogeneity removes the level, not the salary.</p>
+<p>Why does <span class="math tex">\(\rho\)</span> refuse to go away? Because the contribution is <em>tied to salary</em>. The
+premium is a fixed rate on salary, <span class="math tex">\(\Gamma S\)</span>, and each year the plan decides what
+fraction <span class="math tex">\(a \in [0,1]\)</span> of that premium to actually fund, so the euros paid in are
+<span class="math tex">\(c = a\,\Gamma S\)</span>. The quantity that drives the dynamics, though, is the contribution
+measured <em>against liabilities</em>,</p>
+<div class="display-math tex">\[\ell = \frac{c}{L} = a\,\Gamma\,\frac{S}{L} = a\,\Gamma\,\rho.\]</div>
+<p>Read that carefully: the <em>same</em> action <span class="math tex">\(a\)</span> bites differently depending on <span class="math tex">\(\rho\)</span>. A
+young plan whose salary base is large relative to its still-thin liabilities (<span class="math tex">\(\rho\)</span>
+high) moves its funding ratio far with a given <span class="math tex">\(a\)</span>; a mature plan with liabilities
+that dwarf current salary (<span class="math tex">\(\rho\)</span> low) barely moves at all. So <span class="math tex">\((t, F)\)</span> genuinely
+underdetermines the problem — hand me the year and the funding ratio and I <em>still</em>
+cannot tell you what a contribution decision does, until you also tell me <span class="math tex">\(\rho\)</span>.</p>
+<p>With both ratios in hand the dynamics close. Next year's funding ratio,</p>
+<div class="display-math tex">\[F' = \frac{F + \ell}{1 + \ell}\, e^{\mu - G + \sigma z},\]</div>
+<p>carries the asset shock <span class="math tex">\(z\)</span> (drift <span class="math tex">\(\mu\)</span>, liability growth <span class="math tex">\(G\)</span>, volatility <span class="math tex">\(\sigma\)</span>),
+while the salary ratio evolves alongside it,</p>
+<div class="display-math tex">\[\rho' = \frac{(1 + W)\,\rho}{(1 + \ell)\, e^{G}},\]</div>
+<p>with <span class="math tex">\(W\)</span> the wage-growth rate. Both depend only on today's <span class="math tex">\((F, \rho)\)</span> and the action
+— exactly the closure a state variable has to have.</p>
+<p>One subtlety is worth pre-empting, because it looks like <span class="math tex">\(\rho\)</span> should collapse and it
+doesn't. We hold salary growth <span class="math tex">\(W\)</span> <em>deterministic</em>. Doesn't that make salary a pure
+function of the year, and <span class="math tex">\(\rho\)</span> with it? No — and the distinction is the crux.
+Salary <span class="math tex">\(S_t\)</span> is indeed a clean function of <span class="math tex">\(t\)</span>, but <span class="math tex">\(\rho = S/L\)</span> is not, because the
+denominator <span class="math tex">\(L\)</span> depends on every contribution decision taken so far. Two plans in the
+same year, having funded different amounts, hold different liabilities and therefore
+different <span class="math tex">\(\rho\)</span>. Fixing <span class="math tex">\(W\)</span> buys us something real but narrower: it removes a <em>shock</em>
+— salary no longer wobbles randomly — which keeps the only randomness in the model the
+single asset shock <span class="math tex">\(z\)</span>, and keeps the expectation a one-dimensional integral. It does
+not remove a <em>dimension</em>. <span class="math tex">\(\rho\)</span> stays in the state; it simply evolves without noise
+of its own.</p>
+<p>So here is the high-dimensional take-away, and it is more honest than the tidy version.
+Stochasticity costs us a dimension we never had to carry before, and the structure of
+the problem — scale-invariance and a self-contained pair of ratios — hands most of it
+back. But not all of it. We do not land on the one coordinate we might have hoped for,
+the funding ratio alone; the salary-linkage of contributions is precisely the feature
+that blocks that final collapse. We land instead on a value function of two arguments,</p>
+<div class="display-math tex">\[v_t(F, \rho),\]</div>
+<p>year suppressed into the recursion, funding ratio and salary ratio the two shape
+coordinates the decision genuinely needs. That is the object the dynamic programme has
+to solve — and the next section is how.</p>
+<h2>the dynamic programming approach</h2>
+<h2>results</h2>
+<h2>discussion</h2>
+<h2>next steps</h2>
+
+    </article>
+  </main>
+<script src="../../../js/toggleTheme.js"></script>
+<script src="../../../js/toggleSideBar.js"></script>
+</body>
+</html>

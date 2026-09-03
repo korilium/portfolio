@@ -59,99 +59,249 @@
     </label>
     <article>
       <h1>Optimal Pension Design: A high dimensional take-away</h1>
-<p>In the following posts we will take the problem to the next level and consider the aspect of stochastichity and inherent risks a pension plan faces</p>
-<h2>issue at hand</h2>
-<p>In the previous post on optimal pension design, we looked at a deliberately naive
-setup: a Monte Carlo agent decides each year whether or not to fund the pension
-plan, optimizing that binary action against a predetermined value function. It
-worked — but only because we had quietly stripped the problem of the thing that
-makes pensions hard in the first place: risk.</p>
-<p>A real Belgian plan is stochastic on both sides of the balance sheet. On the asset
-side, a Branch 21 contract earns a guaranteed rate that the insurer resets over
-time, while a Branch 23 contract simply tracks the market return of its underlying
-investments. On the liability side sits the legal minimum return (WAP) — itself
-variable, pinned to the 10-year OLO rate. None of this moved in our naive model: we
+<p>In the following posts we will take the problem to the next level and consider the aspect of stochasticity and the inherent risks a pension plan faces.</p>
+<h2>The Issue at Hand</h2>
+<p>In the previous post on optimal pension design, we looked at a deliberately naive setup: a Monte Carlo agent decides each year whether or not to fund the pension plan, optimizing that binary action against a predetermined value function. It worked — but only because we had stripped the problem of the thing that makes pensions hard in the first place: risk.</p>
+<p>A real Belgian plan is stochastic on both sides of the balance sheet. On the asset side, a Branch 21 contract earns a guaranteed rate that the insurer resets over time, while a Branch 23 contract simply tracks the market return of its underlying investments. On the liability side sits the legal minimum return (WAP) — itself variable, pinned to the 10-year OLO rate. (These are distinct guarantees: the insurer's contractual Branch 21 rate and the statutory WAP floor need not coincide, and an insurer may credit above the floor.) None of this moved in our naive model: we
 fixed the rates on both sides and let the agent optimize in a world without
 surprises.</p>
-<p>That simplification was not laziness — it was a modelling choice, and the reason has
-a name: the Markov property.</p>
+<p>That simplification was not laziness — it was a modelling choice, and the reason has to do with the Markov property. More precisely, the Markov property relates to the information one needs to make a well-informed decision in the predetermined dynamics of the modelling world.</p>
+<h2>from last time: the objective, made recursive</h2>
+<p>The Markov property is a statement about <em>information</em> — how much of the past a decision needs in order to be made well informed. But a decision is always toward some objective, and before we can ask what information it needs, we should be clear about what it is optimizing. So let us recover the value function from the previous post and reshape it into something a solver in a stochastic modelling environment can actually
+work with.</p>
+<p>Last time we created a joint value function that incorporated the employee and employer stake in a pension plan:</p>
+<div class="display-math tex">\[V = \lambda\,\frac{B_T}{(1+r)^{T}} - (1-\lambda)\left(\sum_{t=0}^{T}\frac{c_t}{(1+r)^{t}} + \frac{\max(L_T - R_T, 0)}{(1+r)^{T}}\right).\]</div>
+<p>The employee is credited the discounted final benefit <span class="math tex">\(B_T\)</span>, weighted by <span class="math tex">\(\lambda\)</span>; the employer is charged the discounted stream of contributions plus the discounted cost of the guarantee shortfall, weighted by <span class="math tex">\(1-\lambda\)</span>. It is the right thing to want. It is also the wrong <em>shape</em> to solve: one lump summed over the whole path, and you cannot optimise a path all at once when every year's decision reshuffles all the years after it. The fix is to make it recursive — a reward earned each year plus the
+value of everything still to come — without changing what it means.</p>
+<p><strong>First, name the employee's benefit.</strong> The guarantee says the employee walks away with the funded floor: the reserve if it cleared the liability, the liability if it fell short. So <span class="math tex">\(B_T = \max(R_T, L_T)\)</span>. Substituting, and collecting the two maturity terms over their shared discount factor,</p>
+<div class="display-math tex">\[V = \frac{\lambda\max(R_T, L_T) - (1-\lambda)\max(L_T - R_T, 0)}{(1+r)^{T}} - (1-\lambda)\sum_{t=0}^{T}\frac{c_t}{(1+r)^{t}}.\]</div>
+<p>Now <span class="math tex">\(V\)</span> wears its structure openly: a <em>terminal</em> payoff settled at <span class="math tex">\(T\)</span>, and a <em>flow</em> of contribution costs spread across every year.</p>
+<p><strong>Second, chop the lump into per-year pieces.</strong> Call the reward earned in year <span class="math tex">\(t\)</span> its discounted contribution cost, and fold the whole terminal payoff into the final year:</p>
+<div class="display-math tex">\[r_t = -(1-\lambda)\frac{c_t}{(1+r)^{t}}\quad (t<T), \qquad r_T = \frac{\lambda\max(R_T, L_T) - (1-\lambda)\max(L_T - R_T, 0)}{(1+r)^{T}}.\]</div>
+<p>Then <span class="math tex">\(V = \sum_{t=0}^{T} r_t\)</span> exactly — nothing has changed but the packaging. One feature will matter later: every reward is <em>already discounted to today</em>, the factor <span class="math tex">\((1+r)^{-t}\)</span> living inside it. (From here we write <span class="math tex">\(1+r = e^{\text{DISC}}\)</span>, trading the compounding factor for an exponential rate purely for cleaner bookkeeping, so the discount reads <span class="math tex">\(e^{-\text{DISC}\,t}\)</span>.)</p>
+<p><strong>Third, turn the sum of future rewards into a proper value function in Bellman's notation.</strong> Two forces require this notation. The returns are random and therefore demand an <em>expectation</em>; and we are trying to choose the contributions <em>optimally</em>, so we want the <em>best</em> attainable. But &quot;best expected from here on&quot; presumes a <em>here</em> — a description of where the plan stands when the decision is made. That description is the plan's balance sheet, <span class="math tex">\((R_t, L_t, S_t)\)</span>, which marches forward one year at a time as</p>
+<div class="display-math tex">\[R' = (R + c)\,e^{\mu + \sigma_R z_R}, \qquad L' = (L + c)\,e^{G + \sigma_L z_L}, \qquad S' = (1 + W)\,S,\]</div>
+<p>reserve and liability each taking in this year's contribution <span class="math tex">\(c\)</span> and then growing — the reserve at the credited rate <span class="math tex">\(\mu\)</span> with its own asset shock <span class="math tex">\(\sigma_R z_R\)</span>, the liability at the guaranteed rate <span class="math tex">\(G\)</span> with its own shock <span class="math tex">\(\sigma_L z_L\)</span> (the WAP guarantee tracks the OLO, so it wobbles too), and salary deterministically at the wage rate <span class="math tex">\(W\)</span>. The two shocks <span class="math tex">\(z_R, z_L\)</span> are independent standard normals. Define the value function <span class="math tex">\(V\)</span> at time <span class="math tex">\(t\)</span> as the best expected total of the rewards still to come, given
+that balance sheet,</p>
+<div class="display-math tex">\[V_t(R, L, S) = \max_{\{a_s\}_{s \ge t}} \mathbb{E}\left[\sum_{s=t}^{T} r_s \,\Big|\, (R, L, S)\ \text{at}\ t\right],\]</div>
+<p>and the definition folds in on itself: the rewards after this year, optimised, are just next year's value at wherever this year leaves you. That gives the Bellman equation,</p>
+<div class="display-math tex">\[V_t(R, L, S) = \max_{a}\Big[\, r_t + \mathbb{E}_{z_R, z_L}\big[V_{t+1}(R', L', S')\big]\,\Big].\]</div>
+<p>The whole-career lump has become a one-year trade-off. And because each <span class="math tex">\(r_t\)</span> was already discounted to today, no discount factor sits in front of the continuation — the discounting is already inside the rewards. (Sneak a <span class="math tex">\(\gamma\)</span> in there and you would discount twice.)</p>
+<p>So the objective is now solvable in principle — but only if we can describe the state <span class="math tex">\((R_t, L_t, S_t)\)</span> it conditions on, and track how a decision moves it. That triple is three continuous numbers evolving at random, and this is exactly where the Markov property, teased above, comes into play. The next section is about dimensionality reduction — restructuring the value function to our advantage.</p>
 <h2>redefining the value function in high dimensional space</h2>
-<p>Start with what &quot;fixed rates&quot; actually bought us. In a world without shocks, if you
-tell me the calendar year, I can tell you everything else. The plan's assets, its
-liabilities, its funding position all follow a single deterministic path, so standing
-in year <span class="math tex">\(t\)</span> pins down the entire state of the world. The year <em>is</em> the state. That is
-why the naive agent could get away with a value function that depended on nothing but
+<p>Start with what &quot;fixed rates&quot; actually bought us. In a world without shocks, if you tell me the calendar year, I can tell you everything else. The plan's assets, its liabilities, its funding position all follow a single deterministic path, so standing in year <span class="math tex">\(t\)</span> pins down the entire state of the world. The year <em>is</em> the state. That is why the naive agent could get away with a value function that depended on nothing but
 <span class="math tex">\(t\)</span>: <span class="math tex">\(V(t)\)</span> was genuinely all the information the decision needed.</p>
-<p>Turn on stochasticity and that convenience evaporates. Now two plans that both reach
-year 20 can sit in completely different places — one comfortably in surplus, the other
-underwater — because their asset returns diverged along the way. The year no longer
-tells you where you are. To describe the state you need a second number: how
-well-funded the plan is.</p>
+<p>Turn on stochasticity and that convenience evaporates. Now two plans that both reach year 20 can sit in completely different places — one comfortably in surplus, the other underwater — because their asset returns diverged along the way. The year no longer tells you where you are. To describe the state you need a second number: how well-funded the plan is.</p>
 <p>The natural coordinate for &quot;how well-funded&quot; is the funding ratio,</p>
 <div class="display-math tex">\[F_t = \frac{R_t}{L_t},\]</div>
-<p>reserves divided by liabilities. And <span class="math tex">\(F\)</span> is not arbitrary bookkeeping — it is the one
-number the whole problem pivots on, because the employer's legal guarantee behaves
-exactly like a <em>put option</em> struck at <span class="math tex">\(F = 1\)</span>. Above 1 the plan is fine and the
-guarantee is worthless; below 1 the employer is on the hook for the shortfall. The
-optimal decision differs on the two sides of that line, so the moment <span class="math tex">\(F\)</span> can straddle
-it, <span class="math tex">\(F\)</span> has to be part of the state.</p>
-<p>Here is where the title earns its keep. The <em>true</em> state of the plan is really the
-triple <span class="math tex">\((R_t, L_t, S_t)\)</span> — reserves, liabilities, and salary — a three-dimensional
-object evolving at random. Solving a control problem over a 3-D continuous state is a
-different sport from solving one over a single integer <span class="math tex">\(t\)</span>. In one modelling step we
-have jumped from a one-dimensional problem to a genuinely high-dimensional one.</p>
-<p>TThe first thing we can claw back is a matter of scale: nothing in the decision cares
-about the absolute <em>size</em> of the plan. Double every salary and every reserve and you
-double the euros flowing through, but not the <em>fraction</em> of salary you should optimally
-contribute. Formally, the reward is homogeneous of degree one in the money level, which
-lets the value function split into a size part and a shape part,</p>
-<div class="display-math tex">\[V_t(R, L, S) = L_t \cdot v_t(F, \rho).\]</div>
-<p>The liability level <span class="math tex">\(L\)</span> just rescales the answer; it never changes which action is
-best, so it drops out of the <em>decision</em>. But notice what survives the split: not one
-ratio, but two. Alongside the funding ratio <span class="math tex">\(F = R/L\)</span> we are left with a second,</p>
+<p>reserves divided by liabilities. And <span class="math tex">\(F\)</span> is not arbitrary bookkeeping — it is the one number the whole problem pivots on, because the employer's legal guarantee makes them <strong>short a put option</strong> struck at <span class="math tex">\(F = 1\)</span>. They have <em>written</em> the guarantee: above 1 the plan is fine and the option they wrote expires worthless; below 1 they owe the shortfall. The optimal decision differs on the two sides of that line, so the moment <span class="math tex">\(F\)</span> can straddle it, <span class="math tex">\(F\)</span> has to be part of the state.</p>
+<p>The <em>true</em> state of the plan is really the triple <span class="math tex">\((R_t, L_t, S_t)\)</span> — reserves, liabilities, and salary — a three-dimensional object evolving at random. Solving a control problem over a 3-D continuous state is a different sport from solving one over a single integer <span class="math tex">\(t\)</span>. In one modelling step we have jumped from a one-dimensional problem
+to a genuinely high-dimensional one.</p>
+<p>The first thing we can claw back is a matter of scale: nothing in the decision cares about the absolute <em>size</em> of the plan. Double every salary and every reserve and you double the euros flowing through, but not the <em>fraction</em> of salary you should optimally contribute.</p>
+<p>Make that precise. The claim is that the value function is <em>homogeneous of degree one</em> in the money level — scale reserves, liabilities and salary all by the same factor <span class="math tex">\(\kappa\)</span> and the value scales by exactly <span class="math tex">\(\kappa\)</span>:</p>
+<div class="display-math tex">\[V_t(\kappa R,\, \kappa L,\, \kappa S) = \kappa\, V_t(R, L, S).\]</div>
+<p>This is not an assumption we impose; it is forced by two properties of the primitives. First, every reward scales with the money level. The contribution is salary-linked, <span class="math tex">\(c = a\Gamma S\)</span>, so scaling salary scales the euros paid in; and the terminal payoff is built from <span class="math tex">\(\max(R, L)\)</span> and <span class="math tex">\(\max(L - R, 0)\)</span>, each of which pulls a positive constant straight out — <span class="math tex">\(\max(\kappa R, \kappa L) = \kappa\max(R, L)\)</span>. Second, the dynamics
+preserve scale: begin a year <span class="math tex">\(\kappa\)</span> times larger, take the <em>same</em> action, and every next-period quantity comes out <span class="math tex">\(\kappa\)</span> times larger, because the transitions are linear in the money variables — the shocks sit in the exponent, on the rates, while the money enters only through the linear factor,</p>
+<div class="display-math tex">\[R' = \kappa(R + c)\,e^{\mu + \sigma_R z_R}, \qquad L' = \kappa(L + c)\,e^{G + \sigma_L z_L}, \qquad S' = \kappa(1 + W)\,S.\]</div>
+<p>Those two facts propagate through the backward recursion that defines the value. At retirement the value simply <em>is</em> the terminal reward, so it scales by <span class="math tex">\(\kappa\)</span>. And if next year's value scales by <span class="math tex">\(\kappa\)</span>, this year's must too: the flow scales, the scaled state feeds a scaled next-year value, and the common <span class="math tex">\(\kappa\)</span> factors out of the sum, out of the expectation, and out of the maximization — a positive rescaling never changes <em>which</em> action wins. Homogeneity holds at <span class="math tex">\(T\)</span> and survives every step back to <span class="math tex">\(0\)</span>, so it holds everywhere. (Note the shocks are innocent here: scaling the <em>money</em> pulls a clean <span class="math tex">\(\kappa\)</span> out for <em>every</em> realization of <span class="math tex">\(z_R, z_L\)</span>, because the money is linear and the
+shocks only ever multiply it.)</p>
+<p>Homogeneity is a licence to choose the scale, so choose the one that normalises liabilities to one. Setting <span class="math tex">\(\kappa = 1/L\)</span> pulls the level clean out of the function,</p>
+<div class="display-math tex">\[V_t(R, L, S) = L \cdot V_t\!\left(\tfrac{R}{L},\; 1,\; \tfrac{S}{L}\right) \;\equiv\; L_t \cdot v_t(F, \rho),\]</div>
+<p>where the reduced function <span class="math tex">\(v_t\)</span> has its liability argument frozen at <span class="math tex">\(1\)</span> and so depends on just two numbers. The value has split into a <em>size</em> part and a <em>shape</em> part: <span class="math tex">\(L_t\)</span> counts the euros, and <span class="math tex">\(v_t(F, \rho)\)</span> is the value <em>per unit of liability</em>, carrying everything the decision actually turns on.</p>
+<p>The liability level <span class="math tex">\(L\)</span> just rescales the answer; it never changes which action is best, so it drops out of the <em>decision</em>. But notice what survives the split: not one ratio, but two. Alongside the funding ratio <span class="math tex">\(F = R/L\)</span> we are left with a second,</p>
 <div class="display-math tex">\[\rho_t = \frac{S_t}{L_t},\]</div>
 <p>the salary-to-liability ratio. Homogeneity removes the level, not the salary.</p>
-<p>Why does <span class="math tex">\(\rho\)</span> refuse to go away? Because the contribution is <em>tied to salary</em>. The
-premium is a fixed rate on salary, <span class="math tex">\(\Gamma S\)</span>, and each year the plan decides what
-fraction <span class="math tex">\(a \in [0,1]\)</span> of that premium to actually fund, so the euros paid in are
-<span class="math tex">\(c = a\,\Gamma S\)</span>. The quantity that drives the dynamics, though, is the contribution
-measured <em>against liabilities</em>,</p>
+<p>Why does <span class="math tex">\(\rho\)</span> refuse to go away? Because the contribution is <em>tied to salary</em>. The premium is a fixed rate on salary, <span class="math tex">\(\Gamma S\)</span>, and each year the plan decides what fraction <span class="math tex">\(a \in [0,1]\)</span> of that premium to actually fund, so the euros paid in are <span class="math tex">\(c = a\,\Gamma S\)</span>. The quantity that drives the dynamics, though, is the contribution measured <em>against liabilities</em>,</p>
 <div class="display-math tex">\[\ell = \frac{c}{L} = a\,\Gamma\,\frac{S}{L} = a\,\Gamma\,\rho.\]</div>
-<p>Read that carefully: the <em>same</em> action <span class="math tex">\(a\)</span> bites differently depending on <span class="math tex">\(\rho\)</span>. A
-young plan whose salary base is large relative to its still-thin liabilities (<span class="math tex">\(\rho\)</span>
-high) moves its funding ratio far with a given <span class="math tex">\(a\)</span>; a mature plan with liabilities
-that dwarf current salary (<span class="math tex">\(\rho\)</span> low) barely moves at all. So <span class="math tex">\((t, F)\)</span> genuinely
-underdetermines the problem — hand me the year and the funding ratio and I <em>still</em>
-cannot tell you what a contribution decision does, until you also tell me <span class="math tex">\(\rho\)</span>.</p>
+<p>Read that carefully: the <em>same</em> action <span class="math tex">\(a\)</span> bites differently depending on <span class="math tex">\(\rho\)</span>. A young plan whose salary base is large relative to its still-thin liabilities (<span class="math tex">\(\rho\)</span> high) moves its funding ratio far with a given <span class="math tex">\(a\)</span>; a mature plan with liabilities that dwarf current salary (<span class="math tex">\(\rho\)</span> low) barely moves at all. So <span class="math tex">\((t, F)\)</span> genuinely underdetermines the problem — hand me the year and the funding ratio and I <em>still</em> cannot tell you what a contribution decision does, until you also tell me <span class="math tex">\(\rho\)</span>.</p>
 <p>With both ratios in hand the dynamics close. Next year's funding ratio,</p>
-<div class="display-math tex">\[F' = \frac{F + \ell}{1 + \ell}\, e^{\mu - G + \sigma z},\]</div>
-<p>carries the asset shock <span class="math tex">\(z\)</span> (drift <span class="math tex">\(\mu\)</span>, liability growth <span class="math tex">\(G\)</span>, volatility <span class="math tex">\(\sigma\)</span>),
-while the salary ratio evolves alongside it,</p>
-<div class="display-math tex">\[\rho' = \frac{(1 + W)\,\rho}{(1 + \ell)\, e^{G}},\]</div>
-<p>with <span class="math tex">\(W\)</span> the wage-growth rate. Both depend only on today's <span class="math tex">\((F, \rho)\)</span> and the action
-— exactly the closure a state variable has to have.</p>
-<p>One subtlety is worth pre-empting, because it looks like <span class="math tex">\(\rho\)</span> should collapse and it
-doesn't. We hold salary growth <span class="math tex">\(W\)</span> <em>deterministic</em>. Doesn't that make salary a pure
-function of the year, and <span class="math tex">\(\rho\)</span> with it? No — and the distinction is the crux.
-Salary <span class="math tex">\(S_t\)</span> is indeed a clean function of <span class="math tex">\(t\)</span>, but <span class="math tex">\(\rho = S/L\)</span> is not, because the
-denominator <span class="math tex">\(L\)</span> depends on every contribution decision taken so far. Two plans in the
-same year, having funded different amounts, hold different liabilities and therefore
-different <span class="math tex">\(\rho\)</span>. Fixing <span class="math tex">\(W\)</span> buys us something real but narrower: it removes a <em>shock</em>
-— salary no longer wobbles randomly — which keeps the only randomness in the model the
-single asset shock <span class="math tex">\(z\)</span>, and keeps the expectation a one-dimensional integral. It does
-not remove a <em>dimension</em>. <span class="math tex">\(\rho\)</span> stays in the state; it simply evolves without noise
-of its own.</p>
-<p>So here is the high-dimensional take-away, and it is more honest than the tidy version.
-Stochasticity costs us a dimension we never had to carry before, and the structure of
-the problem — scale-invariance and a self-contained pair of ratios — hands most of it
-back. But not all of it. We do not land on the one coordinate we might have hoped for,
-the funding ratio alone; the salary-linkage of contributions is precisely the feature
+<div class="display-math tex">\[F' = \frac{F + \ell}{1 + \ell}\, e^{(\mu - G) + \sigma_R z_R - \sigma_L z_L},\]</div>
+<p>we derive from the reserve-and-liability dynamics we established in the earlier posts, as follows. Over one year each takes in this year's contribution <span class="math tex">\(c\)</span> and then grows — the reserve at the credited rate <span class="math tex">\(\mu\)</span> with its asset shock <span class="math tex">\(\sigma_R z_R\)</span>, the liability at the guaranteed rate <span class="math tex">\(G\)</span> with its shock <span class="math tex">\(\sigma_L z_L\)</span>:</p>
+<div class="display-math tex">\[R' = (R + c)\,e^{\mu + \sigma_R z_R}, \qquad L' = (L + c)\,e^{G + \sigma_L z_L}.\]</div>
+<p>The funding ratio next year is simply their quotient, so divide the one by the other:</p>
+<div class="display-math tex">\[F' = \frac{R'}{L'} = \frac{(R + c)\,e^{\mu + \sigma_R z_R}}{(L + c)\,e^{G + \sigma_L z_L}} = \frac{R + c}{L + c}\cdot e^{(\mu - G) + \sigma_R z_R - \sigma_L z_L}.\]</div>
+<p>The two growth factors collapse into a single exponential that carries the <em>drift</em> <span class="math tex">\(\mu - G\)</span> — the reserve out- or under-earning the guarantee — and the <em>net shock</em> <span class="math tex">\(\sigma_R z_R - \sigma_L z_L\)</span>. Notice the shocks enter as a <em>difference</em>: a good asset year pushes the funding ratio up, a good guarantee year (the liability growing faster) pushes it down, and only the gap between them moves <span class="math tex">\(F\)</span>. The euro ratio left in front becomes a funding-ratio expression once you divide top and bottom by <span class="math tex">\(L\)</span> and recall <span class="math tex">\(\ell = c/L\)</span>:</p>
+<div class="display-math tex">\[\frac{R + c}{L + c} = \frac{R/L + c/L}{1 + c/L} = \frac{F + \ell}{1 + \ell},\]</div>
+<p>which is exactly the expression above. Read it for what it says: the fraction <span class="math tex">\(\frac{F + \ell}{1 + \ell}\)</span> is the part the plan <em>controls</em> — a weighted average of today's <span class="math tex">\(F\)</span> and <span class="math tex">\(1\)</span>, pulled toward fully-funded by contributing — while the exponential is the part <em>nature</em> controls, drift and the two shocks, untouched by any decision. Contribution moves you deterministically; the market and the guarantee scatter you from
+there.</p>
+<p>Not only does the funding ratio evolve; the ratio between salary and liabilities moves alongside it,</p>
+<div class="display-math tex">\[\rho' = \frac{(1 + W)\,\rho}{(1 + \ell)\, e^{G + \sigma_L z_L}},\]</div>
+<p>by the very same divide-through. Salary grows deterministically at the wage rate, <span class="math tex">\(S' = (1 + W)S\)</span>, while the liability follows the same <span class="math tex">\(L' = (L + c)\,e^{G + \sigma_L z_L}\)</span>, so their quotient is</p>
+<div class="display-math tex">\[\rho' = \frac{S'}{L'} = \frac{(1 + W)S}{(L + c)\,e^{G + \sigma_L z_L}} = \frac{1 + W}{(1 + \ell)\,e^{G + \sigma_L z_L}}\cdot\frac{S}{L} = \frac{(1 + W)\,\rho}{(1 + \ell)\, e^{G + \sigma_L z_L}},\]</div>
+<p>where once more dividing the denominator by <span class="math tex">\(L\)</span> turns <span class="math tex">\(L + c\)</span> into <span class="math tex">\(L(1 + \ell)\)</span> and leaves <span class="math tex">\(S/L = \rho\)</span>. And — the point of the whole exercise — both next-year ratios depend on nothing but today's <span class="math tex">\((F, \rho)\)</span>, the action, and fresh exogenous noise. That self-containment is precisely the closure a state variable must have.</p>
+<p>Two remarks on <span class="math tex">\(\rho\)</span> forestall confusion. First, it genuinely belongs in the state: <span class="math tex">\(\rho = S/L\)</span> is <em>not</em> a function of the year alone, because the denominator <span class="math tex">\(L\)</span> depends on every contribution taken so far — two plans in the same year, having funded differently, hold different liabilities and different <span class="math tex">\(\rho\)</span>. Second — and this is new now that the guarantee is shocked — <span class="math tex">\(\rho\)</span> is itself <em>random</em>: its update carries the liability shock <span class="math tex">\(z_L\)</span> through <span class="math tex">\(L'\)</span>, so a surprising year for the guarantee moves the salary ratio too. What keeps <span class="math tex">\(\rho\)</span> a single well-behaved state variable is that its evolution, like the funding ratio's, depends only on today's state plus fresh noise — the Markov closure holds. We do keep salary growth <span class="math tex">\(W\)</span> <em>deterministic</em>, which spares us a <em>third</em> shock; the only randomness in the model is the asset–guarantee pair <span class="math tex">\((z_R, z_L)\)</span>.</p>
+<p>So here is the high-dimensional take-away, and it is more honest than the tidy version. Stochasticity costs us a dimension we never had to carry before, and the structure of the problem — scale-invariance and a self-contained pair of ratios — hands most of it back. But not all of it. We do not land on the one coordinate we might have hoped for, the funding ratio alone; the salary-linkage of contributions is precisely the feature
 that blocks that final collapse. We land instead on a value function of two arguments,</p>
 <div class="display-math tex">\[v_t(F, \rho),\]</div>
-<p>year suppressed into the recursion, funding ratio and salary ratio the two shape
-coordinates the decision genuinely needs. That is the object the dynamic programme has
-to solve — and the next section is how.</p>
+<p>year suppressed into the recursion, funding ratio and salary ratio the two shape coordinates the decision genuinely needs.</p>
+<p>But that two-coordinate count is provisional, and the reason is itself a matter of dimensionality — which is why it belongs here, before we turn to computation. The reduction rests on the reward being homogeneous of degree <em>one</em>, the very property that let us factor the plan's size out of the state. That property belongs to the <em>linear</em> objective we have carried so far — and that objective, it turns out, is not the one we
+want.</p>
+<p>Start with what the linear objective does to the <em>decision</em>. The employee benefit as written is linear in the money funded — and a linear objective has no interior trade-off. Every euro of funding is worth the same as the last, so the best contribution rule rails to a corner: contribute the maximum, always. That is not a modelling accident; it is what any objective with no curvature in how it values a marginal euro must give — a degenerate corner solution.</p>
+<p>To make the funding decision genuinely interesting we must break that linearity — and
+there are two candidate ways, only one of which fits our problem. The familiar one is a
+<em>funding-ratio target</em>: reward the plan for keeping <span class="math tex">\(F\)</span> near some chosen level. For a
+plan that controls its asset allocation — de-risking into bonds to defend the ratio,
+taking equity risk to grow it — that is exactly the right instrument, and it is why
+defined-benefit and glide-path models lean on it. But our agent has a single lever, <em>how
+much to contribute</em>, and a contribution is a remarkably weak instrument on the funding
+ratio. It enters reserve and liability <em>symmetrically</em> — the same euro is added to both
+<span class="math tex">\(R\)</span> and <span class="math tex">\(L\)</span> before they grow — so it can only <em>dilute</em> <span class="math tex">\(F\)</span> toward 1, never drive it to an
+arbitrary target; and the quantity that actually swings the funding ratio, the drift and
+the two shocks, carries no contribution at all. Returns move <span class="math tex">\(F\)</span>; the agent does not
+control returns. Scoring the agent on the funding ratio would therefore ask it to hit a
+mark with a tool that barely moves it — and worst of all in exactly the states where you
+would most want to correct, since a bad return year opens a gap that another euro of
+contribution only dilutes away slowly.</p>
+<p>The contribution's real leverage lies elsewhere, and that is where the curvature belongs.
+Every euro funded is moved from &quot;expected shortfall the employer pays later&quot; into
+&quot;certain contribution paid now,&quot; and it lifts the employee's terminal pot directly. The
+decision is a financing-and-outcome trade-off, not a steer-the-ratio one — so we put the
+curvature on the <em>outcome</em>, which the action genuinely controls, and specifically on the
+worth of a marginal retirement euro, which ought to fall as the pot grows. That is
+exactly what a utility function encodes.</p>
+<p>So we give the employee benefit curvature: replace the raw payout with a concave utility
+<span class="math tex">\(u(\max(R_T, L_T))\)</span>, with constant relative risk aversion (CRRA),
+<span class="math tex">\(u(x) = x^{1-\eta}/(1-\eta)\)</span>. Now the first euro of funding is worth more than the
+hundredth — diminishing marginal value — so at some contribution level the marginal
+benefit finally crosses the marginal cost, and the maximisation has a real interior
+solution. The degenerate &quot;always maximal&quot; rule becomes a genuine throttle
+<span class="math tex">\(a^\star(t, F, \rho, L)\)</span> — and, tellingly, the throttle turns mostly on the plan's
+<em>scale</em> <span class="math tex">\(L\)</span>: fund fully while the plan is small, where a marginal funded euro still lands
+on the steep part of the utility curve and easily beats the linear employer cost, then
+taper toward nothing as the plan grows and that marginal utility falls below the marginal
+cost. (We curve only the <em>employee</em> leg — a retiree has diminishing marginal utility
+of pension euros, the standard lifecycle assumption — and leave the employer's
+contributions and guarantee cost linear, since a firm values a cost roughly linearly.
+Curving the employer's <em>cost</em> to make the math tidier would be the tail wagging the dog.)</p>
+<p>This resolution has a price, and it is exactly the dimensionality caveat we opened with.
+CRRA is homogeneous of degree <span class="math tex">\(1-\eta\)</span>, not degree one; the employer leg is still degree
+one. With the two legs now carrying <em>different</em> homogeneity degrees, the value no longer
+factors as <span class="math tex">\(L \cdot v_t(F,\rho)\)</span> — the clean two-ratio reduction breaks, and the
+liability level <span class="math tex">\(L\)</span> returns as a genuine third coordinate. The state becomes
+<span class="math tex">\((t, F, \rho, L)\)</span>. That sounds worse than it is, for two reasons. First, we keep <span class="math tex">\(F\)</span> and
+<span class="math tex">\(\rho\)</span> as coordinates precisely because everything hard lives there: the put kink is a
+single grid line at <span class="math tex">\(F = 1\)</span> (in raw <span class="math tex">\((R, L)\)</span> it would be a diagonal <span class="math tex">\(R = L\)</span> smeared
+across the whole grid), and the dynamics of <span class="math tex">\(F\)</span> and <span class="math tex">\(\rho\)</span> are self-contained. <span class="math tex">\(L\)</span>
+carries only the scale the utility needs. Second, the objective's dependence on <span class="math tex">\(L\)</span> is
+<em>smooth</em> — the terminal factors as <span class="math tex">\(L_T^{1-\eta}\,\max(F_T,1)^{1-\eta}\)</span>, a gentle power of
+the level times the kink in the ratio — so <span class="math tex">\(L\)</span> gets a coarse, log-spaced axis while <span class="math tex">\(F\)</span>
+keeps its fine resolution at the corner. The reduction, in other words, was a convenience
+for the <em>linear</em> problem; the curvature that makes the problem interesting is exactly what
+costs it back, and the cost is one cheap smooth dimension, not a return to raw
+three-dimensional chaos.</p>
+<p>So the state, finally settled, is <span class="math tex">\((t, F, \rho, L)\)</span> — the two ratios that carry the
+dynamics and the kink, plus the one smooth scale the utility needs. The remaining
+question is no longer <em>what</em> the state is but how to compute the value function over it.
+That is the next section.</p>
 <h2>the dynamic programming approach</h2>
+<p>We have the value function <span class="math tex">\(v_t(F, \rho, L)\)</span> and dynamics that close. What we do not yet
+have is a way to <em>compute</em> it. The definition is circular in the way every
+sequential-decision problem is circular: the value of standing here depends on the
+value of standing everywhere you might go next, which depends on where you go after
+that. Dynamic programming is the standard escape from that circularity, and it works
+by refusing to solve the whole thing at once.</p>
+<p>The escape hatch is the one place where the circularity breaks: the end. At retirement,
+year <span class="math tex">\(T\)</span>, there is no &quot;next&quot; — no more decisions, no more shocks to weather, just the
+payoff you collect. So the value at <span class="math tex">\(T\)</span> is written down directly: the employee's benefit,
+now under the utility, minus the employer's shortfall:</p>
+<div class="display-math tex">\[v_T(F, \rho, L) = e^{-\text{DISC}\cdot T}\Big[\, \lambda\, B\, u\big(\max(F,1)\,L\big) \;-\; (1-\lambda)\,L\,\max(1 - F, 0) \,\Big].\]</div>
+<p>The employee term is the CRRA utility of the funded outcome <span class="math tex">\(\max(R_T, L_T) = \max(F,1)\,L\)</span>;
+the employer term is the put shortfall <span class="math tex">\(L\max(1-F,0)\)</span>, linear. It depends on <span class="math tex">\(F\)</span> and the
+scale <span class="math tex">\(L\)</span> but not on the salary ratio <span class="math tex">\(\rho\)</span> — once contributions stop, <span class="math tex">\(\rho\)</span> no longer
+matters. This is the seed of the whole computation.</p>
+<p>One new constant has crept in, and it is not decoration: the weight <span class="math tex">\(B\)</span> on the employee
+term. Once the two legs stopped being commensurable — the employer's is measured in euros,
+the employee's now in <em>utils</em>, and <span class="math tex">\(u\)</span>'s magnitude depends entirely on the units of wealth
+and on <span class="math tex">\(\eta\)</span> — the objective needs an explicit exchange rate between them. That is <span class="math tex">\(B\)</span>: it
+converts a util of the employee's outcome into euros of the employer's cost, and it is a
+genuine calibration choice, not a free parameter to hide. It sits alongside <span class="math tex">\(\lambda\)</span> as
+the second dial of the objective — <span class="math tex">\(\lambda\)</span> divides the surplus between the parties, <span class="math tex">\(B\)</span>
+fixes the scale at which a marginal retirement util trades against a marginal contribution
+euro — and it is what places the interior optimum where it is. Anchoring it (say, so the
+two legs are equal in magnitude at a reference funding level) is part of stating the
+model, and we do so explicitly rather than letting it ride implicitly at <span class="math tex">\(1\)</span>.</p>
+<p>From there we walk backwards. Suppose — the inductive wager — that we already know
+<span class="math tex">\(v_{t+1}\)</span> everywhere, the value of standing in <em>any</em> <span class="math tex">\((F, \rho, L)\)</span> one year from now.
+Then the value today is a single optimization: over each candidate contribution <span class="math tex">\(a\)</span>,
+weigh what it costs this year against where it leaves you next year, and keep the best.</p>
+<div class="display-math tex">\[v_t(F,\rho,L) = \max_{a \in [0,1]}\Big[\, \underbrace{-(1-\lambda)\,a\Gamma\rho L\,e^{-\text{DISC}\,t}}_{\text{paid this year}} \;+\; \underbrace{\mathbb{E}_{z_R, z_L}\big[\, v_{t+1}(F', \rho', L') \,\big]}_{\text{expected value of next year}} \,\Big], \qquad \ell = a\Gamma\rho.\]</div>
+<p>Two terms. <strong>The cost</strong>, out front: the employer's share of the euros funded this year,
+<span class="math tex">\(\ell = a\Gamma\rho\)</span> measured against the liability, times the scale <span class="math tex">\(L\)</span>, discounted to a
+common date. <strong>The continuation</strong>: simply the expected next-year value, averaged over
+both shocks. Because we now carry the level explicitly and work in plain discounted
+euros, there is <em>no</em> unit-conversion factor multiplying it — the <span class="math tex">\((1+\ell)e^{G}\)</span> that
+would have appeared in a per-unit-of-liability formulation was only an artifact of that
+bookkeeping, and in absolute euros it disappears. The level is simply carried forward
+alongside the two ratios by <span class="math tex">\(L' = L(1+\ell)e^{G+\sigma_L z_L}\)</span>. The action <span class="math tex">\(a\)</span> threads
+through both terms: it costs you now, and through <span class="math tex">\(F', \rho', L'\)</span> it steers where next
+year lands.</p>
+<p>And note what is <em>absent</em>: there is no discount factor multiplying the continuation. In
+the textbook Bellman equation you would see a <span class="math tex">\(\gamma\)</span> there. We do not have one, on
+purpose, because we discounted every cash flow to a single fixed date <span class="math tex">\(t=0\)</span> <em>inside</em> the
+rewards themselves — the <span class="math tex">\(e^{-\text{DISC}\,t}\)</span> on the cost, the <span class="math tex">\(e^{-\text{DISC}\,T}\)</span> on
+the terminal. There is no leftover gap between periods for a <span class="math tex">\(\gamma\)</span> to bridge.
+Slipping one in would discount twice.</p>
+<p>That recursion, iterated from <span class="math tex">\(T\)</span> down to <span class="math tex">\(0\)</span>, is the entire algorithm — in principle.
+In practice three things stand between the equation and a number, and each is a
+modelling decision in its own right.</p>
+<p><strong>The expectation is a two-dimensional integral, and we refuse to sample it.</strong> With both
+sides shocked, the continuation must be averaged over two independent draws — the asset
+shock <span class="math tex">\(z_R\)</span> and the guarantee shock <span class="math tex">\(z_L\)</span> — so the expectation is a double integral,
+<span class="math tex">\(\iint (\cdots)\,\phi(z_R)\,\phi(z_L)\,dz_R\,dz_L\)</span> against two normal densities. The
+obvious move is Monte Carlo: draw many shock pairs, average. But this object is a
+<em>benchmark</em> — the ground truth a learned policy will be measured against — and a
+benchmark that jitters with its random seed is no ground truth at all. So we compute the
+integral deterministically, with Gauss–Hermite quadrature, now as a <em>tensor grid</em>: a
+fixed handful of scenarios in each shock, combined into a grid with product weights,</p>
+<div class="display-math tex">\[\mathbb{E}_{z_R, z_L}\big[g\big] \approx \sum_{i}\sum_{j} \omega_i\,\omega_j\, g\big(z_{R,i},\, z_{L,j}\big).\]</div>
+<p>Fifteen nodes per axis is <span class="math tex">\(225\)</span> evaluations — still deterministic, still seed-free, and
+still far cheaper than a converged Monte-Carlo average. One might hope to collapse the
+two shocks back into one: the funding ratio only ever sees their <em>difference</em>
+<span class="math tex">\(\sigma_R z_R - \sigma_L z_L\)</span>, which is itself a single normal. But the salary ratio and
+the liability level each carry <span class="math tex">\(z_L\)</span> <em>on its own</em> — a second, independent combination —
+so the integrand genuinely lives in two dimensions and the grid cannot be reduced. Only
+if salary too were shocked would we need a third axis; holding <span class="math tex">\(W\)</span> deterministic keeps
+the grid at two.</p>
+<p><strong>The state is continuous, so we lay it on a grid.</strong> <span class="math tex">\(v_{t+1}\)</span> lives at every real
+<span class="math tex">\((F, \rho, L)\)</span>, but we can only store it at finitely many, so we tabulate it on a mesh and
+read values in between by interpolation — now <em>trilinear</em>, over three axes. The three axes
+are not treated alike, and that is the whole point of having kept <span class="math tex">\(F\)</span>. The funding ratio
+gets a fine, uniform grid with one node placement that is <em>not</em> negotiable: <span class="math tex">\(F = 1\)</span> must
+sit exactly on it, because that is where the put kinks, and a grid that straddled the
+corner would round it off. The salary ratio and the liability level are log-spaced, each
+ranging over more than an order of magnitude — and the level's axis can be <em>coarse</em>,
+because the value's dependence on <span class="math tex">\(L\)</span> is a smooth power, with no corner to resolve.
+Interpolation in the <span class="math tex">\(F\)</span> direction is kept linear, never curved: a smoother scheme
+overshoots at the kink, and <span class="math tex">\(F=1\)</span> is precisely where we cannot afford to.</p>
+<p><strong>The action is continuous, so we search it directly.</strong> The <span class="math tex">\(\max\)</span> over <span class="math tex">\(a \in [0,1]\)</span>
+is an optimization at every single grid point, every year. We do not trust a clever
+optimizer here, because the kink at <span class="math tex">\(F=1\)</span> can break the smoothness such methods assume
+and quietly settle on the wrong contribution — and a benchmark that silently finds a
+<em>local</em> optimum would certify a flawed policy as correct. So we do the blunt, safe
+thing: try a dense sweep of candidate contributions and take the best. The only error is
+the fineness of the sweep, which we can make as small as we like and, crucially, can
+<em>report</em>.</p>
+<p>Put together, one backward step is: for every <span class="math tex">\((F, \rho, L)\)</span> on the grid, run every
+candidate contribution through every shock-pair scenario, look up next year's tabulated
+value at each landing point, average with the product weights, add this year's cost, and
+keep the best contribution. Repeat from retirement back to today. What falls out is not
+just the value <span class="math tex">\(v_0\)</span> but, at every state and every year, the contribution that achieved
+it — the optimal funding rule <span class="math tex">\(a^\star(t, F, \rho, L)\)</span> laid out in full, interior and
+scale-dependent, as the utility demands.</p>
+<p>There is one numerical price the curvature extracts, and it is worth stating plainly. A
+CRRA value function is sharply bent — more so the more risk-averse the plan, with
+interpolation error scaling like <span class="math tex">\((1-\eta)^2\)</span> — and a grid resolves sharp curvature only
+when it is fine enough. A strongly risk-averse plan (<span class="math tex">\(\eta = 3\)</span>) needs a markedly finer
+mesh than a moderate one (<span class="math tex">\(\eta = 2\)</span>) for the same accuracy; on a coarse grid the value
+can be off by tens of percent. This is exactly what the grid-doubling check is for:
+refine the mesh, watch the value settle toward the Monte-Carlo cross-check, and read the
+remaining movement as the benchmark's error bar. The cost is real but controllable — and
+it falls on the oracle, not on the learner it exists to certify.</p>
+<p>And the benchmark still earns its keep in a second mode. The same engine runs with the
+contribution rule held <em>fixed</em> to a given plan's actual policy rather than optimised,
+pricing any real plan on precisely the same grid. The gap between the two — what an
+existing plan is worth versus the risk-optimal contribution rule — is the number the
+whole apparatus exists to produce.</p>
 <h2>results</h2>
 <h2>discussion</h2>
 <h2>next steps</h2>

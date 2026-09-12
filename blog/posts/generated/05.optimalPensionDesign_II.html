@@ -402,7 +402,70 @@ integral deterministically, with Gauss–Hermite quadrature, as a <em>tensor gri
 handful of scenarios in each shock, combined into a grid with product weights,</p>
 <div class="display-math tex">\[\mathbb{E}_{z_R, z_L}\big[g\big] \approx \sum_{i}\sum_{j} \omega_i\,\omega_j\, g\big(z_{R,i},\, z_{L,j}\big).\]</div>
 <p>Fifteen nodes per axis is <span class="math tex">\(225\)</span> evaluations — still deterministic, still seed-free, and
-still far cheaper than a converged Monte-Carlo average. One might hope to collapse the two
+still far cheaper than a converged Monte-Carlo average.It is worth seeing what that sum actually <em>does</em>, because the figure is the dynamic-programming principle in a single frame.</p>
+<figure class="post-figure">
+<svg viewBox="0 0 680 300" width="100%" role="img" aria-label="One state's expected continuation as a weighted sum over a fixed grid of next-year states">
+<rect x="224" y="60" width="232" height="170" rx="10" fill="none" stroke="var(--image-lightcolor)" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="340" y="48" text-anchor="middle" font-size="13" fill="var(--image-darkcolor)">the vₜ₊₁ surface, read at fixed nodes</text>
+<line x1="319" y1="66" x2="319" y2="224" stroke="var(--image-lightcolor)" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="319" y="220" text-anchor="middle" font-size="12" fill="var(--image-darkcolor)">F′ = 1</text>
+<rect x="253.8" y="78.8" width="4.4" height="4.4" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="295.2" y="78.2" width="5.6" height="5.6" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="336.8" y="77.8" width="6.4" height="6.4" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="379.2" y="78.2" width="5.6" height="5.6" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="421.8" y="78.8" width="4.4" height="4.4" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="253.2" y="110.2" width="5.6" height="5.6" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="292.5" y="107.5" width="11.0" height="11.0" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="332.7" y="105.7" width="14.6" height="14.6" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="376.5" y="107.5" width="11.0" height="11.0" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="421.2" y="110.2" width="5.6" height="5.6" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="252.8" y="141.8" width="6.4" height="6.4" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="290.7" y="137.7" width="14.6" height="14.6" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="330" y="135" width="20" height="20" rx="2" fill="var(--image-accentcolor)"/>
+<rect x="374.7" y="137.7" width="14.6" height="14.6" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="420.8" y="141.8" width="6.4" height="6.4" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="253.2" y="174.2" width="5.6" height="5.6" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="292.5" y="171.5" width="11.0" height="11.0" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="332.7" y="169.7" width="14.6" height="14.6" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="376.5" y="171.5" width="11.0" height="11.0" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="421.2" y="174.2" width="5.6" height="5.6" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="253.8" y="206.8" width="4.4" height="4.4" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="295.2" y="206.2" width="5.6" height="5.6" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="336.8" y="205.8" width="6.4" height="6.4" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="379.2" y="206.2" width="5.6" height="5.6" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="421.8" y="206.8" width="4.4" height="4.4" rx="1" fill="var(--image-accentcolor)"/>
+<rect x="40" y="121" width="120" height="48" rx="8" fill="none" stroke="var(--image-darkcolor)" stroke-width="1"/>
+<text x="100" y="141" text-anchor="middle" font-size="14" fill="var(--image-darkcolor)">(t, F, ρ)</text>
+<text x="100" y="158" text-anchor="middle" font-size="12" fill="var(--image-darkcolor)">choose a</text>
+<line x1="162" y1="140" x2="222" y2="112" stroke="var(--image-darkcolor)" stroke-width="1"/>
+<line x1="222" y1="112" x2="215" y2="111" stroke="var(--image-darkcolor)" stroke-width="1"/>
+<line x1="222" y1="112" x2="216" y2="117" stroke="var(--image-darkcolor)" stroke-width="1"/>
+<line x1="162" y1="145" x2="222" y2="145" stroke="var(--image-darkcolor)" stroke-width="1"/>
+<line x1="222" y1="145" x2="216" y2="142" stroke="var(--image-darkcolor)" stroke-width="1"/>
+<line x1="222" y1="145" x2="216" y2="148" stroke="var(--image-darkcolor)" stroke-width="1"/>
+<line x1="162" y1="150" x2="222" y2="178" stroke="var(--image-darkcolor)" stroke-width="1"/>
+<line x1="222" y1="178" x2="215" y2="179" stroke="var(--image-darkcolor)" stroke-width="1"/>
+<line x1="222" y1="178" x2="216" y2="173" stroke="var(--image-darkcolor)" stroke-width="1"/>
+<line x1="446" y1="110" x2="486" y2="143" stroke="var(--image-accentcolor)" stroke-width="1"/>
+<line x1="446" y1="145" x2="486" y2="145" stroke="var(--image-accentcolor)" stroke-width="1"/>
+<line x1="446" y1="180" x2="486" y2="147" stroke="var(--image-accentcolor)" stroke-width="1"/>
+<line x1="486" y1="145" x2="480" y2="142" stroke="var(--image-accentcolor)" stroke-width="1"/>
+<line x1="486" y1="145" x2="480" y2="148" stroke="var(--image-accentcolor)" stroke-width="1"/>
+<rect x="490" y="113" width="150" height="64" rx="8" fill="none" stroke="var(--link-hover)" stroke-width="1"/>
+<text x="565" y="139" text-anchor="middle" font-size="14" fill="var(--link-hover)">E[ vₜ₊₁ ]</text>
+<text x="565" y="159" text-anchor="middle" font-size="12" fill="var(--image-darkcolor)">Σ ωᵢ ωⱼ vₜ₊₁</text>
+<line x1="565" y1="177" x2="565" y2="246" stroke="var(--image-lightcolor)" stroke-width="1"/>
+<line x1="565" y1="246" x2="100" y2="246" stroke="var(--image-lightcolor)" stroke-width="1"/>
+<line x1="100" y1="246" x2="100" y2="171" stroke="var(--image-lightcolor)" stroke-width="1"/>
+<line x1="100" y1="171" x2="97" y2="177" stroke="var(--image-lightcolor)" stroke-width="1"/>
+<line x1="100" y1="171" x2="103" y2="177" stroke="var(--image-lightcolor)" stroke-width="1"/>
+<text x="332" y="240" text-anchor="middle" font-size="12" fill="var(--image-darkcolor)">expected continuation → vₜ(F, ρ)</text>
+<text x="340" y="280" text-anchor="middle" font-size="12" fill="var(--image-darkcolor)">square size = product weight ωᵢωⱼ — nodes are fixed, not sampled</text>
+</svg>
+<figcaption>One backward step at a state (t, F, ρ). This year's choice a is scattered by the two shocks across a fixed z_R × z_L grid of next-year states (drawn 5×5; the oracle runs 15×15). Each node is weighted by ωᵢωⱼ and read off the vₜ₊₁ surface; their weighted sum is the expected continuation that feeds vₜ. Vertical spread is ρ′, horizontal is F′, with the put kink pinned at F′ = 1.</figcaption>
+</figure>
+Read it as the recursion made mechanical. One state $(t, F, \rho)$, one candidate action $a$, and the expectation the backup needs is not a haze of random futures but a *fixed lattice* of them — each next-year state $(F', \rho')$ pinned to a quadrature node, each carrying a weight $\omega_i\omega_j$ that is genuinely a probability. The one-dimensional Gauss–Hermite weights sum to one, so their outer product does too; the "integral" is an honest weighted average, not a bag of arbitrary coefficients. The value the backup wants, $\mathbb{E}[v_{t+1}]$, is just those futures looked up on the surface and averaged under those weights — the fat central node, the modal outcome, carrying almost all the mass; the tail nodes faint but never zero, because the shortfall the employer is short lives in precisely those bad-return corners. Many futures in, one number out, handed back to the present: that single returning arrow *is* the Bellman coupling, the value of standing here built from the value of standing everywhere you might go next.
+<p>Two things the tidy lattice hides. First, the nodes are drawn on a square grid but do not <em>land</em> on one: each true position is <span class="math tex">\(\big(\tfrac{F+\ell}{1+\ell}\,e^{(\mu-G)+\sigma_R z_R-\sigma_L z_L},\ \tfrac{(1+W)\rho}{(1+\ell)\,e^{G+\sigma_L z_L}}\big)\)</span>, an exponential warp of the evenly-spaced shock grid — which is exactly why <span class="math tex">\(v_{t+1}\)</span> must be <em>interpolated</em> at each landing rather than read off a stored cell. Second, the lattice is a genuine grid and not a line: two axes, one per shock. That two-dimensionality is not a modelling extravagance but a forced consequence, and it is the next thing to justify. One might hope to collapse the two
 shocks back into one: the funding ratio only ever sees their <em>difference</em>
 <span class="math tex">\(\sigma_R z_R - \sigma_L z_L\)</span>, which is itself a single normal. But the salary ratio <span class="math tex">\(\rho'\)</span>
 carries <span class="math tex">\(z_L\)</span> <em>on its own</em> — a second, independent combination — so the integrand genuinely

@@ -58,7 +58,7 @@
       <span class="slider"></span>
     </label>
     <article>
-      <h1>Optimal Pension Design: A high dimensional take-away</h1>
+      <p>Optimal Pension Design: A high dimensional take-away</p>
 <p>In the following posts we will take the problem to the next level and consider the aspect of stochasticity and the inherent risks a pension plan faces.</p>
 <h2>The Issue at Hand</h2>
 <p>In the previous post on optimal pension design, we looked at a deliberately naive
@@ -319,7 +319,8 @@ be curved about the quantity the employee actually cares about, which is not raw
 the pension <em>relative to final salary</em> — the replacement rate. Define</p>
 <div class="display-math tex">\[\text{RR} = \frac{\max(R_T, L_T)}{S_T},\]</div>
 <p>the fraction of pre-retirement income the plan delivers, the number every pension system
-and adequacy debate is denominated in. Put the CRRA utility on <em>that</em>: <span class="math tex">\(u(\text{RR})\)</span>. The
+and adequacy debate is denominated in. Put the CRRA utility on <em>that</em>: <span class="math tex">\(u(\text{RR})\)</span>.</p>
+<p>The
 employee has diminishing marginal utility of their replacement rate — the first thirty
 points of replacement matter far more than the points above seventy — which is exactly the
 risk aversion the lifecycle literature assumes, now in the units that literature uses.</p>
@@ -352,8 +353,111 @@ the currency of retirement adequacy. (We curve only the <em>employee</em> leg �
 diminishing marginal utility of their replacement rate — and leave the employer's cost
 linear in money, since a firm values a euro of cost roughly linearly.)</p>
 <p>So the state, and this time it really is settled, is <span class="math tex">\((t, F, \rho)\)</span> — two coordinates, for
-the linear objective and the curved one alike. The remaining question is how to compute the
-value function over it. That is the next section.</p>
+the linear objective and the curved one alike.</p>
+<h3>three refinements, and the price of realism</h3>
+<p>That clean object — <span class="math tex">\(u(\text{RR})\)</span> with <span class="math tex">\(\text{RR}=\max(F,1)/\rho\)</span> — is only the <em>skeleton</em> of the
+employee's value. To make it a defensible model of Belgian adequacy rather than a stylised ratio we
+enrich the outcome in three data-anchored ways. Reassuringly — and this is worth checking rather than
+assuming, because the instinct is to expect otherwise — all three keep the value a function of
+<span class="math tex">\((F,\rho)\)</span> alone and degree-zero homogeneous, so the clean two-coordinate reduction survives every one
+of them intact.</p>
+<p><strong>The pension is an annuity, not a lump.</strong> The capital <span class="math tex">\(\max(R_T,L_T)\)</span> is not consumed in one year; it
+buys income across retirement. Converting through an actuarial annuity factor <span class="math tex">\(\ddot a\)</span> — the
+mortality-weighted, discounted value of a lifelong €1/year, about <span class="math tex">\(15\)</span> for a Belgian life expectancy at
+65 near twenty years at a <span class="math tex">\(\sim\!2\%\)</span> technical rate — the <em>annual</em> replacement rate is
+<span class="math tex">\(\max(F,1)/(\ddot a\,\rho)\)</span>. This is still a ratio, still scale-free; it rescales the outcome into the
+units adequacy is measured in, and it matters because an adequate annual pension takes roughly
+<span class="math tex">\(\ddot a\)</span> times the capital of the same number as a lump.</p>
+<p><strong>The second pillar sits on top of the legal first pillar.</strong> A private-sector average earner already
+draws about <span class="math tex">\(\text{RR}_{\text{legal}}\approx 0.43\)</span> from the statutory pension, so the quantity the
+employee cares about is the <em>total</em>, <span class="math tex">\(\text{RR}_{\text{total}} = \text{RR}_{\text{legal}} + \max(F,1)/(\ddot a\,\rho)\)</span>. It is worth pausing on why adding a constant is harmless for the reduction,
+because the instinct is that it must spoil something. It does not. Rescale all money by <span class="math tex">\(\kappa\)</span>: both
+<span class="math tex">\(F\)</span> and <span class="math tex">\(\rho\)</span> are unchanged, so <span class="math tex">\(\max(F,1)/(\ddot a\rho)\)</span> is degree-zero; a constant is trivially
+degree-zero; and the sum of two degree-zero quantities is degree-zero. So <span class="math tex">\(\text{RR}_{\text{total}}\)</span>, and
+the value built on it, stays a function of <span class="math tex">\((F,\rho)\)</span> alone and fully scale-invariant. (Contrast the
+euro-CRRA we rejected earlier, which added a term of a <em>different</em> degree — <span class="math tex">\(1-\eta\)</span> against the costs'
+degree one — and that mismatch is what drags the level back into the state. A constant shares the ratio's
+degree zero and changes nothing.) What the legal baseline <em>does</em> change is real but benign: total
+replacement can never fall below 43%, so the employee is never on the near-vertical part of the CRRA and
+their marginal utility of second-pillar funding is finite and modest rather than explosive. That bounded
+marginal utility — not any lost homogeneity — is what makes funding a genuine trade-off against employer
+cost, and it is the source of the funding threshold we meet in the results.</p>
+<p><strong>Adequacy is measured against a target.</strong> A CRRA with no reference treats &quot;adequate&quot; as infinity; the
+employee actually has a target replacement rate — we take the OECD/EU benchmark of
+<span class="math tex">\(\text{RR}^\star \approx 0.70\)</span> of final salary, total across pillars — and cares how far the plan closes
+the gap to it. Grounding the whole thing in the lifecycle literature (mortality-weighted CRRA over
+retirement consumption; Merton–Yaari–Bodie), the employee's value is the actuarial present value of the
+utility of annuitised consumption against target consumption <span class="math tex">\(c^\star=\text{RR}^\star S_T\)</span>. Under the
+deterministic annuity this collapses cleanly to</p>
+<div class="display-math tex">\[V_{\text{employee}} = \ddot a \cdot u\!\Big(\frac{\text{RR}_{\text{total}}}{\text{RR}^\star}\Big),\]</div>
+<p>where <span class="math tex">\(\ddot a\)</span> appears twice — as the survival-discounted count of retirement years over which
+consumption utility accrues, and inside the capital-to-income conversion — exactly the internal
+consistency the lifecycle formulation supplies for free. The employer's leg stays linear in money, a
+real euro of cost.</p>
+<p><strong>Employer and employee discount at different rates.</strong> One more piece is genuinely two numbers,
+not one. A single discount rate would conflate two different questions: <em>how the employee values
+their future pension</em> and <em>how the employer values deferring cash</em>. These are not the same rate.
+The employee discounts a future retirement income at a risk-free / OLO rate (we use ~2.5%); the
+employer discounts its contributions and shortfall at its cost of capital (~5%). So the objective
+carries a split: the employee leg is discounted at <span class="math tex">\(\delta_e\)</span>, the employer leg at <span class="math tex">\(\delta_f\)</span>, each
+to the same fixed date <span class="math tex">\(t=0\)</span> (no per-period <span class="math tex">\(\gamma\)</span> — the <span class="math tex">\(\gamma=1\)</span> discipline still holds, now
+per leg). This turns the discount from a single free knob into two grounded numbers, and — as the
+results show — the <em>gap</em> <span class="math tex">\(\delta_e - \mu\)</span> between the employee discount and the credited return is
+what governs whether the optimal contribution front-loads or spreads.</p>
+<p>This is the committed employee objective: specified once, from the lifecycle literature, against a
+stated and sourced target, with the first-pillar baseline and the annuity factor grounded in Belgian
+data. Everything below is read off it, not tuned into it. One assumption inside it is load-bearing and
+worth naming: the legal replacement rate is treated as a flat <span class="math tex">\(0.43\)</span>. Belgium's real first pillar is
+<em>regressive</em> — it replaces a smaller fraction of salary for higher earners — and modelling that would
+make <span class="math tex">\(\text{RR}_{\text{legal}}\)</span> a function of the salary <em>level</em>, which is exactly the kind of term
+that <em>would</em> break degree-zero homogeneity and pull the salary level back in as a fourth coordinate. The
+flat baseline is the assumption that keeps the reduction clean; relaxing it is genuine future work, not a
+cosmetic detail.</p>
+<h3>when the worker can leave</h3>
+<p>Everything to this point has assumed the member stays with the plan for the full career.
+That assumption is doing more work than it looks, and it is worth relaxing inside the
+value function before we compute anything — because a worker who may leave changes what
+the terminal payoff even <em>means</em>.</p>
+<p>Leaving is not a new state variable; it is a hazard on the horizon. Let <span class="math tex">\(h_t\)</span> be the
+probability of leaving during year <span class="math tex">\(t\)</span> — a deterministic function of tenure, so it adds
+no dimension. We calibrate it to Belgian job-tenure data (average tenure about eleven
+years, roughly half of workers staying ten years or more): a hazard of about twelve
+percent in the first years, decaying to a two-and-a-half-percent long-tenure floor, so
+around forty-five percent reach ten years and about fifteen percent a full career. The subtlety is the same one that kept <span class="math tex">\(\gamma = 1\)</span> inside the reward:
+retention is <em>not</em> a discount factor to multiply onto the continuation. It is a
+<em>branching</em> of the future. With probability <span class="math tex">\(1 - h_t\)</span> the member stays and the plan lands
+in <span class="math tex">\((F', \rho')\)</span> under the in-force dynamics; with probability <span class="math tex">\(h_t\)</span> the contract goes
+<strong>paid-up</strong>. Under the Belgian regime a paid-up contract is a specific object:
+contributions stop, the liability stops accruing the guaranteed rate and simply freezes
+(<span class="math tex">\(L' = L\)</span>), the reserve keeps earning its credited return (<span class="math tex">\(R' = R\,e^{\mu + \sigma_R z_R}\)</span>),
+the WAP shortfall is still tested only at retirement, and — reserves being immediately
+vested — the leaver <em>keeps</em> the contract. The recursion gains one blended term,</p>
+<div class="display-math tex">\[v_t(F,\rho) = \max_a\Big[\, \text{flow}_t(a) + \mathbb{E}\big[(1 - h_t)\,v_{t+1}(F',\rho') + h_t\,\Phi_{t+1}(F',\rho')\big]\,\Big],\]</div>
+<p>where <span class="math tex">\(\Phi\)</span> is the value of a frozen paid-up contract: an actionless companion problem
+on the same <span class="math tex">\((F,\rho)\)</span> grid, with the guarantee turned off and no contributions, whose
+own recursion is <span class="math tex">\(\Phi_T = v_T\)</span> and <span class="math tex">\(\Phi_t(F,\rho) = \mathbb{E}[\Phi_{t+1}(F\,e^{\mu+\sigma_R z_R},\,(1+W)\rho)]\)</span>.
+No new dimension, just a second value surface and a probabilistic boundary, both computed
+with the same machinery as the core problem.</p>
+<p>There is one thing to get right about the leaver, and it is a question of <em>whose</em> target the
+70% is. The target is a <em>full-career-with-this-employer</em> promise, so a member who leaves after
+<span class="math tex">\(\tau\)</span> years should never be funded toward, or judged against, the full 70% — only a full-career
+stayer should. So the leaver <strong>keeps their full vested pot</strong> (immediate vesting — we take nothing
+from them), but the objective judges that pot against a <strong>service-pro-rated target</strong> on the
+occupational gap,</p>
+<div class="display-math tex">\[\text{RR}^\star_\tau = \text{RR}_{\text{legal}} + \tfrac{\tau}{T}\big(\text{RR}^\star - \text{RR}_{\text{legal}}\big),\]</div>
+<p>so a full-career stayer (<span class="math tex">\(\tau = T\)</span>) faces the full 70% while a short-tenure leaver faces a low
+bar their small pot easily meets. Only the occupational gap is pro-rated; the legal first pillar
+is not (it is earned across the whole career, not with this employer). The consequence for the
+<em>decision</em> is the point: because a euro funded early mostly reaches people who will leave, and
+they are now judged against a low pro-rated bar, the marginal value of funding the churn-heavy
+early years falls — the plan funds the members actually accruing toward the full target. This
+directly disciplines both over-funding of likely-leavers and the front-load. Mechanically, each
+leave-cohort <span class="math tex">\(\tau\)</span> has its own paid-up value <span class="math tex">\(\Phi_\tau\)</span> with target <span class="math tex">\(\text{RR}^\star_\tau\)</span>; because
+the paid-up reserve compounds to a lognormal, <span class="math tex">\(\Phi_\tau\)</span> is a cheap one-dimensional quadrature,
+and the employer's shortfall in it remains a real, unscaled euro.</p>
+<p>This churn-aware value function — not a certain-tenure simplification of it — is the object
+every result below is computed against. The remaining question is how to compute
+<span class="math tex">\(v_t(F,\rho)\)</span> over its two-coordinate state. That is the next section</p>
 <h2>the dynamic programming approach</h2>
 <p>We have the value function <span class="math tex">\(v_t(F, \rho)\)</span> and dynamics that close. What we do not yet
 have is a way to <em>compute</em> it. The definition is circular in the way every
@@ -363,21 +467,22 @@ that. Dynamic programming is the standard escape from that circularity, and it w
 by refusing to solve the whole thing at once.</p>
 <p>The escape hatch is the one place where the circularity breaks: the end. At retirement,
 year <span class="math tex">\(T\)</span>, there is no &quot;next&quot; — no more decisions, no more shocks to weather, just the
-payoff you collect. So the value at <span class="math tex">\(T\)</span> is written down directly: the employee's utility
-of the replacement rate, minus the employer's shortfall, each per unit of final salary:</p>
-<div class="display-math tex">\[v_T(F, \rho) = e^{-\text{DISC}\cdot T}\Big[\, \lambda\, u\!\Big(\tfrac{\max(F,1)}{\rho}\Big) \;-\; (1-\lambda)\,\tfrac{\max(1 - F, 0)}{\rho} \,\Big].\]</div>
-<p>The employee term is the CRRA utility of the funded replacement rate <span class="math tex">\(\max(F,1)/\rho\)</span>; the
-employer term is the shortfall as a fraction of final salary, <span class="math tex">\(\max(1-F,0)/\rho\)</span>, linear.
-It depends on <span class="math tex">\(F\)</span> and <span class="math tex">\(\rho\)</span>, and — being scale-free — on nothing else. This is the seed of
-the whole computation.</p>
+payoff you collect. So the value at <span class="math tex">\(T\)</span> is written down directly — the employee's committed lifecycle utility of
+total replacement against target, minus the employer's shortfall:</p>
+<div class="display-math tex">\[v_T(F, \rho) = \lambda\,\ddot a\, u\!\Big(\tfrac{\text{RR}_{\text{total}}}{\text{RR}^\star}\Big)e^{-\delta_e T} \;-\; (1-\lambda)\,\tfrac{\max(1 - F, 0)}{\rho}\,e^{-\delta_f T}, \qquad \text{RR}_{\text{total}} = \text{RR}_{\text{legal}} + \tfrac{\max(F,1)}{\ddot a\,\rho}.\]</div>
+<p>The employee term is the annuity-weighted CRRA of total replacement — legal first pillar plus the
+annuitised occupational pension — measured against the 70% target; the employer term is the WAP
+shortfall as a fraction of final salary, <span class="math tex">\(\max(1-F,0)/\rho\)</span>, linear. This is the stayer seed (full target); a leaver's paid-up <span class="math tex">\(\Phi_\tau\)</span> uses the service-pro-rated target defined
+above. It depends on <span class="math tex">\(F\)</span> and <span class="math tex">\(\rho\)</span> — the legal baseline enters as a constant, not a new coordinate — and it is the seed of the whole
+computation.</p>
 <p>From there we walk backwards. Suppose — the inductive wager — that we already know
 <span class="math tex">\(v_{t+1}\)</span> everywhere, the value of standing in <em>any</em> <span class="math tex">\((F, \rho)\)</span> one year from now. Then
 the value today is a single optimization: over each candidate contribution <span class="math tex">\(a\)</span>, weigh what
 it costs this year against where it leaves you next year, and keep the best.</p>
-<div class="display-math tex">\[v_t(F,\rho) = \max_{a \in [0,1]}\Big[\, \underbrace{-(1-\lambda)\,a\Gamma\,(1+W)^{-(T-t)}\,e^{-\text{DISC}\,t}}_{\text{paid this year, per unit final salary}} \;+\; \underbrace{\mathbb{E}_{z_R, z_L}\big[\, v_{t+1}(F', \rho') \,\big]}_{\text{expected value of next year}} \,\Big], \qquad \ell = a\Gamma\rho.\]</div>
+<div class="display-math tex">\[v_t(F,\rho) = \max_{a \in [0,1]}\Big[\, \underbrace{-(1-\lambda)\,a\Gamma\,(1+W)^{-(T-t)}\,e^{-\delta_f\,t}}_{\text{paid this year, per unit final salary}} \;+\; \underbrace{\mathbb{E}_{z_R, z_L}\big[\, v_{t+1}(F', \rho') \,\big]}_{\text{expected value of next year}} \,\Big], \qquad \ell = a\Gamma\rho.\]</div>
 <p>Two terms. <strong>The cost</strong>: the employer's contribution this year, expressed as a fraction of
 final salary — it is <span class="math tex">\(a\Gamma\)</span> of <em>current</em> salary, converted to final-salary units by the
-deterministic salary growth <span class="math tex">\((1+W)^{-(T-t)}\)</span>, and discounted to <span class="math tex">\(t=0\)</span> by <span class="math tex">\(e^{-\text{DISC}\,t}\)</span>.
+deterministic salary growth <span class="math tex">\((1+W)^{-(T-t)}\)</span>, and discounted to <span class="math tex">\(t=0\)</span> at the employer rate <span class="math tex">\(e^{-\delta_f\,t}\)</span>.
 <strong>The continuation</strong>: simply the expected next-year value, averaged over both shocks —
 there is <em>no</em> unit-conversion factor, because a scale-free objective carries no size term
 to rescale. The action <span class="math tex">\(a\)</span> threads through both: it costs now, and through <span class="math tex">\(F',\rho'\)</span> it
@@ -385,8 +490,8 @@ steers where next year lands.</p>
 <p>And note what is <em>absent</em>: there is no discount factor multiplying the continuation. In
 the textbook Bellman equation you would see a <span class="math tex">\(\gamma\)</span> there. We do not have one, on
 purpose, because we discounted every cash flow to a single fixed date <span class="math tex">\(t=0\)</span> <em>inside</em> the
-rewards themselves — the <span class="math tex">\(e^{-\text{DISC}\,t}\)</span> on the cost, the <span class="math tex">\(e^{-\text{DISC}\,T}\)</span> on
-the terminal. There is no leftover gap between periods for a <span class="math tex">\(\gamma\)</span> to bridge.
+rewards themselves — the <span class="math tex">\(e^{-\delta_f\,t}\)</span> on the employer cost, and <span class="math tex">\(e^{-\delta_e T}\)</span> / <span class="math tex">\(e^{-\delta_f T}\)</span> on the two
+terminal legs. There is no leftover gap between periods for a <span class="math tex">\(\gamma\)</span> to bridge (the <span class="math tex">\(\gamma=1\)</span> discipline holds per leg).
 Slipping one in would discount twice.</p>
 <p>That recursion, iterated from <span class="math tex">\(T\)</span> down to <span class="math tex">\(0\)</span>, is the entire algorithm — in principle.
 In practice three things stand between the equation and a number, and each is a

@@ -106,7 +106,7 @@ of contribution costs spread across every year.</p>
 <p><strong>Second, chop the lump into per-year pieces.</strong> Call the reward earned in year <span class="math tex">\(t\)</span>
 its discounted contribution cost, and fold the whole terminal payoff into the final
 year:</p>
-<div class="display-math tex">\[r_t = -(1-\lambda)\frac{c_t}{(1+r)^{t}}\quad (t<T), \qquad r_T = \frac{\lambda\max(R_T, L_T) - (1-\lambda)\max(L_T - R_T, 0)}{(1+r)^{T}}.\]</div>
+<div class="display-math tex">\[r_t = -(1-\lambda)\frac{c_t}{(1+r)^{t}}\quad (t \lt T), \qquad r_T = \frac{\lambda\max(R_T, L_T) - (1-\lambda)\max(L_T - R_T, 0)}{(1+r)^{T}}.\]</div>
 <p>Then <span class="math tex">\(V = \sum_{t=0}^{T} r_t\)</span> exactly — nothing has changed but the packaging. One
 feature will matter later: every reward is <em>already discounted to today</em>, the factor
 <span class="math tex">\((1+r)^{-t}\)</span> living inside it. (From here we write <span class="math tex">\(1+r = e^{\text{DISC}}\)</span>, trading the

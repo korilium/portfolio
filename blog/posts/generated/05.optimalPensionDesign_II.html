@@ -88,10 +88,11 @@ reshape it into something a solver in a stochastic modelling environment can act
 work with.</p>
 <p>Last time we scored an entire career with a single number — the joint value to
 employee and employer of a whole contribution path:</p>
-<div class="display-math tex">\[V = \lambda\,\frac{B_T}{(1+r)^{T}} - (1-\lambda)\left(\sum_{t=0}^{T}\frac{c_t}{(1+r)^{t}} + \frac{\max(L_T - R_T, 0)}{(1+r)^{T}}\right).\]</div>
+<div class="display-math tex">\[V = \lambda\,\frac{B_T}{(1+\delta)^{T}} - (1-\lambda)\left(\sum_{t=0}^{T-1}\frac{c_t}{(1+\delta)^{t}} + \frac{\max(L_T - R_T, 0)}{(1+\delta)^{T}}\right).\]</div>
 <p>The employee is credited the discounted final benefit <span class="math tex">\(B_T\)</span>, weighted by <span class="math tex">\(\lambda\)</span>;
 the employer is charged the discounted stream of contributions plus the discounted
-cost of the guarantee shortfall, weighted by <span class="math tex">\(1-\lambda\)</span>. It is the right thing to
+cost of the guarantee shortfall, weighted by <span class="math tex">\(1-\lambda\)</span>. (Contributions run to the
+year <em>before</em> retirement: in year <span class="math tex">\(T\)</span> the plan pays out rather than pays in.) It is the right thing to
 want. It is also the wrong <em>shape</em> to solve: one lump summed over the whole path, and
 you cannot optimise a path all at once when every year's decision reshuffles all the
 years after it. The fix is to make it recursive — a reward earned each year plus the
@@ -100,18 +101,19 @@ value of everything still to come — without changing what it means.</p>
 with the funded floor: the reserve if it cleared the liability, the liability if it
 fell short. So <span class="math tex">\(B_T = \max(R_T, L_T)\)</span>. Substituting, and collecting the two maturity
 terms over their shared discount factor,</p>
-<div class="display-math tex">\[V = \frac{\lambda\max(R_T, L_T) - (1-\lambda)\max(L_T - R_T, 0)}{(1+r)^{T}} - (1-\lambda)\sum_{t=0}^{T}\frac{c_t}{(1+r)^{t}}.\]</div>
+<div class="display-math tex">\[V = \frac{\lambda\max(R_T, L_T) - (1-\lambda)\max(L_T - R_T, 0)}{(1+\delta)^{T}} - (1-\lambda)\sum_{t=0}^{T-1}\frac{c_t}{(1+\delta)^{t}}.\]</div>
 <p>Now <span class="math tex">\(V\)</span> wears its structure openly: a <em>terminal</em> payoff settled at <span class="math tex">\(T\)</span>, and a <em>flow</em>
 of contribution costs spread across every year.</p>
 <p><strong>Second, chop the lump into per-year pieces.</strong> Call the reward earned in year <span class="math tex">\(t\)</span>
 its discounted contribution cost, and fold the whole terminal payoff into the final
 year:</p>
-<div class="display-math tex">\[r_t = -(1-\lambda)\frac{c_t}{(1+r)^{t}}\quad (t \lt T), \qquad r_T = \frac{\lambda\max(R_T, L_T) - (1-\lambda)\max(L_T - R_T, 0)}{(1+r)^{T}}.\]</div>
+<div class="display-math tex">\[r_t = -(1-\lambda)\frac{c_t}{(1+\delta)^{t}}\quad (t \lt T), \qquad r_T = \frac{\lambda\max(R_T, L_T) - (1-\lambda)\max(L_T - R_T, 0)}{(1+\delta)^{T}}.\]</div>
 <p>Then <span class="math tex">\(V = \sum_{t=0}^{T} r_t\)</span> exactly — nothing has changed but the packaging. One
 feature will matter later: every reward is <em>already discounted to today</em>, the factor
-<span class="math tex">\((1+r)^{-t}\)</span> living inside it. (From here we write <span class="math tex">\(1+r = e^{\text{DISC}}\)</span>, trading the
+<span class="math tex">\((1+\delta)^{-t}\)</span> living inside it. (From here we compound continuously, trading the
 compounding factor for an exponential rate purely for cleaner bookkeeping, so the
-discount reads <span class="math tex">\(e^{-\text{DISC}\,t}\)</span>.)</p>
+discount reads <span class="math tex">\(e^{-\delta\,t}\)</span>. Later this single <span class="math tex">\(\delta\)</span> splits into an employee
+rate <span class="math tex">\(\delta_e\)</span> and an employer rate <span class="math tex">\(\delta_f\)</span> — one per leg of the objective.)</p>
 <p><strong>Third, turn the sum of future rewards into a proper value function in Bellman's
 notation.</strong> Two forces require this notation. The returns are random and therefore
 demand an <em>expectation</em>; and we are trying to choose the contributions <em>optimally</em>, so
@@ -181,8 +183,10 @@ straight out — <span class="math tex">\(\max(\kappa R, \kappa L) = \kappa\max(
 preserve scale: begin a year <span class="math tex">\(\kappa\)</span> times larger, take the <em>same</em> action, and every
 next-period quantity comes out <span class="math tex">\(\kappa\)</span> times larger, because the transitions are linear
 in the money variables — the shocks sit in the exponent, on the rates, while the money
-enters only through the linear factor,</p>
-<div class="display-math tex">\[R' = \kappa(R + c)\,e^{\mu + \sigma_R z_R}, \qquad L' = \kappa(L + c)\,e^{G + \sigma_L z_L}, \qquad S' = \kappa(1 + W)\,S.\]</div>
+enters only through the linear factor. Start the year at <span class="math tex">\((\kappa R, \kappa L, \kappa S)\)</span>,
+where the contribution comes out <span class="math tex">\(\kappa c\)</span> because <span class="math tex">\(c = a\Gamma S\)</span>, and run the same
+transitions:</p>
+<div class="display-math tex">\[(\kappa R + \kappa c)\,e^{\mu + \sigma_R z_R} = \kappa R', \qquad (\kappa L + \kappa c)\,e^{G + \sigma_L z_L} = \kappa L', \qquad (1 + W)\,\kappa S = \kappa S'.\]</div>
 <p>Those two facts propagate through the backward recursion that defines the value. At
 retirement the value simply <em>is</em> the terminal reward, so it scales by <span class="math tex">\(\kappa\)</span>. And if
 next year's value scales by <span class="math tex">\(\kappa\)</span>, this year's must too: the flow scales, the scaled
@@ -194,10 +198,10 @@ holds everywhere. (Note the shocks are innocent here: scaling the <em>money</em>
 shocks only ever multiply it.)</p>
 <p>Homogeneity is a licence to choose the scale, so choose the one that normalises
 liabilities to one. Setting <span class="math tex">\(\kappa = 1/L\)</span> pulls the level clean out of the function,</p>
-<div class="display-math tex">\[V_t(R, L, S) = L \cdot V_t\!\left(\tfrac{R}{L},\; 1,\; \tfrac{S}{L}\right) \;\equiv\; L_t \cdot v_t(F, \rho),\]</div>
-<p>where the reduced function <span class="math tex">\(v_t\)</span> has its liability argument frozen at <span class="math tex">\(1\)</span> and so depends
+<div class="display-math tex">\[V_t(R, L, S) = L \cdot V_t\!\left(\tfrac{R}{L},\; 1,\; \tfrac{S}{L}\right) \;\equiv\; L_t \cdot w_t(F, \rho),\]</div>
+<p>where the reduced function <span class="math tex">\(w_t\)</span> has its liability argument frozen at <span class="math tex">\(1\)</span> and so depends
 on just two numbers. The value has split into a <em>size</em> part and a <em>shape</em> part: <span class="math tex">\(L_t\)</span>
-counts the euros, and <span class="math tex">\(v_t(F, \rho)\)</span> is the value <em>per unit of liability</em>, carrying
+counts the euros, and <span class="math tex">\(w_t(F, \rho)\)</span> is the value <em>per unit of liability</em>, carrying
 everything the decision actually turns on.</p>
 <p>The liability level <span class="math tex">\(L\)</span> just rescales the answer; it never changes which action is
 best, so it drops out of the <em>decision</em>. But notice what survives the split: not one
@@ -260,14 +264,16 @@ surprising year for the guarantee moves the salary ratio too. What keeps <span c
 well-behaved state variable is that its evolution, like the funding ratio's, depends
 only on today's state plus fresh noise — the Markov closure holds. We do keep salary
 growth <span class="math tex">\(W\)</span> <em>deterministic</em>, which spares us a <em>third</em> shock; the only randomness in the
-model is the asset–guarantee pair <span class="math tex">\((z_R, z_L)\)</span>.</p>
+balance-sheet dynamics is the asset–guarantee pair <span class="math tex">\((z_R, z_L)\)</span> — a departure hazard
+joins them, without adding a dimension, in a later section.</p>
 <p>So here is the high-dimensional take-away, and it is more honest than the tidy version.
 Stochasticity costs us a dimension we never had to carry before, and the structure of
 the problem — scale-invariance and a self-contained pair of ratios — hands most of it
 back. But not all of it. We do not land on the one coordinate we might have hoped for,
 the funding ratio alone; the salary-linkage of contributions is precisely the feature
-that blocks that final collapse. We land instead on a value function of two arguments,</p>
-<div class="display-math tex">\[v_t(F, \rho),\]</div>
+that blocks that final collapse. We land instead on a value whose shape part takes two
+arguments,</p>
+<div class="display-math tex">\[L_t \cdot w_t(F, \rho),\]</div>
 <p>year suppressed into the recursion, funding ratio and salary ratio the two shape
 coordinates the decision genuinely needs.</p>
 <p>That two-coordinate reduction is real, but it was derived for the <em>linear</em> objective —
@@ -335,7 +341,8 @@ of final salary, so a contribution counts as its fraction of final pay,
 both legs scale-free and matched, the whole objective is homogeneous of degree zero, the
 scale cancels completely, and the value depends on nothing but the two ratios:</p>
 <div class="display-math tex">\[V_t(R,L,S) = v_t(F,\rho).\]</div>
-<p>There is no size factor <span class="math tex">\(L\)</span> multiplying it — the value is <em>literally</em> scale-invariant. So
+<p>There is no size factor <span class="math tex">\(L_t\)</span> in front, as there was in <span class="math tex">\(L_t\,w_t\)</span> under the linear
+objective — the value is <em>literally</em> scale-invariant. So
 the curvature that makes the decision interesting costs us <em>nothing</em> in dimensionality:
 the level never returns, the state stays <span class="math tex">\((t,F,\rho)\)</span>, and the awkward exchange rate never
 appears, because two degree-zero quantities are already in the same units. The only price
@@ -432,12 +439,17 @@ contributions stop, the liability stops accruing the guaranteed rate and simply 
 (<span class="math tex">\(L' = L\)</span>), the reserve keeps earning its credited return (<span class="math tex">\(R' = R\,e^{\mu + \sigma_R z_R}\)</span>),
 the WAP shortfall is still tested only at retirement, and — reserves being immediately
 vested — the leaver <em>keeps</em> the contract. The recursion gains one blended term,</p>
-<div class="display-math tex">\[v_t(F,\rho) = \max_a\Big[\, \text{flow}_t(a) + \mathbb{E}\big[(1 - h_t)\,v_{t+1}(F',\rho') + h_t\,\Phi_{t+1}(F',\rho')\big]\,\Big],\]</div>
-<p>where <span class="math tex">\(\Phi\)</span> is the value of a frozen paid-up contract: an actionless companion problem
-on the same <span class="math tex">\((F,\rho)\)</span> grid, with the guarantee turned off and no contributions, whose
-own recursion is <span class="math tex">\(\Phi_T = v_T\)</span> and <span class="math tex">\(\Phi_t(F,\rho) = \mathbb{E}[\Phi_{t+1}(F\,e^{\mu+\sigma_R z_R},\,(1+W)\rho)]\)</span>.
-No new dimension, just a second value surface and a probabilistic boundary, both computed
-with the same machinery as the core problem.</p>
+<div class="display-math tex">\[v_t(F,\rho) = \max_a\Big[\, \text{flow}_t(a) + \mathbb{E}\big[(1 - h_t)\,v_{t+1}(F',\rho') + h_t\,\Phi^{(t)}_{t+1}(F',\rho')\big]\,\Big],\]</div>
+<p>where <span class="math tex">\(\Phi^{(\tau)}\)</span> is the value of a contract frozen by a departure in year <span class="math tex">\(\tau\)</span>: an
+actionless companion problem on the same <span class="math tex">\((F,\rho)\)</span> grid, with no contributions and no
+further guarantee <em>accrual</em> — the WAP shortfall is still tested at retirement, now against
+the frozen liability. Its own recursion runs</p>
+<div class="display-math tex">\[\Phi^{(\tau)}_s(F,\rho) = \mathbb{E}\big[\Phi^{(\tau)}_{s+1}\big(F\,e^{\mu+\sigma_R z_R},\,(1+W)\rho\big)\big], \qquad \Phi^{(\tau)}_T = v_T\big|_{\text{RR}^\star \to\, \text{RR}^\star_\tau},\]</div>
+<p>seeded at retirement by the stayer's terminal payoff with one substitution — the full
+target gives way to the service-pro-rated target of the next paragraph. (Only the
+full-career cohort <span class="math tex">\(\tau = T\)</span> is seeded by <span class="math tex">\(v_T\)</span> unchanged.) No new dimension, just a
+second value surface per cohort and a probabilistic boundary, all computed with the same
+machinery as the core problem.</p>
 <p>There is one thing to get right about the leaver, and it is a question of <em>whose</em> target the
 70% is. The target is a <em>full-career-with-this-employer</em> promise, so a member who leaves after
 <span class="math tex">\(\tau\)</span> years should never be funded toward, or judged against, the full 70% — only a full-career
@@ -452,9 +464,10 @@ is not (it is earned across the whole career, not with this employer). The conse
 they are now judged against a low pro-rated bar, the marginal value of funding the churn-heavy
 early years falls — the plan funds the members actually accruing toward the full target. This
 directly disciplines both over-funding of likely-leavers and the front-load. Mechanically, each
-leave-cohort <span class="math tex">\(\tau\)</span> has its own paid-up value <span class="math tex">\(\Phi_\tau\)</span> with target <span class="math tex">\(\text{RR}^\star_\tau\)</span>; because
-the paid-up reserve compounds to a lognormal, <span class="math tex">\(\Phi_\tau\)</span> is a cheap one-dimensional quadrature,
-and the employer's shortfall in it remains a real, unscaled euro.</p>
+leave-cohort <span class="math tex">\(\tau\)</span> has its own paid-up value <span class="math tex">\(\Phi^{(\tau)}\)</span> with target <span class="math tex">\(\text{RR}^\star_\tau\)</span>; because
+the paid-up reserve compounds to a lognormal, <span class="math tex">\(\Phi^{(\tau)}\)</span> is a cheap one-dimensional quadrature,
+and the employer's shortfall in it stays linear, in the same per-unit-of-final-salary
+numéraire as the stayer's.</p>
 <p>This churn-aware value function — not a certain-tenure simplification of it — is the object
 every result below is computed against. The remaining question is how to compute
 <span class="math tex">\(v_t(F,\rho)\)</span> over its two-coordinate state. That is the next section</p>
@@ -472,7 +485,7 @@ total replacement against target, minus the employer's shortfall:</p>
 <div class="display-math tex">\[v_T(F, \rho) = \lambda\,\ddot a\, u\!\Big(\tfrac{\text{RR}_{\text{total}}}{\text{RR}^\star}\Big)e^{-\delta_e T} \;-\; (1-\lambda)\,\tfrac{\max(1 - F, 0)}{\rho}\,e^{-\delta_f T}, \qquad \text{RR}_{\text{total}} = \text{RR}_{\text{legal}} + \tfrac{\max(F,1)}{\ddot a\,\rho}.\]</div>
 <p>The employee term is the annuity-weighted CRRA of total replacement — legal first pillar plus the
 annuitised occupational pension — measured against the 70% target; the employer term is the WAP
-shortfall as a fraction of final salary, <span class="math tex">\(\max(1-F,0)/\rho\)</span>, linear. This is the stayer seed (full target); a leaver's paid-up <span class="math tex">\(\Phi_\tau\)</span> uses the service-pro-rated target defined
+shortfall as a fraction of final salary, <span class="math tex">\(\max(1-F,0)/\rho\)</span>, linear. This is the stayer seed (full target); a leaver's paid-up <span class="math tex">\(\Phi^{(\tau)}\)</span> uses the service-pro-rated target defined
 above. It depends on <span class="math tex">\(F\)</span> and <span class="math tex">\(\rho\)</span> — the legal baseline enters as a constant, not a new coordinate — and it is the seed of the whole
 computation.</p>
 <p>From there we walk backwards. Suppose — the inductive wager — that we already know
@@ -487,6 +500,11 @@ deterministic salary growth <span class="math tex">\((1+W)^{-(T-t)}\)</span>, an
 there is <em>no</em> unit-conversion factor, because a scale-free objective carries no size term
 to rescale. The action <span class="math tex">\(a\)</span> threads through both: it costs now, and through <span class="math tex">\(F',\rho'\)</span> it
 steers where next year lands.</p>
+<p>Displayed here is the <em>stayer</em> backup, for readability. The churn-aware version — the one
+every result is computed against — is the same expression with the continuation
+<span class="math tex">\(\mathbb{E}[v_{t+1}]\)</span> replaced by the blend of the previous section,
+<span class="math tex">\(\mathbb{E}\big[(1-h_t)\,v_{t+1} + h_t\,\Phi^{(t)}_{t+1}\big]\)</span>: same grid, same quadrature
+nodes, one extra surface to look up per node.</p>
 <p>And note what is <em>absent</em>: there is no discount factor multiplying the continuation. In
 the textbook Bellman equation you would see a <span class="math tex">\(\gamma\)</span> there. We do not have one, on
 purpose, because we discounted every cash flow to a single fixed date <span class="math tex">\(t=0\)</span> <em>inside</em> the

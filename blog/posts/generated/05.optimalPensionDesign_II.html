@@ -434,22 +434,52 @@ around forty-five percent reach ten years and about fifteen percent a full caree
 retention is <em>not</em> a discount factor to multiply onto the continuation. It is a
 <em>branching</em> of the future. With probability <span class="math tex">\(1 - h_t\)</span> the member stays and the plan lands
 in <span class="math tex">\((F', \rho')\)</span> under the in-force dynamics; with probability <span class="math tex">\(h_t\)</span> the contract goes
-<strong>paid-up</strong>. Under the Belgian regime a paid-up contract is a specific object:
-contributions stop, the liability stops accruing the guaranteed rate and simply freezes
-(<span class="math tex">\(L' = L\)</span>), the reserve keeps earning its credited return (<span class="math tex">\(R' = R\,e^{\mu + \sigma_R z_R}\)</span>),
-the WAP shortfall is still tested only at retirement, and — reserves being immediately
-vested — the leaver <em>keeps</em> the contract. The recursion gains one blended term,</p>
+<strong>paid-up</strong>. Under the Belgian regime a paid-up contract is a specific object, and the
+thing to get right about it is an <em>asymmetry between the two rates</em>: one keeps running and
+the other stops. Contributions cease. The reserve goes on earning the insurer's credited
+return, now locked for the remaining term, so it compounds deterministically and with no
+further asset shock (<span class="math tex">\(R' = R\,e^{\mu}\)</span>). The liability, by contrast, stops accruing the
+<em>legal</em> return altogether and freezes at its departure level (<span class="math tex">\(L' = L\)</span>) — the WAP rate no
+longer applies to a member who has gone.</p>
+<p>What does not disappear is the floor <em>itself</em>. The frozen <span class="math tex">\(L_\tau\)</span> remains the benchmark the
+reserve is tested against at retirement, so the employee still walks away with
+<span class="math tex">\(\max(R_T, L_\tau)\)</span> and the employer still owes any shortfall against it. The guarantee
+stops <em>growing</em>; it does not lapse. And reserves being immediately vested, the leaver keeps
+the contract outright. The recursion gains one blended term,</p>
 <div class="display-math tex">\[v_t(F,\rho) = \max_a\Big[\, \text{flow}_t(a) + \mathbb{E}\big[(1 - h_t)\,v_{t+1}(F',\rho') + h_t\,\Phi^{(t)}_{t+1}(F',\rho')\big]\,\Big],\]</div>
 <p>where <span class="math tex">\(\Phi^{(\tau)}\)</span> is the value of a contract frozen by a departure in year <span class="math tex">\(\tau\)</span>: an
 actionless companion problem on the same <span class="math tex">\((F,\rho)\)</span> grid, with no contributions and no
-further guarantee <em>accrual</em> — the WAP shortfall is still tested at retirement, now against
-the frozen liability. Its own recursion runs</p>
-<div class="display-math tex">\[\Phi^{(\tau)}_s(F,\rho) = \mathbb{E}\big[\Phi^{(\tau)}_{s+1}\big(F\,e^{\mu+\sigma_R z_R},\,(1+W)\rho\big)\big], \qquad \Phi^{(\tau)}_T = v_T\big|_{\text{RR}^\star \to\, \text{RR}^\star_\tau},\]</div>
+further accrual on either side — but with the shortfall against the frozen floor still
+settled at retirement. Its own recursion runs</p>
+<div class="display-math tex">\[\Phi^{(\tau)}_s(F,\rho) = \Phi^{(\tau)}_{s+1}\big(F\,e^{\mu},\,(1+W)\rho\big), \qquad \Phi^{(\tau)}_T = v_T\big|_{\text{RR}^\star \to\, \text{RR}^\star_\tau},\]</div>
 <p>seeded at retirement by the stayer's terminal payoff with one substitution — the full
 target gives way to the service-pro-rated target of the next paragraph. (Only the
-full-career cohort <span class="math tex">\(\tau = T\)</span> is seeded by <span class="math tex">\(v_T\)</span> unchanged.) No new dimension, just a
-second value surface per cohort and a probabilistic boundary, all computed with the same
-machinery as the core problem.</p>
+full-career cohort <span class="math tex">\(\tau = T\)</span> is seeded by <span class="math tex">\(v_T\)</span> unchanged.)</p>
+<p>Both branches pay <span class="math tex">\(\text{flow}_t(a)\)</span> and both land at the same in-force <span class="math tex">\((F', \rho')\)</span>: a
+member leaving during year <span class="math tex">\(t\)</span> still receives that year's contribution and that year's
+guarantee accrual, and the contract freezes only from <span class="math tex">\(t+1\)</span>. They worked the year, so they
+are funded for it.</p>
+<p>Note what that recursion no longer has: an expectation. Freezing the contract freezes its
+<em>risk</em> as well as its cash flows. The liability stops moving, the credited rate is locked,
+and salary growth was deterministic all along — so both state coordinates simply roll
+forward, and nothing random happens to a paid-up contract between the freeze and
+retirement:</p>
+<div class="display-math tex">\[F_T = F_s\,e^{\mu\,(T-s)}, \qquad \rho_T = (1+W)^{\,T-s}\,\rho_s.\]</div>
+<p>So <span class="math tex">\(\Phi\)</span> is not a companion <em>stochastic</em> problem at all. It is a closed form: roll the two
+coordinates forward to <span class="math tex">\(T\)</span> and evaluate the terminal payoff there, once, with no quadrature
+and no backward pass. The recursion above is the definition; this is the implementation, and
+it is a single function evaluation per point rather than a second value surface to store and
+interpolate.</p>
+<p>This has an economic reading worth pausing on, because it is a real consequence of the
+Belgian paid-up regime rather than a modelling convenience. The employer's WAP exposure on a
+leaver is <em>settled at the moment they leave</em>: with <span class="math tex">\(F_T = F_\tau e^{\mu(T-\tau)}\)</span> known at
+departure, whether the guarantee bites at retirement — and by how much — is already
+determined. An underfunded leaver either cures deterministically through the locked credited
+return or does not, and no subsequent market year can change the answer. All the genuine
+risk in the problem lives in the stayer branch; departure converts a risky position into a
+known one. Seen from year <span class="math tex">\(t\)</span>, of course, <span class="math tex">\(\Phi^{(t)}_{t+1}\)</span> is still evaluated at a
+<em>random</em> <span class="math tex">\((F', \rho')\)</span> — this year's shocks have yet to land. It is only from the freeze
+onward that the path is certain.</p>
 <p>There is one thing to get right about the leaver, and it is a question of <em>whose</em> target the
 70% is. The target is a <em>full-career-with-this-employer</em> promise, so a member who leaves after
 <span class="math tex">\(\tau\)</span> years should never be funded toward, or judged against, the full 70% — only a full-career
@@ -463,10 +493,10 @@ is not (it is earned across the whole career, not with this employer). The conse
 <em>decision</em> is the point: because a euro funded early mostly reaches people who will leave, and
 they are now judged against a low pro-rated bar, the marginal value of funding the churn-heavy
 early years falls — the plan funds the members actually accruing toward the full target. This
-directly disciplines both over-funding of likely-leavers and the front-load. Mechanically, each
-leave-cohort <span class="math tex">\(\tau\)</span> has its own paid-up value <span class="math tex">\(\Phi^{(\tau)}\)</span> with target <span class="math tex">\(\text{RR}^\star_\tau\)</span>; because
-the paid-up reserve compounds to a lognormal, <span class="math tex">\(\Phi^{(\tau)}\)</span> is a cheap one-dimensional quadrature,
-and the employer's shortfall in it stays linear, in the same per-unit-of-final-salary
+directly disciplines both over-funding of likely-leavers and the front-load. Mechanically the
+target is the <em>only</em> thing the cohort index changes: <span class="math tex">\(\Phi^{(\tau)}\)</span> differs from <span class="math tex">\(\Phi^{(\tau')}\)</span>
+in the seed <span class="math tex">\(\text{RR}^\star_\tau\)</span> and in nothing else — same frozen dynamics, same deterministic
+roll-forward, and an employer shortfall that stays linear, in the same per-unit-of-final-salary
 numéraire as the stayer's.</p>
 <p>This churn-aware value function — not a certain-tenure simplification of it — is the object
 every result below is computed against. The remaining question is how to compute
@@ -492,19 +522,17 @@ computation.</p>
 <span class="math tex">\(v_{t+1}\)</span> everywhere, the value of standing in <em>any</em> <span class="math tex">\((F, \rho)\)</span> one year from now. Then
 the value today is a single optimization: over each candidate contribution <span class="math tex">\(a\)</span>, weigh what
 it costs this year against where it leaves you next year, and keep the best.</p>
-<div class="display-math tex">\[v_t(F,\rho) = \max_{a \in [0,1]}\Big[\, \underbrace{-(1-\lambda)\,a\Gamma\,(1+W)^{-(T-t)}\,e^{-\delta_f\,t}}_{\text{paid this year, per unit final salary}} \;+\; \underbrace{\mathbb{E}_{z_R, z_L}\big[\, v_{t+1}(F', \rho') \,\big]}_{\text{expected value of next year}} \,\Big], \qquad \ell = a\Gamma\rho.\]</div>
+<div class="display-math tex">\[v_t(F,\rho) = \max_{a \in [0,1]}\Big[\, \underbrace{-(1-\lambda)\,a\Gamma\,(1+W)^{-(T-t)}\,e^{-\delta_f\,t}}_{\text{paid this year, per unit final salary}} \;+\; \underbrace{\mathbb{E}_{z_R, z_L}\big[\, (1-h_t)\,v_{t+1}(F', \rho') \;+\; h_t\,\Phi^{(t)}_{t+1}(F', \rho') \,\big]}_{\text{expected value of next year, stay or leave}} \,\Big], \qquad \ell = a\Gamma\rho.\]</div>
 <p>Two terms. <strong>The cost</strong>: the employer's contribution this year, expressed as a fraction of
 final salary — it is <span class="math tex">\(a\Gamma\)</span> of <em>current</em> salary, converted to final-salary units by the
 deterministic salary growth <span class="math tex">\((1+W)^{-(T-t)}\)</span>, and discounted to <span class="math tex">\(t=0\)</span> at the employer rate <span class="math tex">\(e^{-\delta_f\,t}\)</span>.
-<strong>The continuation</strong>: simply the expected next-year value, averaged over both shocks —
-there is <em>no</em> unit-conversion factor, because a scale-free objective carries no size term
-to rescale. The action <span class="math tex">\(a\)</span> threads through both: it costs now, and through <span class="math tex">\(F',\rho'\)</span> it
-steers where next year lands.</p>
-<p>Displayed here is the <em>stayer</em> backup, for readability. The churn-aware version — the one
-every result is computed against — is the same expression with the continuation
-<span class="math tex">\(\mathbb{E}[v_{t+1}]\)</span> replaced by the blend of the previous section,
-<span class="math tex">\(\mathbb{E}\big[(1-h_t)\,v_{t+1} + h_t\,\Phi^{(t)}_{t+1}\big]\)</span>: same grid, same quadrature
-nodes, one extra surface to look up per node.</p>
+<strong>The continuation</strong>: the expected next-year value, averaged over both shocks <em>and</em> over the
+two ways the year can end — with probability <span class="math tex">\(1 - h_t\)</span> the member is still in the plan and
+next year's decision is live, with probability <span class="math tex">\(h_t\)</span> the contract is frozen and its value is
+the actionless <span class="math tex">\(\Phi^{(t)}_{t+1}\)</span> of the previous section. There is <em>no</em> unit-conversion
+factor on either, because a scale-free objective carries no size term to rescale. The action
+<span class="math tex">\(a\)</span> threads through all of it: it costs now, and through <span class="math tex">\(F',\rho'\)</span> it steers where next year
+lands — for stayer and leaver alike, since the year's contribution is paid before the freeze.</p>
 <p>And note what is <em>absent</em>: there is no discount factor multiplying the continuation. In
 the textbook Bellman equation you would see a <span class="math tex">\(\gamma\)</span> there. We do not have one, on
 purpose, because we discounted every cash flow to a single fixed date <span class="math tex">\(t=0\)</span> <em>inside</em> the
@@ -525,7 +553,12 @@ integral deterministically, with Gauss–Hermite quadrature, as a <em>tensor gri
 handful of scenarios in each shock, combined into a grid with product weights,</p>
 <div class="display-math tex">\[\mathbb{E}_{z_R, z_L}\big[g\big] \approx \sum_{i}\sum_{j} \omega_i\,\omega_j\, g\big(z_{R,i},\, z_{L,j}\big).\]</div>
 <p>Fifteen nodes per axis is <span class="math tex">\(225\)</span> evaluations — still deterministic, still seed-free, and
-still far cheaper than a converged Monte-Carlo average.It is worth seeing what that sum actually <em>does</em>, because the figure is the dynamic-programming principle in a single frame.</p>
+still far cheaper than a converged Monte-Carlo average. The leaving branch barely adds to
+that, and it is worth being precise about how little: at each of those <span class="math tex">\(225\)</span> landing points
+the backup also wants <span class="math tex">\(\Phi^{(t)}_{t+1}\)</span>, which by the collapse above is <em>one</em> evaluation of
+the terminal payoff at a deterministically rolled-forward point — no inner quadrature, no
+backward pass, no stored surface of its own. Nor does the cohort index multiply anything:
+the year-<span class="math tex">\(t\)</span> backup only ever asks for <span class="math tex">\(\Phi^{(t)}\)</span>, one cohort, the one that leaves now.It is worth seeing what that sum actually <em>does</em>, because the figure is the dynamic-programming principle in a single frame.</p>
 <figure class="post-figure">
 <svg viewBox="0 0 680 300" width="100%" role="img" aria-label="One state's expected continuation as a weighted sum over a fixed grid of next-year states">
 <rect x="224" y="60" width="232" height="170" rx="10" fill="none" stroke="var(--image-lightcolor)" stroke-width="1" stroke-dasharray="4 4"/>
@@ -585,9 +618,9 @@ still far cheaper than a converged Monte-Carlo average.It is worth seeing what t
 <text x="332" y="240" text-anchor="middle" font-size="12" fill="var(--image-darkcolor)">expected continuation → vₜ(F, ρ)</text>
 <text x="340" y="280" text-anchor="middle" font-size="12" fill="var(--image-darkcolor)">square size = product weight ωᵢωⱼ — nodes are fixed, not sampled</text>
 </svg>
-<figcaption>One backward step at a state (t, F, ρ). This year's choice a is scattered by the two shocks across a fixed z_R × z_L grid of next-year states (drawn 5×5; the oracle runs 15×15). Each node is weighted by ωᵢωⱼ and read off the vₜ₊₁ surface; their weighted sum is the expected continuation that feeds vₜ. Vertical spread is ρ′, horizontal is F′, with the put kink pinned at F′ = 1.</figcaption>
+<figcaption>One backward step at a state (t, F, ρ). This year's choice a is scattered by the two shocks across a fixed z_R × z_L grid of next-year states (drawn 5×5; the oracle runs 15×15). Each node is weighted by ωᵢωⱼ and read off the vₜ₊₁ surface; their weighted sum is the expected continuation that feeds vₜ. Vertical spread is ρ′, horizontal is F′, with the put kink pinned at F′ = 1. Drawn for the stayer branch: under churn each node reads a blend of the vₜ₊₁ surface and the frozen contract's Φ⁽ᵗ⁾ₜ₊₁, in proportion 1 − hₜ to hₜ.</figcaption>
 </figure>
-Read it as the recursion made mechanical. One state $(t, F, \rho)$, one candidate action $a$, and the expectation the backup needs is not a haze of random futures but a *fixed lattice* of them — each next-year state $(F', \rho')$ pinned to a quadrature node, each carrying a weight $\omega_i\omega_j$ that is genuinely a probability. The one-dimensional Gauss–Hermite weights sum to one, so their outer product does too; the "integral" is an honest weighted average, not a bag of arbitrary coefficients. The value the backup wants, $\mathbb{E}[v_{t+1}]$, is just those futures looked up on the surface and averaged under those weights — the fat central node, the modal outcome, carrying almost all the mass; the tail nodes faint but never zero, because the shortfall the employer is short lives in precisely those bad-return corners. Many futures in, one number out, handed back to the present: that single returning arrow *is* the Bellman coupling, the value of standing here built from the value of standing everywhere you might go next.
+Read it as the recursion made mechanical. One state $(t, F, \rho)$, one candidate action $a$, and the expectation the backup needs is not a haze of random futures but a *fixed lattice* of them — each next-year state $(F', \rho')$ pinned to a quadrature node, each carrying a weight $\omega_i\omega_j$ that is genuinely a probability. The one-dimensional Gauss–Hermite weights sum to one, so their outer product does too; the "integral" is an honest weighted average, not a bag of arbitrary coefficients. The value the backup wants is just those futures looked up on the surface and averaged under those weights — under churn, each lookup is the $1-h_t$ / $h_t$ blend of the live surface and the frozen one, but the lattice and the weights are identical either way — the fat central node, the modal outcome, carrying almost all the mass; the tail nodes faint but never zero, because the shortfall the employer is short lives in precisely those bad-return corners. Many futures in, one number out, handed back to the present: that single returning arrow *is* the Bellman coupling, the value of standing here built from the value of standing everywhere you might go next.
 <p>Two things the tidy lattice hides. First, the nodes are drawn on a square grid but do not <em>land</em> on one: each true position is <span class="math tex">\(\big(\tfrac{F+\ell}{1+\ell}\,e^{(\mu-G)+\sigma_R z_R-\sigma_L z_L},\ \tfrac{(1+W)\rho}{(1+\ell)\,e^{G+\sigma_L z_L}}\big)\)</span>, an exponential warp of the evenly-spaced shock grid — which is exactly why <span class="math tex">\(v_{t+1}\)</span> must be <em>interpolated</em> at each landing rather than read off a stored cell. Second, the lattice is a genuine grid and not a line: two axes, one per shock. That two-dimensionality is not a modelling extravagance but a forced consequence, and it is the next thing to justify. One might hope to collapse the two
 shocks back into one: the funding ratio only ever sees their <em>difference</em>
 <span class="math tex">\(\sigma_R z_R - \sigma_L z_L\)</span>, which is itself a single normal. But the salary ratio <span class="math tex">\(\rho'\)</span>
@@ -612,12 +645,15 @@ thing: try a dense sweep of candidate contributions and take the best. The only 
 the fineness of the sweep, which we can make as small as we like and, crucially, can
 <em>report</em>.</p>
 <p>Put together, one backward step is: for every <span class="math tex">\((F, \rho)\)</span> on the grid, run every candidate
-contribution through every shock-pair scenario, look up next year's tabulated value at each
-landing point, average with the product weights, add this year's cost, and keep the best
-contribution. Repeat from retirement back to today. What falls out is not just the value
-<span class="math tex">\(v_0\)</span> but, at every state and every year, the contribution that achieved it — the optimal
-funding rule <span class="math tex">\(a^\star(t, F, \rho)\)</span> laid out in full, interior and adequacy-driven, as the
-utility demands.</p>
+contribution through every shock-pair scenario; at each landing point blend the two futures
+the year can have — next year's tabulated value <span class="math tex">\(v_{t+1}\)</span> with weight <span class="math tex">\(1 - h_t\)</span>, and the
+frozen contract's <span class="math tex">\(\Phi^{(t)}_{t+1}\)</span>, priced on the spot by rolling it forward in closed
+form, with weight <span class="math tex">\(h_t\)</span> — then average those blends with the product weights, add this year's cost,
+and keep the best contribution. Repeat from retirement back to today. What falls out is not
+just the value <span class="math tex">\(v_0\)</span> — the worth of a <em>new hire</em>, already averaged over every way their
+tenure might end — but, at every state and every year, the contribution that achieved it: the
+optimal funding rule <span class="math tex">\(a^\star(t, F, \rho)\)</span> laid out in full, interior and adequacy-driven, as
+the utility demands.</p>
 <p>There is one numerical price the curvature extracts, and it is worth stating plainly. A
 CRRA value function is sharply bent — more so the more risk-averse the plan, with
 interpolation error scaling like <span class="math tex">\((1-\eta)^2\)</span> — and a grid resolves sharp curvature only

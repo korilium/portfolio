@@ -45,6 +45,7 @@ function chartFrame({
   yDomain,
   xTickFormat = String,
   yTickLabels = null,
+  xTickLabels = null,
   xLabel = null,
   yLabel = null,
   width = CHART_W,
@@ -60,7 +61,10 @@ function chartFrame({
   const yTicks = yTickLabels
     ? yTickLabels
     : niceTicks(yDomain[0], yDomain[1], 4).map((v) => ({ v, label: v.toFixed(2) }));
-  const xTickVals = niceTicks(xDomain[0], xDomain[1], 4);
+  // explicit x labels are for axes whose even spacing is not in data units (log cost)
+  const xTicks = xTickLabels
+    ? xTickLabels
+    : niceTicks(xDomain[0], xDomain[1], 4).map((v) => ({ v, label: xTickFormat(v) }));
 
   const yGrid = yTicks
     .map(
@@ -70,9 +74,9 @@ function chartFrame({
     )
     .join("");
 
-  const xTicksSvg = xTickVals
+  const xTicksSvg = xTicks
     .map(
-      (v) => `<text x="${xs(v)}" y="${m.top + plotH + 16}" class="chart-tick chart-tick-x">${xTickFormat(v)}</text>`
+      ({ v, label }) => `<text x="${xs(v)}" y="${m.top + plotH + 16}" class="chart-tick chart-tick-x">${label}</text>`
     )
     .join("");
 
@@ -108,14 +112,21 @@ function chartSvg(body, label, width = CHART_W, height = CHART_H) {
 // exact 256-entry tables — close enough that the two are recognisably the same
 // colour scheme side by side.
 
+/** A ramp is a function t in [0, 1] -> CSS colour; `.rgb(t)` gives the same colour
+ *  as [r, g, b], which is what a canvas heatmap writes. */
 function rampOf(stops) {
-  return (t) => {
+  const rgb = (t) => {
     const x = Math.max(0, Math.min(1, t)) * (stops.length - 1);
     const i = Math.min(stops.length - 2, Math.floor(x));
     const f = x - i;
-    const c = stops[i].map((v, k) => Math.round(v + f * (stops[i + 1][k] - v)));
+    return stops[i].map((v, k) => Math.round(v + f * (stops[i + 1][k] - v)));
+  };
+  const css = (t) => {
+    const c = rgb(t);
     return `rgb(${c[0]},${c[1]},${c[2]})`;
   };
+  css.rgb = rgb;
+  return css;
 }
 
 const VIRIDIS = rampOf([
@@ -129,6 +140,48 @@ const MAGMA = rampOf([
   [181, 54, 122], [229, 80, 100], [251, 135, 97], [254, 194, 135],
   [252, 253, 191],
 ]);
+
+// matplotlib's RdBu_r: blue (t = 0) through white (0.5) to red (1), for a signed
+// quantity centred on zero
+const RDBU = rampOf([
+  [5, 48, 97], [33, 102, 172], [67, 147, 195], [146, 197, 222], [209, 229, 240],
+  [247, 247, 247], [253, 219, 199], [244, 165, 130], [214, 96, 77], [178, 24, 43],
+  [103, 0, 31],
+]);
+
+/** A heatmap as an <image>, one pixel per grid node, drawn through a canvas.
+ *
+ *  The (F, log rho) grids are uniform in plot coordinates, so node (i, j) is one
+ *  pixel and the image only has to be stretched over the node CELLS: half a step
+ *  beyond the first and last node on each axis, as pcolormesh(shading="auto")
+ *  does. At 73x71 that is one element instead of ~5,000 SVG rects.
+ *
+ *  `colourAt(i, j)` returns [r, g, b] or null (transparent). `xOf`/`yOf` map a node
+ *  INDEX (fractional allowed) to plot coordinates. */
+function heatImage(nx, ny, colourAt, xOf, yOf) {
+  const canvas = document.createElement("canvas");
+  canvas.width = nx;
+  canvas.height = ny;
+  const ctx = canvas.getContext("2d");
+  const img = ctx.createImageData(nx, ny);
+  for (let i = 0; i < nx; i++) {
+    for (let j = 0; j < ny; j++) {
+      const c = colourAt(i, j);
+      if (!c) continue;
+      const k = 4 * ((ny - 1 - j) * nx + i);          // row 0 is the TOP, i.e. rho max
+      img.data[k] = c[0];
+      img.data[k + 1] = c[1];
+      img.data[k + 2] = c[2];
+      img.data[k + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  const x0 = xOf(-0.5);
+  const x1 = xOf(nx - 0.5);
+  const yTop = yOf(ny - 0.5);
+  const yBot = yOf(-0.5);
+  return `<image href="${canvas.toDataURL()}" x="${x0.toFixed(2)}" y="${yTop.toFixed(2)}" width="${(x1 - x0).toFixed(2)}" height="${(yBot - yTop).toFixed(2)}" preserveAspectRatio="none" class="chart-heat" />`;
+}
 
 /** Vertical colour bar with a label, mirroring matplotlib's colorbar.
  *  `ticks` are [position 0..1, label] pairs, bottom to top. */

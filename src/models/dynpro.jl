@@ -298,21 +298,27 @@ applies only from t+1. Pass `hazard = no_churn` for the no-churn benchmark.
 
 `beta` is the policy-EXTRACTION temperature (see `soft_readout!`): 0 gives the
 hard argmax, > 0 gives the soft readout with the argmax also returned as
-`policy_hard`. V[t] = max_a Q either way, so beta never changes the objective."""
+`policy_hard`. V[t] = max_a Q either way, so beta never changes the objective.
+
+`betas` additionally returns the soft readout at each of those temperatures as
+`policy_soft[beta]`, from the SAME Q-values — the readout is cheap next to the Q
+computation, so one solve serves a whole temperature sweep (the Python's `betas`)."""
 function solve(Fg::Vector{Float64}, rg::Vector{Float64}, ag::Vector{Float64},
                p::Params=Params(); n_quad::Integer=5, hazard=tenure_hazard,
-               beta::Union{Nothing,Real}=nothing)
+               beta::Union{Nothing,Real}=nothing, betas=())
     NF, NR, na = length(Fg), length(rg), length(ag)
     zR, zL, wq = gauss_hermite_2d(n_quad)
     Q = length(wq)
     lrg = log.(rg)
     beta = beta === nothing ? p.BETA : float(beta)
-    need_Q = beta > 0
+    betas = Float64[float(b) for b in betas]
+    need_Q = beta > 0 || !isempty(betas)
 
     Phi = paidup_service(Fg, rg, p)
     V = [Matrix{Float64}(undef, NF, NR) for _ in 0:p.T]
     policy = [Matrix{Float64}(undef, NF, NR) for _ in 1:p.T]
     hard = need_Q ? [Matrix{Float64}(undef, NF, NR) for _ in 1:p.T] : nothing
+    soft = Dict(b => [Matrix{Float64}(undef, NF, NR) for _ in 1:p.T] for b in betas)
     V[p.T + 1] = terminal(Fg, rg, p)
 
     Vnext = Matrix{Float64}(undef, NF, NR)
@@ -372,12 +378,16 @@ function solve(Fg::Vector{Float64}, rg::Vector{Float64}, ag::Vector{Float64},
         copyto!(V[t + 1], best)
         if need_Q
             copyto!(hard[t + 1], abest)
-            soft_readout!(policy[t + 1], Qstack, ag, beta)
+            beta > 0 ? soft_readout!(policy[t + 1], Qstack, ag, beta) :
+                       copyto!(policy[t + 1], abest)
+            for b in betas
+                soft_readout!(soft[b][t + 1], Qstack, ag, b)
+            end
         else
             copyto!(policy[t + 1], abest)
         end
     end
-    return (Fg=Fg, rg=rg, ag=ag, V=V, policy=policy, policy_hard=hard)
+    return (Fg=Fg, rg=rg, ag=ag, V=V, policy=policy, policy_hard=hard, policy_soft=soft)
 end
 
 # --- forward evaluation ------------------------------------------------------

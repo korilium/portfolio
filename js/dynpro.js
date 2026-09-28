@@ -1,6 +1,6 @@
 // Play Ground tool for the Rung-2 DP oracle. Charts use the shared SVG helpers in
-// js/charts.js; the heatmap below is the one piece those don't cover, since they
-// are line-only.
+// js/charts.js; the (F, rho) panel figures are in js/panels.js. Every figure here
+// mirrors one in the thesis repo's tests/dynpro suites, named at each function.
 
 const form = document.getElementById("dynpro-form");
 const results = document.getElementById("dynpro-results");
@@ -26,10 +26,6 @@ function fmtRange(m, digits = 3) {
 
 // Room for a rotated y-label on the left and a colour bar on the right.
 const LINE_GEOM = { width: 420, height: 300, margin: { top: 26, right: 18, bottom: 46, left: 62 } };
-const MAP_GEOM = { width: 420, height: 300, margin: { top: 26, right: 84, bottom: 46, left: 62 } };
-
-const AX_F = "F = R / L   (funding ratio)";
-const AX_RHO = "ρ = S / L   (log)";
 
 function scheduleChart(years, schedules) {
   const all = schedules.flatMap((s) => s.c_by);
@@ -89,94 +85,224 @@ function adequacyChart(ad) {
   );
 }
 
-/** The simulation drawn ON the state space: pooled occupancy behind, and the
-    cohort's median path through (F, rho) over the career on top. Quantiles come
-    from the occupancy histogram, so the path is a staircase at node resolution. */
-function stateSpaceChart(F, rho, pooled, traj) {
-  // The axes are set by the TRAJECTORY, not by where the occupancy mass is. Those
-  // differ sharply: the cohort starts at rho ~ 22 for one year then spends 44 years
-  // below 2, so cropping to 99% of path-years would cut off the start of the very
-  // path being drawn.
-  const span = (q) => [
-    Math.min(...traj[q].p10.filter(Number.isFinite)),
-    Math.max(...traj[q].p90.filter(Number.isFinite)),
-  ];
-  const [fLo, fHi] = span("F");
-  const [rLo, rHi] = span("rho");
-  if (!(fHi > fLo) || !(rHi > rLo)) return "";
+// --- small shared pieces ------------------------------------------------------
 
-  let maxV = 0;
-  for (const row of pooled) for (const v of row) if (v > maxV) maxV = v;
-
-  const xDomain = padDomain(fLo, fHi, 0.08);
-  const loR = Math.log(rLo) - 0.2;
-  const hiR = Math.log(rHi) + 0.2;
-
-  const { xs, geom, svgHead } = chartFrame({
-    ...MAP_GEOM,
-    title: "Where the simulated cohort travels",
-    xDomain,
-    yDomain: [0, 1],
-    xTickFormat: (v) => v.toFixed(2),
-    yTickLabels: [0, 0.25, 0.5, 0.75, 1].map((f) => {
-      const val = Math.exp(loR + f * (hiR - loR));
-      return { v: f, label: val >= 10 ? val.toFixed(0) : val.toFixed(2) };
-    }),
-    xLabel: AX_F,
-    yLabel: AX_RHO,
-  });
-  const yOf = (r) => geom.m.top + geom.plotH - ((Math.log(r) - loR) / (hiR - loR || 1)) * geom.plotH;
-
-  let cells = "";
-  for (let i = 0; i < pooled.length; i++) {
-    for (let j = 0; j < pooled[i].length; j++) {
-      const v = pooled[i][j];
-      if (!v) continue;
-      const x0 = xs(F[i]);
-      const w = Math.max(0.8, xs(F[i + 1]) - x0);
-      const y0 = yOf(rho[j + 1]);
-      const h = Math.max(0.8, yOf(rho[j]) - y0);
-      cells += `<rect x="${x0.toFixed(1)}" y="${y0.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="${MAGMA(Math.log1p(v) / Math.log1p(maxV))}" opacity="0.45" />`;
-    }
+/** A point marker. Shapes carry the series as well as the colour does, as in the
+ *  thesis figures, so the charts survive greyscale and colour-blind reading. */
+function marker(shape, x, y, cls, r = 3.4) {
+  const X = x.toFixed(1);
+  const Y = y.toFixed(1);
+  if (shape === "square") {
+    return `<rect x="${(x - r).toFixed(1)}" y="${(y - r).toFixed(1)}" width="${2 * r}" height="${2 * r}" class="chart-mk ${cls}" />`;
   }
+  if (shape === "diamond") {
+    const k = r * 1.3;
+    return `<path d="M${X},${(y - k).toFixed(1)} L${(x + k).toFixed(1)},${Y} L${X},${(y + k).toFixed(1)} L${(x - k).toFixed(1)},${Y} Z" class="chart-mk ${cls}" />`;
+  }
+  return `<circle cx="${X}" cy="${Y}" r="${r}" class="chart-mk ${cls}" />`;
+}
 
-  const pts = traj.F.p50.map((f, t) => [xs(f), yOf(traj.rho.p50[t])]);
-  // a dark halo under the path: the shading is brightest exactly where the path runs
-  const d = pathFrom(pts);
-  const path = `<path d="${d}" class="chart-halo" /><path d="${d}" class="chart-line chart-traj" />`;
+const DESIGN_CLS = ["c-d0", "c-d1"];
+const DESIGN_SHAPE = ["square", "diamond"];
 
-  const marks = [0, 10, 22, 44]
-    .filter((t) => t < pts.length)
-    .map((t) => {
-      const [cx, cy] = pts[t];
-      const xlo = xs(traj.F.p10[t]);
-      const xhi = xs(traj.F.p90[t]);
-      const ylo = yOf(traj.rho.p10[t]);
-      const yhi = yOf(traj.rho.p90[t]);
-      const whiskers = `M${xlo.toFixed(1)},${cy.toFixed(1)} L${xhi.toFixed(1)},${cy.toFixed(1)} M${cx.toFixed(1)},${ylo.toFixed(1)} L${cx.toFixed(1)},${yhi.toFixed(1)}`;
-      return `<path d="${whiskers}" class="chart-halo chart-halo-thin" /><path d="${whiskers}" class="chart-whisker" />
-              <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="3.2" class="chart-marker chart-marker-ringed" />
-              <text x="${(cx + 6).toFixed(1)}" y="${(cy - 5).toFixed(1)}" class="chart-tick chart-tick-halo">t = ${t}</text>`;
-    })
-    .join("");
+const swatch = (cls, label) =>
+  `<span class="legend-item"><i class="legend-swatch swatch-c ${cls}"></i>${label}</span>`;
 
-  const par =
-    xDomain[0] <= 1 && xDomain[1] >= 1
-      ? `<line x1="${xs(1).toFixed(1)}" y1="${geom.m.top}" x2="${xs(1).toFixed(1)}" y2="${geom.m.top + geom.plotH}" class="chart-par" />
-         <text x="${(xs(1) + 3).toFixed(1)}" y="${(geom.m.top + 9).toFixed(1)}" class="chart-tick">F = 1</text>`
-      : "";
+/** A vertical reference line across the plot, with a label above it. */
+function vRule(x, geom, cls, label) {
+  return `<line x1="${x.toFixed(1)}" y1="${geom.m.top}" x2="${x.toFixed(1)}" y2="${geom.m.top + geom.plotH}" class="${cls}" />
+    <text x="${x.toFixed(1)}" y="${geom.m.top - 4}" class="chart-tick" text-anchor="middle">${label}</text>`;
+}
 
-  const bar = colourBar({
-    x: geom.m.left + geom.plotW + 12, y: geom.m.top, w: 10, h: geom.plotH,
-    ramp: MAGMA, label: "path-years (log)",
-    ticks: [[0, "1"], [1, `${Math.round(maxV)}`]],
+function hRule(y, geom, cls, label) {
+  return `<line x1="${geom.m.left}" y1="${y.toFixed(1)}" x2="${geom.m.left + geom.plotW}" y2="${y.toFixed(1)}" class="${cls}" />
+    <text x="${geom.m.left + geom.plotW - 3}" y="${(y - 3).toFixed(1)}" class="chart-tick" text-anchor="end">${label}</text>`;
+}
+
+/** Tick labels for a log10 axis from a list of candidate values. */
+function logAxisLabels(dom, candidates, fmtv = (c) => `${c}`) {
+  return candidates
+    .filter((c) => Math.log10(c) >= dom[0] && Math.log10(c) <= dom[1])
+    .map((c) => ({ v: Math.log10(c), label: fmtv(c) }));
+}
+
+// --- the lambda dial (from /dynpro/sweep) -------------------------------------
+
+/** lambda_dial_suite.lambda_threshold: grid-mean and path-weighted a* against the
+ *  employee weight, on the unconstrained action grid. The two differ because only
+ *  a thin ribbon of the grid is ever visited. */
+function thresholdChart(th, lamUser) {
+  const lam = th.lambda;
+  const hi = Math.max(...th.grid_mean, ...th.path);
+  const { xs, ys, geom, svgHead } = chartFrame({
+    ...LINE_GEOM,
+    title: "Optimal funding rises smoothly in λ, then saturates",
+    xDomain: padDomain(lam[0], lam[lam.length - 1], 0.04),
+    yDomain: [0, hi * 1.08],
+    xTickFormat: (v) => v.toFixed(2),
+    yTickLabels: niceTicks(0, hi, 5).map((v) => ({ v, label: v.toFixed(2) })),
+    xLabel: "employee weight λ",
+    yLabel: "optimal funding a*",
   });
+  const series = (vals, cls, shape) =>
+    `<path d="${pathFrom(vals.map((v, k) => [xs(lam[k]), ys(v)]))}" class="chart-series ${cls}" />` +
+    vals.map((v, k) => marker(shape, xs(lam[k]), ys(v), cls, 2.6)).join("");
+  const you = lamUser >= lam[0] && lamUser <= lam[lam.length - 1]
+    ? vRule(xs(lamUser), geom, "chart-refline", `your λ = ${lamUser.toFixed(2)}`)
+    : "";
+  return chartSvg(`${svgHead}${you}${series(th.grid_mean, "c-grid", "circle")}${series(th.path, "c-path", "square")}`,
+                  "Grid-mean and path-weighted optimal funding against the employee weight",
+                  LINE_GEOM.width, LINE_GEOM.height);
+}
 
-  // the axes are cropped to the trajectory, so occupancy cells outside them must be clipped
-  const clip = `<clipPath id="ss-clip"><rect x="${geom.m.left}" y="${geom.m.top}" width="${geom.plotW}" height="${geom.plotH}" /></clipPath>`;
-  return chartSvg(`${clip}<g clip-path="url(#ss-clip)">${cells}</g>${svgHead}${par}${path}${marks}${bar}`,
-                  "Median path of the simulated cohort through the funding and salary ratios",
-                  MAP_GEOM.width, MAP_GEOM.height);
+/** benchmark_suite.frontier: the lambda-frontier, with the page's market designs on
+ *  it (left), and the adequacy each design gives up at its own budget (right). The
+ *  ring is the optimum at the lambda set in the form. */
+function frontierCharts(sw, opt) {
+  const fr = sw.frontier;
+  const n = fr.cost.length;
+  const costs = [...fr.cost, ...sw.designs.map((d) => d.cost), opt.cost.value].filter((v) => v > 0);
+  const xDomain = [Math.log10(Math.min(...costs)) - 0.06, Math.log10(Math.max(...costs)) + 0.06];
+  const xTickLabels = logAxisLabels(xDomain, [0.05, 0.07, 0.1, 0.15, 0.2, 0.3, 0.4, 0.6, 0.8, 1]);
+  const lx = (c) => Math.log10(c);
+
+  const frame = (title, yVals, yLabel, xLabel, fmtY) => {
+    const lo = Math.min(...yVals);
+    const hi = Math.max(...yVals);
+    return chartFrame({
+      ...LINE_GEOM,
+      title, xDomain, xTickLabels,
+      yDomain: padDomain(lo, hi, 0.08),
+      yTickLabels: niceTicks(lo, hi, 5).map((v) => ({ v, label: fmtY(v) })),
+      xLabel, yLabel,
+    });
+  };
+  const line = (xs, ys, yKey) =>
+    `<path d="${pathFrom(fr.cost.map((c, k) => [xs(lx(c)), ys(fr[yKey][k])]))}" class="chart-series c-front" />` +
+    fr.cost.map((c, k) => marker("circle", xs(lx(c)), ys(fr[yKey][k]), "c-front", 2.6)).join("");
+  const designMarks = (xs, ys, yKey) =>
+    sw.designs.map((d, i) => marker(DESIGN_SHAPE[i], xs(lx(d.cost)), ys(d[yKey]), DESIGN_CLS[i], 4.2)).join("");
+  const ring = (xs, ys, y) =>
+    `<circle cx="${xs(lx(opt.cost.value)).toFixed(1)}" cy="${ys(y).toFixed(1)}" r="6" class="chart-ring" />`;
+
+  // left: employee value against employer cost
+  const L = frame("Market designs against the optimised frontier",
+                  [...fr.benefit, ...sw.designs.map((d) => d.benefit), opt.benefit.value],
+                  "employee value E[u(RR)]  (better ↑)", "employer cost per unit final salary (log; cheaper ←)",
+                  (v) => v.toFixed(2));
+  // label a few lambdas, skipping any whose point coincides with one already drawn:
+  // on the band-censored stretches several lambdas share one point
+  const shown = [];
+  const lamLabels = [0, Math.floor(n / 3), Math.floor((2 * n) / 3), n - 1]
+    .filter((k) => {
+      if (shown.some((j) => Math.abs(fr.cost[k] / fr.cost[j] - 1) < 0.02)) return false;
+      shown.push(k);
+      return true;
+    })
+    .map((k) => `<text x="${(L.xs(lx(fr.cost[k])) + 5).toFixed(1)}" y="${(L.ys(fr.benefit[k]) + 11).toFixed(1)}" class="chart-tick chart-tick-accent">λ = ${fr.lambda[k].toFixed(2)}</text>`)
+    .join("");
+  const left = chartSvg(`${L.svgHead}${line(L.xs, L.ys, "benefit")}${lamLabels}${designMarks(L.xs, L.ys, "benefit")}${ring(L.xs, L.ys, opt.benefit.value)}`,
+                        "Employee value against employer cost: the optimised frontier and the market designs",
+                        LINE_GEOM.width, LINE_GEOM.height);
+
+  // right: stayer adequacy at the same budget, the arrow is the gap
+  const target = sw.meta.target;
+  const legal = sw.meta.legal;
+  const R = frame("Adequacy at the same budget (arrow = the gap)",
+                  [...fr.sty, ...sw.designs.flatMap((d) => [d.sty, d.dp_sty ?? d.sty]), target, legal],
+                  "stayer replacement rate", "employer cost per unit final salary (log)",
+                  (v) => v.toFixed(2));
+  const arrows = sw.designs.map((d, i) => {
+    if (d.dp_sty === null || d.dp_sty === undefined) return "";
+    const x = R.xs(lx(d.cost));
+    const y0 = R.ys(d.sty);
+    const y1 = R.ys(d.dp_sty);
+    const dir = y1 < y0 ? 1 : -1;               // +1: arrow points up the page
+    const head = `M${x.toFixed(1)},${y1.toFixed(1)} L${(x - 3).toFixed(1)},${(y1 + 6 * dir).toFixed(1)} L${(x + 3).toFixed(1)},${(y1 + 6 * dir).toFixed(1)} Z`;
+    return `<line x1="${x.toFixed(1)}" y1="${(y0 - 5 * dir).toFixed(1)}" x2="${x.toFixed(1)}" y2="${(y1 + 5 * dir).toFixed(1)}" class="chart-arrow ${DESIGN_CLS[i]}" />
+            <path d="${head}" class="chart-mk ${DESIGN_CLS[i]}" />`;
+  }).join("");
+  const right = chartSvg(`${R.svgHead}${hRule(R.ys(target), R.geom, "chart-refline", `target ${target.toFixed(2)}`)}${hRule(R.ys(legal), R.geom, "chart-zeroline", `legal ${legal.toFixed(2)}`)}${line(R.xs, R.ys, "sty")}${arrows}${designMarks(R.xs, R.ys, "sty")}${ring(R.xs, R.ys, opt.sty.value)}`,
+                         "Stayer replacement rate against employer cost, with the gap each design leaves",
+                         LINE_GEOM.width, LINE_GEOM.height);
+  return { left, right };
+}
+
+// --- the signal readout ----------------------------------------------------------
+
+/** An integer as superscript digits, for 10⁻⁴-style log-axis labels. */
+const sup = (n) => String(n).split("").map((ch) => "⁻⁰¹²³⁴⁵⁶⁷⁸⁹"["-0123456789".indexOf(ch)]).join("");
+
+const SIGNAL_GEOM = { ...LINE_GEOM, margin: { ...LINE_GEOM.margin, right: 56 } };
+const betaColour = (k, n) => VIRIDIS(0.15 + (0.65 * k) / Math.max(1, n - 1));
+
+/** contribution_schedule_suite.signal_schedule: the contribution read off the same
+ *  value function at each temperature beta (left), and what that legibility costs
+ *  in joint value against how much smoother it makes the schedule (right). */
+function signalCharts(sig) {
+  const soft = sig.soft;
+  const T = sig.hard.c_by.length;
+  const hi = Math.max(...sig.hard.c_by, ...soft.flatMap((s) => s.c_by));
+  const A = chartFrame({
+    ...LINE_GEOM,
+    title: "Contribution read off the value function as a signal",
+    xDomain: [0, T - 1],
+    yDomain: [0, hi * 1.05],
+    xTickFormat: (v) => `${Math.round(v)}`,
+    yTickLabels: niceTicks(0, hi, 5).map((v) => ({ v, label: v.toFixed(0) })),
+    xLabel: "career year t",
+    yLabel: "contribution (% of salary)",
+  });
+  const sched = (c_by) => pathFrom(c_by.map((v, t) => [A.xs(t), A.ys(v)]));
+  const leftSvg = `${A.svgHead}<path d="${sched(sig.hard.c_by)}" class="chart-series chart-series-bold c-hard" />` +
+    soft.map((s, k) => `<path d="${sched(s.c_by)}" class="chart-series" style="stroke:${betaColour(k, soft.length)}" />`).join("");
+  const left = chartSvg(leftSvg, "Contribution schedule read off the value function at each temperature",
+                        LINE_GEOM.width, LINE_GEOM.height);
+
+  const betas = soft.map((s) => s.beta);
+  const gaps = soft.map((s) => s.gap);
+  const roughs = soft.map((s) => s.rough);
+  const xDomain = [Math.log10(betas[0]) - 0.25, Math.log10(betas[betas.length - 1]) + 0.25];
+  const gLo = Math.min(0, ...gaps);
+  const gHi = Math.max(...gaps);
+  const B = chartFrame({
+    ...SIGNAL_GEOM,
+    title: "Price of legibility: a smoother schedule costs joint value",
+    xDomain,
+    xTickLabels: logAxisLabels(xDomain, [1e-4, 1e-3, 1e-2, 1e-1, 1],
+                               (c) => `10${sup(Math.round(Math.log10(c)))}`),
+    yDomain: padDomain(gLo, gHi, 0.08),
+    yTickLabels: niceTicks(gLo, gHi, 5).map((v) => ({ v, label: (Math.abs(v) < 0.05 ? 0 : v).toFixed(1) })),
+    xLabel: "readout temperature β (fraction of local Q-range, log)",
+    yLabel: "value gap vs argmax (% of joint)",
+  });
+  // right-hand axis for roughness, as the thesis's twinx
+  const rAll = [...roughs, sig.hard.rough];
+  const rDom = padDomain(Math.min(...rAll), Math.max(...rAll), 0.08);
+  const yr = makeScale(rDom, [B.geom.m.top + B.geom.plotH, B.geom.m.top]);
+  const xr = B.geom.m.left + B.geom.plotW;
+  const rAxis = niceTicks(Math.min(...rAll), Math.max(...rAll), 5)
+    .map((v) => `<line x1="${xr}" y1="${yr(v).toFixed(1)}" x2="${xr + 3}" y2="${yr(v).toFixed(1)}" class="chart-axis" />
+                 <text x="${xr + 5}" y="${yr(v).toFixed(1)}" class="chart-tick chart-tick-y" text-anchor="start">${v.toFixed(2)}</text>`)
+    .join("") +
+    `<line x1="${xr}" y1="${B.geom.m.top}" x2="${xr}" y2="${B.geom.m.top + B.geom.plotH}" class="chart-axis" />
+     <text transform="translate(${SIGNAL_GEOM.width - 6} ${B.geom.m.top + B.geom.plotH / 2}) rotate(-90)" class="chart-axis-label" text-anchor="middle">roughness (mean sq. yr-on-yr change)</text>`;
+  const bx = (b) => B.xs(Math.log10(b));
+  const gapLine = `<path d="${pathFrom(betas.map((b, k) => [bx(b), B.ys(gaps[k])]))}" class="chart-series c-hard" />` +
+    betas.map((b, k) => marker("circle", bx(b), B.ys(gaps[k]), "c-hard", 3)).join("");
+  const roughLine = `<path d="${pathFrom(betas.map((b, k) => [bx(b), yr(roughs[k])]))}" class="chart-series c-path" />` +
+    betas.map((b, k) => marker("square", bx(b), yr(roughs[k]), "c-path", 3)).join("");
+  const hardRough = `<line x1="${B.geom.m.left}" y1="${yr(sig.hard.rough).toFixed(1)}" x2="${xr}" y2="${yr(sig.hard.rough).toFixed(1)}" class="chart-series chart-series-dotted c-path" />`;
+  const you = sig.beta > 0 && Math.log10(sig.beta) >= xDomain[0] && Math.log10(sig.beta) <= xDomain[1]
+    ? vRule(bx(sig.beta), B.geom, "chart-refline", `your β = ${sig.beta}`)
+    : "";
+  const right = chartSvg(`${B.svgHead}${rAxis}${you}${hardRough}${gapLine}${roughLine}`,
+                         "Value gap and schedule roughness against the readout temperature",
+                         SIGNAL_GEOM.width, SIGNAL_GEOM.height);
+
+  const legend = swatch("c-hard", `argmax (hard, avg ${sig.hard.avg.toFixed(1)}%)`) +
+    soft.map((s, k) => `<span class="legend-item"><i class="legend-swatch" style="background:${betaColour(k, soft.length)}"></i>β=${s.beta} (avg ${s.avg.toFixed(1)}%)</span>`).join("");
+  return { left, right, legend };
 }
 
 // --- render ------------------------------------------------------------------
@@ -229,6 +355,10 @@ function render(d) {
   const legend = d.schedules
     .map((s, i) => `<span class="legend-item"><i class="legend-swatch ${SWATCH[i % SWATCH.length]}"></i>${s.name}</span>`)
     .join("");
+  const sig = signalCharts(d.signal);
+  const mis = d.misfunding.designs
+    .map((m) => `${m.name} over-funds ${Math.round(100 * m.over_share)}% of the path-years it reaches (mean Δ ${m.mean_delta >= 0 ? "+" : "−"}${Math.abs(m.mean_delta).toFixed(2)})`)
+    .join("; ");
 
   results.innerHTML = `
     <div class="chart-row">
@@ -242,31 +372,96 @@ function render(d) {
         </figcaption></figure>
     </div>
     ${renderTable(d.table)}
-    <h3 class="chart-section">The simulation on the state space
-      <span class="chart-subnote">median path through (F, ρ); crosses are the 10th–90th percentile spread; shading is total occupancy</span></h3>
-    <div class="chart-row">
-      <figure class="chart-figure chart-figure-wide">
-        ${stateSpaceChart(d.state_space.F, d.state_space.rho, d.state_space.visits, d.trajectory)}
-        <figcaption class="chart-caption">Contributions enter the reserve and the guarantee equally, so they carry F = 1 and pull the plan towards par: F stays near 1 while ρ = S/L falls as the liability builds against salary.</figcaption>
-      </figure>
-    </div>
+
+    <h3 class="chart-section">What the λ dial buys
+      <span class="chart-subnote">the optimum re-solved across the employee weight λ, every other assumption as set above</span></h3>
+    <div id="dynpro-sweep"><p class="playground-placeholder">Sweeping λ… 32 more solves, about ten seconds.</p></div>
+
     <h3 class="chart-section">Optimal funding rule, and where careers actually are
-      <span class="chart-subnote">a*(F, ρ) in colour; white: iso total replacement (gold = target); magenta: the cohort that year (50/90/99th pct of occupancy); dotted: F = 1</span></h3>
+      <span class="chart-subnote">a*(F, ρ) in colour; white: iso total replacement, <span class="subnote-target">gold: the ${fmt(d.adequacy.target, 2)} target</span>; magenta: the simulated cohort that year (50/90/99th pct of occupancy); dotted: F = 1</span></h3>
     <div class="chart-scroll">
       <figure class="chart-figure-full">${policyPanels({
         F: d.policy_maps.F, rho: d.policy_maps.rho, maps: d.policy_maps.maps,
         legal: d.adequacy.legal, target: d.adequacy.target, annuity: d.meta.annuity,
       })}</figure>
     </div>
+
+    <h3 class="chart-section">Where each market design departs from the optimum
+      <span class="chart-subnote">Δ = a_design − a* on the states the design's own careers visit: red over-funds, blue under-funds; contours: 50/90/99th pct of that year's occupancy; blank: never visited</span></h3>
+    <div class="chart-scroll">
+      <figure class="chart-figure-full">${misfundingPanels(d.misfunding)}
+        <figcaption class="chart-caption">${mis}. a* is read off-policy on these cells: the design steers careers to states the optimum's own simulation may rarely reach.</figcaption></figure>
+    </div>
+
+    <h3 class="chart-section">The contribution as a signal
+      <span class="chart-subnote">the same V read out at temperature β; β = 0 is the hard argmax, and your β = ${d.signal.beta} is the readout used everywhere above</span></h3>
+    <div class="chart-row">
+      <figure class="chart-figure">${sig.left}
+        <figcaption class="chart-legend chart-legend-wrap">${sig.legend}</figcaption></figure>
+      <figure class="chart-figure">${sig.right}
+        <figcaption class="chart-legend">
+          ${swatch("c-hard", "value gap vs argmax (%)")}
+          ${swatch("c-path", "schedule roughness")}
+          <span class="legend-item"><i class="legend-swatch swatch-dotted c-path"></i>argmax roughness</span>
+        </figcaption></figure>
+    </div>
     ${renderNotes(d)}
   `;
 }
 
+function renderSweep(sw, d) {
+  const box = document.getElementById("dynpro-sweep");
+  if (!box) return;
+  const fr = frontierCharts(sw, d.table[0]);
+  const designs = sw.designs.map((x, i) =>
+    `<span class="legend-item"><svg class="legend-mk" viewBox="-6 -6 12 12">${marker(DESIGN_SHAPE[i], 0, 0, DESIGN_CLS[i], 4)}</svg>${x.name}</span>`).join("");
+  const gaps = sw.designs
+    .filter((x) => x.dp_sty !== null)
+    .map((x) => `${x.name} reaches ${fmt(x.sty, 2)}; the optimum reaches ${fmt(x.dp_sty, 2)} on the same budget`)
+    .join(". ");
+  box.innerHTML = `
+    <div class="chart-row">
+      <figure class="chart-figure">${fr.left}</figure>
+      <figure class="chart-figure">${fr.right}</figure>
+    </div>
+    <p class="chart-legend chart-legend-wrap">
+      ${swatch("c-front", "optimised frontier (swept λ)")}${designs}
+      <span class="legend-item"><i class="legend-ring"></i>your λ = ${d.meta.lambda.toFixed(2)}</span>
+    </p>
+    <p class="chart-caption">${gaps ? `${gaps}.` : ""} The frontier is censored by the contribution band at both ends, so its points sit between λ = 0.15 and 0.60.</p>
+    <div class="chart-row">
+      <figure class="chart-figure">${thresholdChart(sw.threshold, d.meta.lambda)}
+        <figcaption class="chart-legend">
+          ${swatch("c-grid", "grid-mean a*")}${swatch("c-path", "path-weighted a*")}
+        </figcaption></figure>
+      <figure class="chart-figure chart-figure-text">
+        <p>The <strong>grid-mean</strong> averages the rule over every state; the <strong>path-weighted</strong> mean averages it over the states careers actually occupy. They differ because only a thin ribbon of the grid is ever reached — the magenta contours below.</p>
+        <p>Funding rises smoothly with λ and saturates once the optimum is pinned at the top of the action grid; there is no kink. This sweep is unconstrained (no band), as in the thesis, since the band would censor the very rise it shows.</p>
+        <p class="chart-subnote">${sw.threshold.lambda.length + sw.frontier.lambda.length} solves on a ${sw.meta.grid.nF}×${sw.meta.grid.nR} grid in ${sw.meta.seconds}s across ${sw.meta.threads} threads.</p>
+      </figure>
+    </div>`;
+}
+
+async function postJSON(path, payload) {
+  const response = await fetch(`${API_BASE}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return response.json();
+}
+
+// A second click while a run is in flight must not let the older run's slower
+// sweep land on the newer run's page.
+let runId = 0;
+
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+  const run = ++runId;
   const button = form.querySelector("button[type=submit]");
   button.disabled = true;
-  results.innerHTML = `<p class="playground-placeholder">Solving… the DP takes a couple of seconds.</p>`;
+  results.innerHTML = `<p class="playground-placeholder">Solving… the DP takes a few seconds.</p>`;
 
   const payload = {};
   for (const el of form.elements) {
@@ -274,17 +469,22 @@ form.addEventListener("submit", async (event) => {
     payload[el.name] = el.type === "checkbox" ? el.checked : Number(el.value);
   }
 
+  // The sweep is requested only once the main result is in. Sent together, they
+  // share the server's cores and the main result (the one being waited on) took
+  // ~7s instead of ~4s; in sequence it lands first and the lambda section follows.
   try {
-    const response = await fetch(`${API_BASE}/dynpro/evaluate`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    render(await response.json());
+    const d = await postJSON("/dynpro/evaluate", payload);
+    if (run !== runId) return;
+    render(d);
+    postJSON("/dynpro/sweep", payload)
+      .then((sw) => { if (run === runId) renderSweep(sw, d); })
+      .catch((err) => {
+        const box = document.getElementById("dynpro-sweep");
+        if (run === runId && box) box.innerHTML = `<p class="playground-error">The λ sweep failed: ${err.message}</p>`;
+      });
   } catch (err) {
-    results.innerHTML = `<p class="playground-error">Couldn't reach the model backend: ${err.message}</p>`;
+    if (run === runId) results.innerHTML = `<p class="playground-error">Couldn't reach the model backend: ${err.message}</p>`;
   } finally {
-    button.disabled = false;
+    if (run === runId) button.disabled = false;
   }
 });

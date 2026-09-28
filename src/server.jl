@@ -78,7 +78,21 @@ end
 # The DP solve is the whole cost (~2s at 73x71; simulate is ~0.05s), so the grid
 # is capped rather than left to the caller — this runs on a home server.
 const DYNPRO_MAX = (nF=145, nR=101, na=41, nq=7, n_paths=40_000, n_seeds=10)
-const DYNPRO_YEARS = [0, 10, 22, 44]   # the years whose policy maps are returned
+# The years each figure shows, taken from the thesis figures they mirror.
+const PANEL_YEARS = [1, 5, 10, 20, 25, 30, 40, 44]      # policy_map.png
+const MISFUND_YEARS = [0, 10, 22, 44]                   # benchmark_misfunding.png
+const SIGNAL_BETAS = [0.0001, 0.001, 0.01, 0.03, 0.10, 0.30]   # signal_schedule.png
+
+# lambda_dial_suite.lambda_threshold: stops at 0.62 because above ~0.6 the optimum is
+# pinned at the top of the action grid and the path-weighted curve is a flat line.
+const THRESHOLD_LAMBDAS = collect(range(0.15, 0.62; length=16))
+# benchmark_suite.FRONTIER_LAMBDAS: the frontier is censored by the band at both ends
+# (lambda <= 0.15 at the floor, >= 0.60 at the ceiling), so the points sit in between.
+const FRONTIER_LAMBDAS = [0.15, 0.18, 0.21, 0.24, 0.27, 0.30, 0.33, 0.36, 0.39, 0.42,
+                          0.45, 0.48, 0.51, 0.54, 0.57, 0.60]
+# The sweeps are 32 solves, so they run on the thesis's protocol grid at most
+# (common.GRID), whatever the main request asked for.
+const SWEEP_MAX = (nF=73, nR=71, na=20, nq=5, n_paths=15_000)
 
 # 1,000,000 episodes runs in ~1s server-side, so there's no real reason to
 # undercut basicEnv.py's own default here. A lower value converges fine for
@@ -113,86 +127,22 @@ function moving_average(v::AbstractVector, window::Integer)
     return out
 end
 
-# Reducing a 73x71 grid to something a browser should draw. n = 28 keeps the
-# heatmaps to a few thousand SVG rects; at 40 the rendered markup was 750 KB.
-#
-# The reduction differs by WHAT is being reduced, and getting this wrong is not
-# cosmetic. A policy surface is smooth, so sampling every k-th node represents it
-# faithfully. An occupancy histogram is not: sampling it DISCARDS the counts in
-# between, which silently deletes mass — it cropped the state-space plot to
-# rho <= 1.9 when the cohort starts near 22. Histograms are block-SUMMED instead.
-
-"""Block starts and the cell edges for reducing an axis of `nodes` to <= n cells."""
-function blocks(nodes::AbstractVector, n::Integer=28)
-    k = max(1, cld(length(nodes) - 1, n))
-    starts = collect(1:k:(length(nodes) - 1))
-    edges = vcat([nodes[i] for i in starts], nodes[end])
-    return starts, k, edges
-end
-
-"""Subsample a smooth field at the block starts (for the policy surface)."""
-sample_at(M::AbstractMatrix, si, sj) = [M[i, j] for i in si, j in sj]
-
-"""Sum a histogram over blocks, so no count is lost (for occupancy). The two axes
-can reduce by different factors, so both block sizes are passed.
-
-The LAST block runs to the end of the axis, not to start + k - 1: `blocks` puts the
-final node in the last cell's edge rather than starting a block of its own, so
-stopping at start + k - 1 silently dropped it (nF = 73, k = 3: node 73 never summed)."""
-function pool(M::AbstractMatrix, si, ki::Integer, sj, kj::Integer)
-    stop(s, a, k, n) = a == length(s) ? n : s[a] + k - 1
-    out = zeros(eltype(M), length(si), length(sj))
-    for (a, i) in enumerate(si), (b, j) in enumerate(sj)
-        out[a, b] = sum(@view M[i:stop(si, a, ki, size(M, 1)),
-                                j:stop(sj, b, kj, size(M, 2))])
-    end
-    return out
-end
-
 """A matrix as a vector of its rows, so the client's `M[i][j]` is `M[i, j]`.
 
 JSON.jl writes a Matrix column-major — `[1 2; 3 4]` becomes `[[1,3],[2,4]]` — so
-sending one as-is hands the browser its TRANSPOSE. On the (near-)square reduced
-grid that fails silently: every (F, rho) map was drawn with the axes swapped."""
+sending one as-is hands the browser its TRANSPOSE. On a (near-)square grid that
+fails silently: every (F, rho) map was once drawn with the axes swapped."""
 rows(M::AbstractMatrix) = [M[i, :] for i in axes(M, 1)]
 
-"""Weighted quantile of `nodes` under the counts `w`."""
-function wquantile(nodes::AbstractVector, w::AbstractVector, q::Real)
-    tot = sum(w)
-    tot <= 0 && return NaN
-    acc = 0.0
-    for i in eachindex(nodes)
-        acc += w[i]
-        acc >= q * tot && return float(nodes[i])
-    end
-    return float(nodes[end])
-end
-
-"""The cohort's path through the state space, read off the per-year occupancy
-histogram rather than from the paths themselves.
-
-Doing it this way keeps `simulate` a faithful port — it returns exactly what the
-Python returns — at the cost of node resolution: these quantiles land on grid
-nodes, so the curve is a staircase on a coarse grid rather than smooth. That is
-the honest trade, and the plot is about where the cohort GOES, not about the
-third decimal of where it is."""
-function trajectory(visits, Fg, rg)
-    T = length(visits)
-    out = Dict("F" => Dict{String,Vector{Float64}}(), "rho" => Dict{String,Vector{Float64}}(),
-               "present" => Float64[])
-    for key in ("p10", "p50", "p90")
-        out["F"][key] = Float64[]
-        out["rho"][key] = Float64[]
-    end
-    for t in 1:T
-        V = visits[t]
-        fw = vec(sum(V, dims=2))        # marginal over rho -> distribution of F
-        rw = vec(sum(V, dims=1))        # marginal over F   -> distribution of rho
-        push!(out["present"], sum(V))
-        for (key, q) in (("p10", 0.1), ("p50", 0.5), ("p90", 0.9))
-            push!(out["F"][key], wquantile(Fg, fw, q))
-            push!(out["rho"][key], wquantile(rg, rw, q))
-        end
+"""The occupied cells of a visit histogram as `[i, j, count]` (0-based, for the
+client), or `[i, j, count, extra[i, j]]`. Careers fill a thin ribbon of the grid,
+so this is a few hundred cells where the dense matrix would be ~5,000."""
+function occupied(V::AbstractMatrix; extra=nothing)
+    out = Vector{Vector{Float64}}()
+    for j in axes(V, 2), i in axes(V, 1)
+        V[i, j] > 0 || continue
+        push!(out, extra === nothing ? [i - 1, j - 1, V[i, j]] :
+                                       [i - 1, j - 1, V[i, j], round(extra[i, j], digits=4)])
     end
     return out
 end
@@ -269,113 +219,234 @@ end
     return json(Dict("tools" => TOOLS))
 end
 
-@post "/dynpro/evaluate" function(req)
-    r = parse_request(req, DynProRequest)
-
+"""What both DP endpoints share: the parameters, the grids, the band, and the two
+market designs as rate-of-salary schedules. `cap` bounds the grid."""
+function dynpro_setup(r::DynProRequest; cap=DYNPRO_MAX)
     p = DynPro.Params(T=r.T, G=r.G, MU=r.MU, W=r.W, DISC_EMP=r.DISC_EMP,
                       DISC_ER=r.DISC_ER, SIGMA_R=r.SIGMA_R, SIGMA_L=r.SIGMA_L,
                       GAMMA=r.GAMMA, LAMBDA=r.LAMBDA, ETA=r.ETA, ANNUITY=r.ANNUITY,
                       RR_LEGAL=r.RR_LEGAL, RR_TARGET=r.RR_TARGET,
-                      SATIATE=r.SATIATE, BETA=r.BETA)
-
-    nF = clamp(r.nF, 21, DYNPRO_MAX.nF)
-    nR = clamp(r.nR, 21, DYNPRO_MAX.nR)
-    na = clamp(r.na, 5, DYNPRO_MAX.na)
-    nq = clamp(r.nq, 3, DYNPRO_MAX.nq)
-    n_paths = clamp(r.n_paths, 500, DYNPRO_MAX.n_paths)
-    n_seeds = clamp(r.n_seeds, 1, DYNPRO_MAX.n_seeds)
-
+                      SATIATE=r.SATIATE, BETA=max(r.BETA, 0.0))
+    nF = clamp(r.nF, 21, cap.nF)
+    nR = clamp(r.nR, 21, cap.nR)
+    na = clamp(r.na, 5, cap.na)
+    nq = clamp(r.nq, 3, cap.nq)
+    n_paths = clamp(r.n_paths, 500, cap.n_paths)
     Fg = make_F_grid(n=nF)
     rg = make_rho_grid(n=nR)
-    lo = r.band_lo / p.GAMMA
     hi = min(r.band_hi / p.GAMMA, 1.0)
-    lo = min(lo, hi)                       # GAMMA -> 0 can invert the band
-    ag = collect(range(lo, hi; length=na))
-
-    t_solve = @elapsed out = solve(Fg, rg, ag, p; n_quad=nq)
-
-    # The design functions return a RATE OF SALARY; schedule_policy wants the control
-    # a, and contribution = a * GAMMA * S — so every design divides through by GAMMA.
-    as_control(rate_of_t) = t -> rate_of_t(t) / p.GAMMA
-    age_rate = design_age(r.age_rate0, r.age_step, r.age_band)
+    lo = min(r.band_lo / p.GAMMA, hi)       # GAMMA -> 0 can invert the band
     designs = [("Flat $(round(100 * r.flat_rate, digits=1))% of salary",
-                schedule_policy(as_control(design_flat(r.flat_rate)), nF, nR, p)),
+                design_flat(r.flat_rate)),
                ("Age scale $(round(100 * r.age_rate0, digits=1))% +$(round(100 * r.age_step, digits=1))%/$(r.age_band)y",
-                schedule_policy(as_control(age_rate), nF, nR, p))]
+                design_age(r.age_rate0, r.age_step, r.age_band))]
+    return (; p, nF, nR, na, nq, n_paths, Fg, rg, lo, hi,
+            ag=collect(range(lo, hi; length=na)), designs)
+end
+
+"""A design's rate-of-salary schedule as a policy. The design functions return a
+RATE OF SALARY; the control is a, with contribution = a * GAMMA * S."""
+design_policy(rate_of_t, s) =
+    schedule_policy(t -> rate_of_t(t) / s.p.GAMMA, s.nF, s.nR, s.p)
+
+roughness(c_by) = mean(diff(c_by) .^ 2)   # signal_schedule's "mean sq. yr-on-yr change"
+
+function dynpro_evaluate(r::DynProRequest)
+    s = dynpro_setup(r)
+    p, Fg, rg, n_paths = s.p, s.Fg, s.rg, s.n_paths
+    n_seeds = clamp(r.n_seeds, 1, DYNPRO_MAX.n_seeds)
+
+    # One solve serves the optimum AND the signal figure: every temperature in
+    # SIGNAL_BETAS is read off the same Q-values (see DynPro.solve's `betas`).
+    t_solve = @elapsed out = solve(Fg, rg, s.ag, p; n_quad=s.nq, betas=SIGNAL_BETAS)
+    designs = [(name, design_policy(rate, s)) for (name, rate) in s.designs]
 
     # one solve, several simulates: the range across seeds is the honest error bar
     runs = Dict{String,Vector{Any}}()
-    first_opt = nothing
+    firsts = Dict{String,Any}()
+    entry = nothing
     for k in 0:(n_seeds - 1)
-        rng = Xoshiro(r.seed + k)
-        R0, L0, S0 = new_plan_init(n_paths, rng)
-        want = k == 0
-        ro = simulate(out.policy, Fg, rg, p; R0=R0, L0=L0, S0=S0, band=(lo, hi),
-                      n_paths=n_paths, seed=r.seed + k, visits=want)
-        push!(get!(runs, "Optimised (DP)", []), ro)
-        k == 0 && (first_opt = ro)
-        for (name, pol) in designs
-            push!(get!(runs, name, []),
-                  simulate(pol, Fg, rg, p; R0=R0, L0=L0, S0=S0,
-                           n_paths=n_paths, seed=r.seed + k))
+        R0, L0, S0 = new_plan_init(n_paths, Xoshiro(r.seed + k))
+        k == 0 && (entry = (R0, L0, S0))
+        sim(pol; band=nothing) = simulate(pol, Fg, rg, p; R0=R0, L0=L0, S0=S0, band=band,
+                                          n_paths=n_paths, seed=r.seed + k, visits=k == 0)
+        for (name, pol, band) in [("Optimised (DP)", out.policy, (s.lo, s.hi));
+                                  [(nm, pl, nothing) for (nm, pl) in designs]]
+            ro = sim(pol; band=band)
+            push!(get!(runs, name, []), ro)
+            k == 0 && (firsts[name] = ro)
         end
     end
 
     names = ["Optimised (DP)", designs[1][1], designs[2][1]]
     table = [Dict("name" => nm,
-                  "cost" => spread([x[:cost] for x in runs[nm]]),
-                  "sty" => spread([x[:sty] for x in runs[nm]]),
-                  "lea" => spread([x[:lea] for x in runs[nm]]),
-                  "avg" => spread([x[:avg] for x in runs[nm]]),
-                  "joint" => spread([x[:joint] for x in runs[nm]])) for nm in names]
-
+                  (key => spread([x[Symbol(key)] for x in runs[nm]])
+                   for key in ("cost", "sty", "lea", "avg", "joint", "benefit"))...)
+             for nm in names]
     schedules = [Dict("name" => nm, "c_by" => runs[nm][1][:c_by]) for nm in names]
 
-    rr = first_opt[:RR_tot]
-    stay = first_opt[:stay]
-    hi_rr = maximum(rr)
-    sty_counts, edges = histogram(rr[stay], p.RR_LEGAL, hi_rr)
-    lea_counts, _ = histogram(rr[.!stay], p.RR_LEGAL, hi_rr)
+    opt = firsts["Optimised (DP)"]
+    rr, stay = opt[:RR_tot], opt[:stay]
+    sty_counts, edges = histogram(rr[stay], p.RR_LEGAL, maximum(rr))
+    lea_counts, _ = histogram(rr[.!stay], p.RR_LEGAL, maximum(rr))
 
-    years = [y for y in DYNPRO_YEARS if y <= p.T - 1]
-    si, ki, Fedges = blocks(Fg)
-    sj, kj, Redges = blocks(rg)
-    maps = [Dict("year" => y,
-                 "a" => rows(sample_at(out.policy[y + 1], si, sj)),
-                 "visits" => rows(pool(first_opt[:visits][y + 1], si, ki, sj, kj)))
-            for y in years]
-    # The state-space plot crops its axes to the trajectory (F ~ 0.75-1.35), where
-    # the 28-cell reduction leaves only ~4 cells across: it drew as wide vertical
-    # bands. It gets node resolution instead (k = 1). Only the occupied ribbon is
-    # drawn client-side, so the rect count stays small.
-    fi, fk, Ffull = blocks(Fg, length(Fg))
-    ri, rk, Rfull = blocks(rg, length(rg))
-    pooled = rows(pool(reduce(+, first_opt[:visits]), fi, fk, ri, rk))
-    traj = trajectory(first_opt[:visits], Fg, rg)
+    # policy_map.png: the rule at full grid resolution, the cohort's occupancy on it
+    V = opt[:visits]
+    policy_maps = Dict("F" => Fg, "rho" => rg,
+        "maps" => [Dict("year" => y,
+                        "a" => rows(round.(out.policy[y + 1], digits=3)),
+                        "visits" => occupied(V[y + 1]),
+                        "present" => sum(V[y + 1]))
+                   for y in PANEL_YEARS if y < p.T])
+
+    # benchmark_misfunding.png: Delta = a_design - a* on the cells the design visits.
+    # a* is read OFF-policy there (the design steers the plan elsewhere), which the
+    # page states; it is the banded optimum, the one the table simulates.
+    star = out.policy
+    misfunding = Dict("F" => Fg, "rho" => rg, "designs" => map(designs) do (name, pol)
+        Vd = firsts[name][:visits]
+        D = [pol[t] .- star[t] for t in 1:p.T]
+        tot = sum(sum, Vd)
+        over = sum(sum(Vd[t] .* (D[t] .> 0)) for t in 1:p.T)
+        Dict("name" => name,
+             "over_share" => tot > 0 ? over / tot : nothing,
+             "mean_delta" => tot > 0 ? sum(sum(Vd[t] .* D[t]) for t in 1:p.T) / tot : nothing,
+             "panels" => [Dict("year" => y,
+                               "cells" => occupied(Vd[y + 1]; extra=D[y + 1]),
+                               "mean_delta" => sum(Vd[y + 1]) > 0 ?
+                                   sum(Vd[y + 1] .* D[y + 1]) / sum(Vd[y + 1]) : nothing)
+                          for y in MISFUND_YEARS if y < p.T])
+    end)
+
+    # signal_schedule.png: the contribution read off V at each temperature, against
+    # the hard argmax, on the first seed's cohort
+    R0, L0, S0 = entry
+    sig(pol) = simulate(pol, Fg, rg, p; R0=R0, L0=L0, S0=S0, band=(s.lo, s.hi),
+                        n_paths=n_paths, seed=r.seed)
+    hard = sig(out.policy_hard)
+    signal = Dict("beta" => p.BETA,
+        "hard" => Dict("c_by" => hard[:c_by], "avg" => hard[:avg],
+                       "rough" => roughness(hard[:c_by])),
+        "soft" => map(SIGNAL_BETAS) do b
+            rs = sig(out.policy_soft[b])
+            Dict("beta" => b, "c_by" => rs[:c_by], "avg" => rs[:avg],
+                 "rough" => roughness(rs[:c_by]),
+                 "gap" => 100 * (hard[:joint] - rs[:joint]) / abs(hard[:joint]))
+        end)
 
     # A band-pinned schedule is set by the constraint, not by the trade-off, and a
     # lambda slider that does nothing reads as broken unless the page says why.
-    at_cap = count(>(r.band_hi * 100 - 0.3), first_opt[:c_by])
-    at_floor = count(<(r.band_lo * 100 + 0.3), first_opt[:c_by])
+    at_cap = count(>(r.band_hi * 100 - 0.3), opt[:c_by])
+    at_floor = count(<(r.band_lo * 100 + 0.3), opt[:c_by])
 
-    return json(Dict(
+    return Dict(
         "years" => collect(0:(p.T - 1)),
         "schedules" => schedules,
         "table" => table,
         "adequacy" => Dict("edges" => edges, "stayers" => sty_counts,
                            "leavers" => lea_counts,
                            "target" => p.RR_TARGET, "legal" => p.RR_LEGAL),
-        "policy_maps" => Dict("F" => Fedges, "rho" => Redges, "maps" => maps),
-        "state_space" => Dict("F" => Ffull, "rho" => Rfull, "visits" => pooled),
-        "trajectory" => traj,
+        "policy_maps" => policy_maps,
+        "misfunding" => misfunding,
+        "signal" => signal,
         "meta" => Dict("solve_seconds" => round(t_solve, digits=2),
-                       "grid" => Dict("nF" => nF, "nR" => nR, "na" => na, "nq" => nq),
+                       "grid" => Dict("nF" => s.nF, "nR" => s.nR, "na" => s.na, "nq" => s.nq),
                        "n_paths" => n_paths, "n_seeds" => n_seeds,
                        "years_at_cap" => at_cap, "years_at_floor" => at_floor,
-                       "band" => [r.band_lo, r.band_hi],
+                       "band" => [r.band_lo, r.band_hi], "lambda" => p.LAMBDA,
                        # the client draws iso-replacement contours on the policy map
                        "annuity" => p.ANNUITY, "gamma" => p.GAMMA),
-    ))
+    )
+end
+
+"""The two lambda sweeps: lambda_dial_suite.lambda_threshold and the frontier of
+benchmark_suite.frontier, with the page's two market designs placed against it.
+
+32 independent solves, so they run in parallel on Julia's worker threads (the
+Dockerfile passes --threads=auto,1); `Params` is a value, not module state, which
+is what makes that safe. Kept out of /dynpro/evaluate so the main result is not held
+up behind them: the page requests both and draws each as it lands."""
+function dynpro_sweep(r::DynProRequest)
+    s = dynpro_setup(r; cap=SWEEP_MAX)
+    p, Fg, rg, n_paths = s.p, s.Fg, s.rg, s.n_paths
+    R0, L0, S0 = new_plan_init(n_paths, Xoshiro(r.seed))
+    sim(pol, q; band=nothing) = simulate(pol, Fg, rg, q; R0=R0, L0=L0, S0=S0, band=band,
+                                         n_paths=n_paths, seed=r.seed)
+    ag_full = make_a_grid(n=s.na)
+
+    jobs = vcat([(:threshold, l) for l in THRESHOLD_LAMBDAS],
+                [(:frontier, l) for l in FRONTIER_LAMBDAS])
+    res = Vector{Any}(undef, length(jobs))
+    # A pool of all-but-two workers rather than @threads over every thread: the page
+    # fires /dynpro/evaluate at the same moment, and with every core taken by the
+    # sweep the main result (the one the reader waits on) went from ~4s to ~14s.
+    workers = max(1, Threads.nthreads(:default) - 2)
+    queue = Channel{Int}(length(jobs))
+    foreach(k -> put!(queue, k), eachindex(jobs))
+    close(queue)
+    run_job(k) = begin
+        kind, l = jobs[k]
+        q = DynPro.Params(p; LAMBDA=l)
+        if kind === :threshold
+            # unconstrained, as in the thesis: the band would censor the very rise
+            # this figure is about
+            pol = solve(Fg, rg, ag_full, q; n_quad=s.nq).policy
+            res[k] = (grid_mean=mean(mean, pol), path=sim(pol, q)[:mean_a])
+        else
+            pol = solve(Fg, rg, s.ag, q; n_quad=s.nq).policy
+            m = sim(pol, q; band=(s.lo, s.hi))
+            res[k] = (cost=m[:cost], benefit=m[:benefit], sty=m[:sty])
+        end
+    end
+    t_sweep = @elapsed @sync for _ in 1:workers
+        Threads.@spawn for k in queue
+            run_job(k)
+        end
+    end
+    nt = length(THRESHOLD_LAMBDAS)
+    thr, fr = res[1:nt], res[(nt + 1):end]
+
+    # adequacy at matched cost, along the frontier (interpolation CHORDS a concave
+    # frontier, so the gap is conservative); none outside the swept range
+    o = sortperm([x.cost for x in fr])
+    fc, fs = [fr[i].cost for i in o], [fr[i].sty for i in o]
+    function at_cost(c)
+        (c < fc[1] || c > fc[end]) && return nothing
+        k = clamp(searchsortedlast(fc, c), 1, length(fc) - 1)
+        w = fc[k + 1] > fc[k] ? (c - fc[k]) / (fc[k + 1] - fc[k]) : 0.0
+        return fs[k] + w * (fs[k + 1] - fs[k])
+    end
+    designs = map(s.designs) do (name, rate)
+        m = sim(design_policy(rate, s), p)
+        Dict("name" => name, "cost" => m[:cost], "benefit" => m[:benefit],
+             "sty" => m[:sty], "dp_sty" => at_cost(m[:cost]))
+    end
+
+    return Dict(
+        "threshold" => Dict("lambda" => THRESHOLD_LAMBDAS,
+                            "grid_mean" => [x.grid_mean for x in thr],
+                            "path" => [x.path for x in thr]),
+        "frontier" => Dict("lambda" => FRONTIER_LAMBDAS,
+                           "cost" => [x.cost for x in fr],
+                           "benefit" => [x.benefit for x in fr],
+                           "sty" => [x.sty for x in fr]),
+        "designs" => designs,
+        "meta" => Dict("seconds" => round(t_sweep, digits=2), "threads" => workers,
+                       "grid" => Dict("nF" => s.nF, "nR" => s.nR, "na" => s.na, "nq" => s.nq),
+                       "lambda" => p.LAMBDA, "target" => p.RR_TARGET, "legal" => p.RR_LEGAL),
+    )
+end
+
+# Both run on a worker thread, so the server's own thread stays free to accept the
+# page's second request while the first is solving.
+@post "/dynpro/evaluate" function(req)
+    r = parse_request(req, DynProRequest)
+    return json(fetch(Threads.@spawn dynpro_evaluate(r)))
+end
+
+@post "/dynpro/sweep" function(req)
+    r = parse_request(req, DynProRequest)
+    return json(fetch(Threads.@spawn dynpro_sweep(r)))
 end
 
 @post "/pension/evaluate" function(req)
@@ -418,6 +489,20 @@ end
 end
 
 # --- server -----------------------------------------------------------------
+
+# Warm-up. Julia compiles on first call, which made the first request after every
+# rebuild take ~23s. Compilation is per TYPE, not per grid size, so one call on a
+# tiny grid compiles everything a full-size request needs. It runs in the
+# background, so /health answers immediately.
+Threads.@spawn try
+    tiny = DynProRequest(nF=25, nR=21, na=5, nq=3, n_paths=500, n_seeds=1)
+    dynpro_evaluate(tiny)
+    dynpro_sweep(tiny)
+    JSON.json(dynpro_evaluate(tiny))
+    @info "DP endpoints warmed up"
+catch err
+    @warn "warm-up failed; the first request will compile instead" err
+end
 
 allowed_origin = get(ENV, "ALLOWED_ORIGIN", "*")
 host = get(ENV, "HOST", "127.0.0.1")

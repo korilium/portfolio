@@ -188,3 +188,19 @@ end
         @test tilt < 0.25
     end
 end
+
+# The signal sweep reads every temperature off ONE solve's Q-values. That must be
+# the same readout a solve at that temperature gives on its own — bit for bit,
+# since the arithmetic is identical — and must leave V and the argmax alone.
+@testset "betas sweep == one solve per beta" begin
+    Fg, rg, ag = make_F_grid(n=25), make_rho_grid(n=21), make_a_grid(n=9)
+    bs = (0.001, 0.03, 0.3)
+    sweep = solve(Fg, rg, ag, P; n_quad=3, beta=0.0, betas=bs)
+    hard = solve(Fg, rg, ag, P; n_quad=3, beta=0.0)
+    @test sweep.policy == hard.policy                 # beta = 0 still means argmax
+    @test sweep.V == hard.V
+    for b in bs
+        one = solve(Fg, rg, ag, P; n_quad=3, beta=b)
+        @test sweep.policy_soft[b] == one.policy
+    end
+end

@@ -472,3 +472,77 @@
   stroke-width: 1;
   opacity: 0.65;
 }
+
+/* Policy-map panel row (js/panels.js), mirroring the thesis's policy_map.png. */
+.chart-contour-target {
+  stroke: #ffd166;
+  stroke-width: 1.6;
+  opacity: 1;
+}
+
+.chart-contour-label-target {
+  fill: #ffd166;
+}
+
+.chart-occ {
+  fill: none;
+  stroke: #ff4d9d;
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+}
+
+/* The row is 736 units wide and its text is 7-9 units, so it must not scale below
+   ~1 unit per pixel: it scrolls sideways inside its wrapper instead, which keeps
+   the page itself from scrolling horizontally on a phone. */
+.chart-scroll {
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.chart-figure-full {
+  min-width: 740px;
+  margin: 0;
+}
+
+/* The results table carries a range beside every value; on a phone it scrolls
+   inside this wrapper rather than pushing the page sideways. */
+.table-scroll {
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.table-scroll .metrics-table {
+  margin-bottom: 0;
+}
+
+.table-scroll caption {
+  text-align: left;
+}
+
+/* State-space trajectory: a dark outline under the path, whiskers, markers and
+   labels, since they run through the brightest part of the occupancy shading. */
+.chart-halo {
+  fill: none;
+  stroke: #0b1410;
+  stroke-width: 4.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  opacity: 0.7;
+}
+
+.chart-halo-thin {
+  stroke-width: 3;
+}
+
+.chart-marker-ringed {
+  stroke: #0b1410;
+  stroke-width: 1.5;
+}
+
+.chart-tick-halo {
+  opacity: 1;
+  paint-order: stroke;
+  stroke: #0b1410;
+  stroke-width: 1.6px;
+  stroke-linejoin: round;
+}

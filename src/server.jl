@@ -134,15 +134,27 @@ end
 sample_at(M::AbstractMatrix, si, sj) = [M[i, j] for i in si, j in sj]
 
 """Sum a histogram over blocks, so no count is lost (for occupancy). The two axes
-can reduce by different factors, so both block sizes are passed."""
+can reduce by different factors, so both block sizes are passed.
+
+The LAST block runs to the end of the axis, not to start + k - 1: `blocks` puts the
+final node in the last cell's edge rather than starting a block of its own, so
+stopping at start + k - 1 silently dropped it (nF = 73, k = 3: node 73 never summed)."""
 function pool(M::AbstractMatrix, si, ki::Integer, sj, kj::Integer)
+    stop(s, a, k, n) = a == length(s) ? n : s[a] + k - 1
     out = zeros(eltype(M), length(si), length(sj))
     for (a, i) in enumerate(si), (b, j) in enumerate(sj)
-        out[a, b] = sum(@view M[i:min(i + ki - 1, size(M, 1)),
-                                j:min(j + kj - 1, size(M, 2))])
+        out[a, b] = sum(@view M[i:stop(si, a, ki, size(M, 1)),
+                                j:stop(sj, b, kj, size(M, 2))])
     end
     return out
 end
+
+"""A matrix as a vector of its rows, so the client's `M[i][j]` is `M[i, j]`.
+
+JSON.jl writes a Matrix column-major — `[1 2; 3 4]` becomes `[[1,3],[2,4]]` — so
+sending one as-is hands the browser its TRANSPOSE. On the (near-)square reduced
+grid that fails silently: every (F, rho) map was drawn with the axes swapped."""
+rows(M::AbstractMatrix) = [M[i, :] for i in axes(M, 1)]
 
 """Weighted quantile of `nodes` under the counts `w`."""
 function wquantile(nodes::AbstractVector, w::AbstractVector, q::Real)
@@ -329,10 +341,16 @@ end
     si, ki, Fedges = blocks(Fg)
     sj, kj, Redges = blocks(rg)
     maps = [Dict("year" => y,
-                 "a" => sample_at(out.policy[y + 1], si, sj),
-                 "visits" => pool(first_opt[:visits][y + 1], si, ki, sj, kj))
+                 "a" => rows(sample_at(out.policy[y + 1], si, sj)),
+                 "visits" => rows(pool(first_opt[:visits][y + 1], si, ki, sj, kj)))
             for y in years]
-    pooled = pool(reduce(+, first_opt[:visits]), si, ki, sj, kj)
+    # The state-space plot crops its axes to the trajectory (F ~ 0.75-1.35), where
+    # the 28-cell reduction leaves only ~4 cells across: it drew as wide vertical
+    # bands. It gets node resolution instead (k = 1). Only the occupied ribbon is
+    # drawn client-side, so the rect count stays small.
+    fi, fk, Ffull = blocks(Fg, length(Fg))
+    ri, rk, Rfull = blocks(rg, length(rg))
+    pooled = rows(pool(reduce(+, first_opt[:visits]), fi, fk, ri, rk))
     traj = trajectory(first_opt[:visits], Fg, rg)
 
     # A band-pinned schedule is set by the constraint, not by the trade-off, and a
@@ -347,8 +365,8 @@ end
         "adequacy" => Dict("edges" => edges, "stayers" => sty_counts,
                            "leavers" => lea_counts,
                            "target" => p.RR_TARGET, "legal" => p.RR_LEGAL),
-        "policy_maps" => Dict("F" => Fedges, "rho" => Redges, "maps" => maps,
-                              "pooled_visits" => pooled),
+        "policy_maps" => Dict("F" => Fedges, "rho" => Redges, "maps" => maps),
+        "state_space" => Dict("F" => Ffull, "rho" => Rfull, "visits" => pooled),
         "trajectory" => traj,
         "meta" => Dict("solve_seconds" => round(t_solve, digits=2),
                        "grid" => Dict("nF" => nF, "nR" => nR, "na" => na, "nq" => nq),

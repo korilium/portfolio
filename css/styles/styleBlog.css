@@ -83,6 +83,10 @@ aside a:focus-visible {
 
 main {
   flex: 1;
+  /* A flex item will not shrink below its content by default, so one wide image
+     or formula widened the whole column and scrolled the page sideways; with 0
+     the column keeps its width and wide content scrolls inside its own box. */
+  min-width: 0;
   padding: 2rem;
 }
 
@@ -250,4 +254,39 @@ article a:hover::after {
 /* Optional: better contrast for visited links */
 article a:visited {
   color: var(--image-accentcolor);
+}
+/* Result figures exported from the thesis repo. They are matplotlib PNGs on a
+   white background, so on the dark theme they sit on a rounded white card rather
+   than as a bright rectangle with hard edges. */
+article .post-figure {
+  margin: 1.5rem 0;
+}
+
+article .post-figure img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+article .post-figure figcaption {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  opacity: 0.8;
+  margin-top: 0.5rem;
+}
+
+/* A row of eight small panels is unreadable when shrunk to the column, so it
+   scrolls sideways inside its own box instead; the page itself never does. */
+article .post-figure-scroll {
+  overflow-x: auto;
+}
+
+article .post-figure-scroll img {
+  max-width: none;
+  width: 2200px;
 }

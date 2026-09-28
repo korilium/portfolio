@@ -388,7 +388,8 @@ degree zero and changes nothing.) What the legal baseline <em>does</em> change i
 replacement can never fall below 43%, so the employee is never on the near-vertical part of the CRRA and
 their marginal utility of second-pillar funding is finite and modest rather than explosive. That bounded
 marginal utility — not any lost homogeneity — is what makes funding a genuine trade-off against employer
-cost, and it is the source of the funding threshold we meet in the results.</p>
+cost, and it is why, in the results, funding rises smoothly with the negotiation weight <span class="math tex">\(\lambda\)</span> instead
+of being all-or-nothing.</p>
 <p><strong>Adequacy is measured against a target.</strong> A CRRA with no reference treats &quot;adequate&quot; as infinity; the
 employee actually has a target replacement rate — we take the OECD/EU benchmark of
 <span class="math tex">\(\text{RR}^\star \approx 0.70\)</span> of final salary, total across pillars — and cares how far the plan closes
@@ -396,21 +397,30 @@ the gap to it. Grounding the whole thing in the lifecycle literature (mortality-
 retirement consumption; Merton–Yaari–Bodie), the employee's value is the actuarial present value of the
 utility of annuitised consumption against target consumption <span class="math tex">\(c^\star=\text{RR}^\star S_T\)</span>. Under the
 deterministic annuity this collapses cleanly to</p>
-<div class="display-math tex">\[V_{\text{employee}} = \ddot a \cdot u\!\Big(\frac{\text{RR}_{\text{total}}}{\text{RR}^\star}\Big),\]</div>
+<div class="display-math tex">\[V_{\text{employee}} = \text{RR}^\star\,\ddot a \cdot u\!\Big(\frac{\text{RR}_{\text{total}}}{\text{RR}^\star}\Big), \qquad u(x) = \frac{x^{1-\eta} - 1}{1-\eta},\]</div>
 <p>where <span class="math tex">\(\ddot a\)</span> appears twice — as the survival-discounted count of retirement years over which
 consumption utility accrues, and inside the capital-to-income conversion — exactly the internal
-consistency the lifecycle formulation supplies for free. The employer's leg stays linear in money, a
-real euro of cost.</p>
+consistency the lifecycle formulation supplies for free. The utility is the <em>normalised</em> CRRA: it differs
+from the textbook <span class="math tex">\(x^{1-\eta}/(1-\eta)\)</span> only by a constant, so it changes no decision, but it is pinned so
+that <span class="math tex">\(u(1) = 0\)</span> and <span class="math tex">\(u'(1) = 1\)</span> — &quot;on target&quot; is the natural zero, and at the target the slope is one.
+That slope, together with the factor <span class="math tex">\(\text{RR}^\star\ddot a\)</span> in front, is what makes the employee leg
+<em>money-metric</em>: differentiate with respect to the pension capital and the <span class="math tex">\(\text{RR}^\star\ddot a\)</span> cancels,
+so at the target one extra unit of capital per unit of final salary is worth exactly one unit — the same
+numéraire the employer's cost is measured in. The two legs of <span class="math tex">\(\lambda V_{\text{employee}} + (1-\lambda)V_{\text{employer}}\)</span> are then commensurable without any hidden exchange rate, which is what
+lets <span class="math tex">\(\lambda\)</span> be read as a pure negotiation weight. The employer's leg stays linear in money, a real euro
+of cost.</p>
 <p><strong>Employer and employee discount at different rates.</strong> One more piece is genuinely two numbers,
 not one. A single discount rate would conflate two different questions: <em>how the employee values
 their future pension</em> and <em>how the employer values deferring cash</em>. These are not the same rate.
-The employee discounts a future retirement income at a risk-free / OLO rate (we use ~2.5%); the
-employer discounts its contributions and shortfall at its cost of capital (~5%). So the objective
+The employee discounts a future retirement income at a risk-free / OLO rate (we use 3%); the
+employer discounts its contributions and shortfall at its cost of capital (5%). So the objective
 carries a split: the employee leg is discounted at <span class="math tex">\(\delta_e\)</span>, the employer leg at <span class="math tex">\(\delta_f\)</span>, each
 to the same fixed date <span class="math tex">\(t=0\)</span> (no per-period <span class="math tex">\(\gamma\)</span> — the <span class="math tex">\(\gamma=1\)</span> discipline still holds, now
-per leg). This turns the discount from a single free knob into two grounded numbers, and — as the
-results show — the <em>gap</em> <span class="math tex">\(\delta_e - \mu\)</span> between the employee discount and the credited return is
-what governs whether the optimal contribution front-loads or spreads.</p>
+per leg). This turns the discount from a single free knob into two grounded numbers — though, as the
+results show, only one of them is a genuinely independent lever. The employer's rate <span class="math tex">\(\delta_f\)</span>, set
+against the credited return <span class="math tex">\(\mu\)</span>, decides <em>when</em> the plan funds. The employee's rate <span class="math tex">\(\delta_e\)</span> turns
+out to decide nothing on its own: it only ever multiplies the employee leg by the constant
+<span class="math tex">\(e^{-\delta_e T}\)</span>, which is indistinguishable from a change in <span class="math tex">\(\lambda\)</span>.</p>
 <p>This is the committed employee objective: specified once, from the lifecycle literature, against a
 stated and sourced target, with the first-pillar baseline and the annuity factor grounded in Belgian
 data. Everything below is read off it, not tuned into it. One assumption inside it is load-bearing and
@@ -512,7 +522,7 @@ by refusing to solve the whole thing at once.</p>
 year <span class="math tex">\(T\)</span>, there is no &quot;next&quot; — no more decisions, no more shocks to weather, just the
 payoff you collect. So the value at <span class="math tex">\(T\)</span> is written down directly — the employee's committed lifecycle utility of
 total replacement against target, minus the employer's shortfall:</p>
-<div class="display-math tex">\[v_T(F, \rho) = \lambda\,\ddot a\, u\!\Big(\tfrac{\text{RR}_{\text{total}}}{\text{RR}^\star}\Big)e^{-\delta_e T} \;-\; (1-\lambda)\,\tfrac{\max(1 - F, 0)}{\rho}\,e^{-\delta_f T}, \qquad \text{RR}_{\text{total}} = \text{RR}_{\text{legal}} + \tfrac{\max(F,1)}{\ddot a\,\rho}.\]</div>
+<div class="display-math tex">\[v_T(F, \rho) = \lambda\,\text{RR}^\star\ddot a\, u\!\Big(\tfrac{\text{RR}_{\text{total}}}{\text{RR}^\star}\Big)e^{-\delta_e T} \;-\; (1-\lambda)\,\tfrac{\max(1 - F, 0)}{\rho}\,e^{-\delta_f T}, \qquad \text{RR}_{\text{total}} = \text{RR}_{\text{legal}} + \tfrac{\max(F,1)}{\ddot a\,\rho}.\]</div>
 <p>The employee term is the annuity-weighted CRRA of total replacement — legal first pillar plus the
 annuitised occupational pension — measured against the 70% target; the employer term is the WAP
 shortfall as a fraction of final salary, <span class="math tex">\(\max(1-F,0)/\rho\)</span>, linear. This is the stayer seed (full target); a leaver's paid-up <span class="math tex">\(\Phi^{(\tau)}\)</span> uses the service-pro-rated target defined
@@ -552,13 +562,16 @@ benchmark that jitters with its random seed is no ground truth at all. So we com
 integral deterministically, with Gauss–Hermite quadrature, as a <em>tensor grid</em>: a fixed
 handful of scenarios in each shock, combined into a grid with product weights,</p>
 <div class="display-math tex">\[\mathbb{E}_{z_R, z_L}\big[g\big] \approx \sum_{i}\sum_{j} \omega_i\,\omega_j\, g\big(z_{R,i},\, z_{L,j}\big).\]</div>
-<p>Fifteen nodes per axis is <span class="math tex">\(225\)</span> evaluations — still deterministic, still seed-free, and
-still far cheaper than a converged Monte-Carlo average. The leaving branch barely adds to
-that, and it is worth being precise about how little: at each of those <span class="math tex">\(225\)</span> landing points
+<p>Five nodes per axis is <span class="math tex">\(25\)</span> evaluations — deterministic, seed-free, and far cheaper than a
+converged Monte-Carlo average. Five is enough because the integrand is smooth in the shocks:
+moving to seven nodes per axis (<span class="math tex">\(49\)</span> evaluations) leaves every reported figure unchanged to the
+third decimal. The leaving branch barely adds to that, and it is worth being precise about how
+little: at each of those <span class="math tex">\(25\)</span> landing points
 the backup also wants <span class="math tex">\(\Phi^{(t)}_{t+1}\)</span>, which by the collapse above is <em>one</em> evaluation of
 the terminal payoff at a deterministically rolled-forward point — no inner quadrature, no
 backward pass, no stored surface of its own. Nor does the cohort index multiply anything:
-the year-<span class="math tex">\(t\)</span> backup only ever asks for <span class="math tex">\(\Phi^{(t)}\)</span>, one cohort, the one that leaves now.It is worth seeing what that sum actually <em>does</em>, because the figure is the dynamic-programming principle in a single frame.</p>
+the year-<span class="math tex">\(t\)</span> backup only ever asks for <span class="math tex">\(\Phi^{(t)}\)</span>, one cohort, the one that leaves now.</p>
+<p>It is worth seeing what that sum actually <em>does</em>, because the figure is the dynamic-programming principle in a single frame.</p>
 <figure class="post-figure">
 <svg viewBox="0 0 680 300" width="100%" role="img" aria-label="One state's expected continuation as a weighted sum over a fixed grid of next-year states">
 <rect x="224" y="60" width="232" height="170" rx="10" fill="none" stroke="var(--image-lightcolor)" stroke-width="1" stroke-dasharray="4 4"/>
@@ -618,7 +631,7 @@ the year-<span class="math tex">\(t\)</span> backup only ever asks for <span cla
 <text x="332" y="240" text-anchor="middle" font-size="12" fill="var(--image-darkcolor)">expected continuation → vₜ(F, ρ)</text>
 <text x="340" y="280" text-anchor="middle" font-size="12" fill="var(--image-darkcolor)">square size = product weight ωᵢωⱼ — nodes are fixed, not sampled</text>
 </svg>
-<figcaption>One backward step at a state (t, F, ρ). This year's choice a is scattered by the two shocks across a fixed z_R × z_L grid of next-year states (drawn 5×5; the oracle runs 15×15). Each node is weighted by ωᵢωⱼ and read off the vₜ₊₁ surface; their weighted sum is the expected continuation that feeds vₜ. Vertical spread is ρ′, horizontal is F′, with the put kink pinned at F′ = 1. Drawn for the stayer branch: under churn each node reads a blend of the vₜ₊₁ surface and the frozen contract's Φ⁽ᵗ⁾ₜ₊₁, in proportion 1 − hₜ to hₜ.</figcaption>
+<figcaption>One backward step at a state (t, F, ρ). This year's choice a is scattered by the two shocks across a fixed z_R × z_L grid of next-year states (5×5, as the oracle runs it). Each node is weighted by ωᵢωⱼ and read off the vₜ₊₁ surface; their weighted sum is the expected continuation that feeds vₜ. Vertical spread is ρ′, horizontal is F′, with the put kink pinned at F′ = 1. Drawn for the stayer branch: under churn each node reads a blend of the vₜ₊₁ surface and the frozen contract's Φ⁽ᵗ⁾ₜ₊₁, in proportion 1 − hₜ to hₜ.</figcaption>
 </figure>
 Read it as the recursion made mechanical. One state $(t, F, \rho)$, one candidate action $a$, and the expectation the backup needs is not a haze of random futures but a *fixed lattice* of them — each next-year state $(F', \rho')$ pinned to a quadrature node, each carrying a weight $\omega_i\omega_j$ that is genuinely a probability. The one-dimensional Gauss–Hermite weights sum to one, so their outer product does too; the "integral" is an honest weighted average, not a bag of arbitrary coefficients. The value the backup wants is just those futures looked up on the surface and averaged under those weights — under churn, each lookup is the $1-h_t$ / $h_t$ blend of the live surface and the frozen one, but the lattice and the weights are identical either way — the fat central node, the modal outcome, carrying almost all the mass; the tail nodes faint but never zero, because the shortfall the employer is short lives in precisely those bad-return corners. Many futures in, one number out, handed back to the present: that single returning arrow *is* the Bellman coupling, the value of standing here built from the value of standing everywhere you might go next.
 <p>Two things the tidy lattice hides. First, the nodes are drawn on a square grid but do not <em>land</em> on one: each true position is <span class="math tex">\(\big(\tfrac{F+\ell}{1+\ell}\,e^{(\mu-G)+\sigma_R z_R-\sigma_L z_L},\ \tfrac{(1+W)\rho}{(1+\ell)\,e^{G+\sigma_L z_L}}\big)\)</span>, an exponential warp of the evenly-spaced shock grid — which is exactly why <span class="math tex">\(v_{t+1}\)</span> must be <em>interpolated</em> at each landing rather than read off a stored cell. Second, the lattice is a genuine grid and not a line: two axes, one per shock. That two-dimensionality is not a modelling extravagance but a forced consequence, and it is the next thing to justify. One might hope to collapse the two
@@ -633,17 +646,42 @@ read values in between by <em>bilinear</em> interpolation, over the two axes. Th
 alike, and that is the whole point of having kept <span class="math tex">\(F\)</span>. The funding ratio gets a fine,
 uniform grid with one node placement that is <em>not</em> negotiable: <span class="math tex">\(F = 1\)</span> must sit exactly on
 it, because that is where the put kinks, and a grid that straddled the corner would round
-it off. The salary ratio is log-spaced, ranging over more than an order of magnitude.
-Interpolation in the <span class="math tex">\(F\)</span> direction is kept linear, never curved: a smoother scheme
-overshoots at the kink, and <span class="math tex">\(F=1\)</span> is precisely where we cannot afford to.</p>
-<p><strong>The action is continuous, so we search it directly.</strong> The <span class="math tex">\(\max\)</span> over <span class="math tex">\(a \in [0,1]\)</span>
+it off. Concretely, <span class="math tex">\(F\)</span> runs from <span class="math tex">\(0\)</span> to <span class="math tex">\(3\)</span> in 73 even steps, so <span class="math tex">\(F = 1\)</span> is a node. The
+salary ratio is log-spaced over 71 nodes from <span class="math tex">\(0.01\)</span> to <span class="math tex">\(35\)</span> — three and a half orders of
+magnitude, because a new plan starts with a salary base some twenty times its liability and a
+heavily funded career ends with the liability several times the salary. The floor is lower
+than it looks necessary for a reason: interpolation <em>clips</em> anything beyond the grid, and since
+replacement is <span class="math tex">\(\max(F,1)/(\ddot a\rho)\)</span>, clipping <span class="math tex">\(\rho\)</span> from below silently caps the
+replacement rate the solver can see. An early grid that stopped at <span class="math tex">\(\rho = 0.3\)</span> undervalued
+heavy funding by more than half. Interpolation in the <span class="math tex">\(F\)</span> direction is kept linear, never
+curved: a smoother scheme overshoots at the kink, and <span class="math tex">\(F=1\)</span> is precisely where we cannot
+afford to.</p>
+<p><strong>The action is continuous, so we search it directly — inside a band.</strong> Contributions are
+bounded to between 2% and 15% of salary: a plan that promises a contribution must pay at
+least something every year, and cannot pay more than its funding capacity <span class="math tex">\(\Gamma = 15\%\)</span>.
+In the units of the control that is <span class="math tex">\(a \in [2\%/\Gamma,\ 1]\)</span>. The <span class="math tex">\(\max\)</span> over that interval
 is an optimization at every single grid point, every year. We do not trust a clever
 optimizer here, because the kink at <span class="math tex">\(F=1\)</span> can break the smoothness such methods assume
 and quietly settle on the wrong contribution — and a benchmark that silently finds a
 <em>local</em> optimum would certify a flawed policy as correct. So we do the blunt, safe
-thing: try a dense sweep of candidate contributions and take the best. The only error is
-the fineness of the sweep, which we can make as small as we like and, crucially, can
-<em>report</em>.</p>
+thing: try an even sweep of 20 candidate contributions across the band and take the best.
+The only error is the fineness of the sweep, which we can make as small as we like and,
+crucially, can <em>report</em>: doubling it to 41 candidates moves no headline figure by more than
+0.001.</p>
+<p><strong>Reading the rule off the value: a hard or a soft choice.</strong> The backward pass leaves, at every
+state, a score <span class="math tex">\(Q(a)\)</span> for each candidate contribution. Taking the best of them — the <em>argmax</em> —
+is the textbook policy, and it has a practical flaw: when two contributions score almost the
+same, the argmax jumps between them from one grid cell to the next, and the schedule inherits
+those jumps. So the rule is read off as a <em>signal</em> instead, a softmax-weighted average of the
+candidates,</p>
+<div class="display-math tex">\[a_{\text{soft}} = \sum_{a} a\,\frac{\exp\!\big((Q(a) - \max Q)/(\beta\,\Delta Q)\big)}{\sum_{a'}\exp\!\big((Q(a') - \max Q)/(\beta\,\Delta Q)\big)},\]</div>
+<p>where <span class="math tex">\(\Delta Q\)</span> is the local spread between the best and worst candidate. Dividing by that
+spread makes the temperature <span class="math tex">\(\beta\)</span> a <em>relative</em> number — the same <span class="math tex">\(\beta\)</span> means the same
+sharpness everywhere, whatever the scale of the value function — and <span class="math tex">\(\beta \to 0\)</span> recovers
+the argmax. Nothing about the objective changes: <span class="math tex">\(v_t\)</span> is still the maximum, and <span class="math tex">\(\beta\)</span> only
+decides how sharply the contribution follows it. We use <span class="math tex">\(\beta = 0.01\)</span>, which is sharp enough
+to be indistinguishable from the argmax in every reported figure; the results show what a
+larger <span class="math tex">\(\beta\)</span> costs.</p>
 <p>Put together, one backward step is: for every <span class="math tex">\((F, \rho)\)</span> on the grid, run every candidate
 contribution through every shock-pair scenario; at each landing point blend the two futures
 the year can have — next year's tabulated value <span class="math tex">\(v_{t+1}\)</span> with weight <span class="math tex">\(1 - h_t\)</span>, and the
@@ -669,8 +707,237 @@ pricing any real plan on precisely the same grid. The gap between the two — wh
 existing plan is worth versus the risk-optimal contribution rule — is the number the
 whole apparatus exists to produce.</p>
 <h2>results</h2>
-<h2>discussion</h2>
+<p>The oracle exists to answer three questions, in order. Does it compute what it claims to — does it
+return the answers we can work out without it? Given that, what does the risk-optimal contribution
+rule look like, and what shapes it? And what is that rule worth against the plans employers actually
+run? Everything below is computed on one protocol, so every number can be compared with every other.</p>
+<h3>calibration</h3>
+<table><thead><tr><th align="left">Parameter</th><th align="left">Symbol</th><th align="left">Value</th><th align="left">Anchor</th></tr></thead><tbody><tr><td align="left">career length</td><td align="left"><span class="math tex">\(T\)</span></td><td align="left">45 years</td><td align="left">—</td></tr><tr><td align="left">credited return (Branch 21)</td><td align="left"><span class="math tex">\(\mu\)</span></td><td align="left">3.0%</td><td align="left">at the money against the guarantee</td></tr><tr><td align="left">WAP guaranteed rate</td><td align="left"><span class="math tex">\(G\)</span></td><td align="left">3.0%</td><td align="left">within the 1.75–3.75% statutory corridor</td></tr><tr><td align="left">salary growth</td><td align="left"><span class="math tex">\(W\)</span></td><td align="left">2.5%</td><td align="left">—</td></tr><tr><td align="left">asset / guarantee volatility</td><td align="left"><span class="math tex">\(\sigma_R\)</span>, <span class="math tex">\(\sigma_L\)</span></td><td align="left">5% / 2%</td><td align="left">—</td></tr><tr><td align="left">funding capacity</td><td align="left"><span class="math tex">\(\Gamma\)</span></td><td align="left">15% of salary</td><td align="left">the top of the contribution band</td></tr><tr><td align="left">contribution band</td><td align="left">—</td><td align="left">2–15% of salary</td><td align="left">minimum promise, capacity</td></tr><tr><td align="left">employee / employer discount</td><td align="left"><span class="math tex">\(\delta_e\)</span>, <span class="math tex">\(\delta_f\)</span></td><td align="left">3% / 5%</td><td align="left">OLO rate / cost of capital</td></tr><tr><td align="left">risk aversion</td><td align="left"><span class="math tex">\(\eta\)</span></td><td align="left">2</td><td align="left">lifecycle literature</td></tr><tr><td align="left">annuity factor</td><td align="left"><span class="math tex">\(\ddot a\)</span></td><td align="left">15</td><td align="left">Belgian life expectancy at 65</td></tr><tr><td align="left">legal (first-pillar) replacement</td><td align="left"><span class="math tex">\(\text{RR}_{\text{legal}}\)</span></td><td align="left">0.43</td><td align="left">private-sector average earner</td></tr><tr><td align="left">total replacement target</td><td align="left"><span class="math tex">\(\text{RR}^\star\)</span></td><td align="left">0.70</td><td align="left">OECD / EU benchmark</td></tr><tr><td align="left">negotiation weight</td><td align="left"><span class="math tex">\(\lambda\)</span></td><td align="left">0.5</td><td align="left">balanced</td></tr><tr><td align="left">signal readout</td><td align="left"><span class="math tex">\(\beta\)</span></td><td align="left">0.01</td><td align="left">indistinguishable from the argmax</td></tr></tbody></table>
+<h3>evaluation protocol</h3>
+<p>The rule is solved on the 73 × 71 grid with 20 candidate contributions and 5 × 5 quadrature
+nodes, then <em>simulated</em>: 15,000 careers of a new plan, each starting fully funded (<span class="math tex">\(F_0 \approx 1\)</span>)
+with a small liability against salary (<span class="math tex">\(\rho_0\)</span> between 15 and 34), each exposed to the tenure
+hazard, followed to retirement. The simulation is repeated over five random seeds, and every
+simulated figure is reported with its [min–max] range across them. (The solve itself is
+deterministic and needs no range.) Three outcomes are tracked:</p>
+<ul>
+<li><strong>employer cost</strong> — the present value of contributions plus the terminal shortfall, per unit of final salary: 0.32 means the employer pays, in today's money, 32% of one final salary over the career;</li>
+<li><strong>stayer RR</strong> — the median <em>total</em> replacement rate of members who stay the full 45 years;</li>
+<li><strong>leaver RR</strong> — the same for members who leave before retirement, their pot paid-up.</li>
+</ul>
+<p>Two market plans are priced on exactly the same protocol by holding the contribution to a fixed
+schedule instead of optimising it: a <strong>flat</strong> 5% of salary, and an <strong>age scale</strong> starting at 3% and
+rising one point every ten years. Their levels are illustrative placeholders chosen to bracket
+Belgian practice, not sourced plan data — the same caveat as in the previous post.</p>
+<h3>the checks that come first</h3>
+<p>Before reading anything off the oracle, it has to pass the cases whose answer is known without
+running it. These play the role the indifference control <code>neut2</code> played in the previous post.</p>
+<table><thead><tr><th align="left">Check</th><th align="left">Prediction</th><th align="left">Result</th></tr></thead><tbody><tr><td align="left"><span class="math tex">\(\lambda = 0\)</span>: only the employer counts</td><td align="left">fund the legal minimum — the band floor, every year</td><td align="left">2.0% every year · stayer RR 0.507</td></tr><tr><td align="left"><span class="math tex">\(\lambda = 1\)</span>: only the employee counts</td><td align="left">fund to capacity — the band ceiling, every year</td><td align="left">15.0% every year · stayer RR 0.981</td></tr><tr><td align="left"><span class="math tex">\(\delta_e = 2\%\)</span> at <span class="math tex">\(\lambda = 0.5\)</span>, against <span class="math tex">\(\delta_e = 3\%\)</span> at the predicted equivalent <span class="math tex">\(\lambda = 0.6106\)</span></td><td align="left">identical policies</td><td align="left">schedules equal to <span class="math tex">\(10^{-13}\)</span></td></tr><tr><td align="left"><span class="math tex">\(\sigma_R = \sigma_L = 0\)</span></td><td align="left">same schedule; slightly lower replacement, the call <span class="math tex">\(\max(R, L)\)</span> losing its option value</td><td align="left">same shape · stayer RR 0.849 vs 0.873</td></tr></tbody></table>
+<p>All four hold. The third deserves a sentence of its own: it is a <em>negative</em> result, and it
+reshapes how the model should be read. It is covered under the rate comparisons below.</p>
+<h3>the optimum against the market plans</h3>
+<table><thead><tr><th align="left">Plan</th><th align="left">avg contribution</th><th align="left">early → late</th><th align="left">employer cost</th><th align="left">stayer RR</th><th align="left">leaver RR</th><th align="left">joint value</th></tr></thead><tbody><tr><td align="left"><strong>optimised (DP)</strong></td><td align="left">9.9%</td><td align="left">4.4% → 14.9%</td><td align="left">0.320 [0.316–0.325]</td><td align="left">0.873 [0.872–0.875]</td><td align="left">0.446</td><td align="left">−0.108</td></tr><tr><td align="left">flat 5% of salary</td><td align="left">5.0%</td><td align="left">5.0% → 5.0%</td><td align="left">0.187 [0.185–0.189]</td><td align="left">0.617 [0.616–0.618]</td><td align="left">0.459</td><td align="left">−0.149</td></tr><tr><td align="left">age scale 3% +1%/10y</td><td align="left">4.2%</td><td align="left">3.0% → 6.5%</td><td align="left">0.143 [0.141–0.145]</td><td align="left">0.604 [0.603–0.605]</td><td align="left">0.449</td><td align="left">−0.154</td></tr></tbody></table>
+<p><em>Early → late: the average contribution over career years 0–9 and 35–44.</em></p>
+<p>The optimum wins on joint value, as it must — it is the maximiser of exactly that objective, and a
+design that beat it would mean the two evaluation paths were not running the same model. What is
+informative is <em>how</em> it wins. It does not simply spend more; it spends <em>late</em>. The optimal schedule
+starts at the band floor, ramps to capacity around year twelve and holds there: 26 of the 45 years
+sit at the 15% ceiling and 5 at the 2% floor. Stayers retire at 0.873 — well past the 0.70 target,
+which is a point we return to. Leavers, meanwhile, retire at 0.446, barely above the 0.43 legal
+floor and slightly <em>below</em> what either market plan gives them. That is the back-loading at work: a
+member who leaves early has left before the money arrives.</p>
+<figure class="post-figure">
+<img src="../img/dp_benchmark_schedules.png" alt="Contribution schedules of five calendar-driven market plans against the optimised schedule" loading="lazy">
+<figcaption>The optimised schedule (dashed) against calendar-driven designs, including three more than the table: flat 3% and 8%, and a faster age scale of 2% rising one point every five years. None of them back-loads as steeply, and the optimum's stayer replacement (0.87) sits above all of them. Source: <code>benchmark_suite.py schedules</code>.</figcaption>
+</figure>
+<h3>where the rule lives: the policy map</h3>
+<p>The optimal rule <span class="math tex">\(a^\star(t, F, \rho)\)</span> is defined on the whole grid, and at every year it has the
+same shape: fund at capacity above a boundary in <span class="math tex">\(\rho\)</span>, fund at the floor below it. High <span class="math tex">\(\rho\)</span>
+means salary is large against the liability built so far, so the projected replacement
+<span class="math tex">\(\max(F,1)/(\ddot a\rho)\)</span> is low — fund. Low <span class="math tex">\(\rho\)</span> means the projected pension is already
+comfortable — ease off. The boundary runs roughly along the iso-replacement contours, and it is
+nearly flat in <span class="math tex">\(F\)</span> below full funding, which is what the marginal analysis predicts: at <span class="math tex">\(\mu = G\)</span> a
+contribution lifts reserve and guarantee equally and leaves any shortfall untouched, so how far
+below the floor the plan sits barely changes the value of the next euro.</p>
+<p>The more revealing picture is where the simulated careers actually go on that map. They occupy a
+thin ribbon: over the whole career, only 20% of the grid's cells are ever visited. From about year
+ten onward the cohort sits right <em>on</em> the boundary — the optimum funds just enough to hold the
+projected replacement there, no more. And because the careers sit where the rule is generous, the
+rule averaged over the states careers occupy (<span class="math tex">\(a^\star = 0.665\)</span>) is well above its average over the
+whole grid (<span class="math tex">\(0.527\)</span>). A policy's behaviour off the ribbon is never exercised, which is exactly the
+caution a learned policy will need: agreement with the oracle only matters where careers go.</p>
+<figure class="post-figure">
+<div class="post-figure-scroll"><img src="../img/dp_policy_map.png" alt="Optimal funding rule a-star over the funding ratio and the salary ratio for eight career years, with iso-replacement contours and the simulated cohort's occupancy" loading="lazy"></div>
+<figcaption>The optimal rule a*(F, ρ) for eight career years on a finer 145 × 101 grid — yellow is fund at capacity, purple at the floor. White lines are iso total-replacement contours, the gold one the 0.70 target; magenta contours are where the simulated cohort actually is that year (50/90/99th percentile of occupancy). From year ten the cohort rides the boundary. Scroll sideways for all eight years. Source: <code>contribution_schedule_suite.py policy</code>.</figcaption>
+</figure>
+<h3>what sets the shape: three rate comparisons</h3>
+<p>One euro contributed at year <span class="math tex">\(t\)</span> costs the employer <span class="math tex">\(e^{-\delta_f t}\)</span>, compounds in the reserve at
+<span class="math tex">\(\mu\)</span> until retirement, and is valued by the employee at <span class="math tex">\(e^{-\delta_e T}\)</span>. The ratio of what the
+employee gains to what the employer gives up is</p>
+<div class="display-math tex">\[\frac{\text{benefit}}{\text{cost}} = \exp\big((\mu - \delta_e)\,T + (\delta_f - \mu)\,t\big),\]</div>
+<p>and the two terms do different jobs. The first is constant in <span class="math tex">\(t\)</span>: it decides whether funding is worth
+anything at all. The second is linear in <span class="math tex">\(t\)</span>: it decides <em>when</em>. A third comparison, <span class="math tex">\(\mu\)</span> against <span class="math tex">\(G\)</span>,
+does not appear because it acts through the dynamics — it is the drift of the funding ratio, and so the
+moneyness of the guarantee. Each prediction can be tested by bracketing its sign.</p>
+<p><strong>The employer discount against the credited return sets the timing.</strong></p>
+<table><thead><tr><th align="left"><span class="math tex">\(\delta_f\)</span></th><th align="left">ordering</th><th align="left">early → late</th><th align="left">avg</th><th align="left">stayer RR</th></tr></thead><tbody><tr><td align="left">2%</td><td align="left"><span class="math tex">\(\delta_f < \mu\)</span></td><td align="left">10.2% → 2.0%</td><td align="left">6.6%</td><td align="left">0.614</td></tr><tr><td align="left">3%</td><td align="left"><span class="math tex">\(\delta_f = \mu\)</span></td><td align="left">7.9% → 6.9%</td><td align="left">7.5%</td><td align="left">0.707</td></tr><tr><td align="left">5% (committed)</td><td align="left"><span class="math tex">\(\delta_f > \mu\)</span></td><td align="left">4.4% → 14.9%</td><td align="left">9.9%</td><td align="left">0.873</td></tr></tbody></table>
+<p>The sign of <span class="math tex">\(\delta_f - \mu\)</span> flips the schedule from front-loaded to back-loaded, with a flat schedule
+at equality — the frictionless case in which the timing of funding is irrelevant. This is the cleanest
+structural result in the model, and it corrects a tempting story: the back-loading at the committed
+calibration is <em>not</em> caused by workforce churn. Churn is present in all three rows. The discount wedge
+is what moves.</p>
+<figure class="post-figure">
+<img src="../img/dp_scenario_rates.png" alt="Optimal schedules for employer discount 2 percent and 5 percent, each at three guarantee rates" loading="lazy">
+<figcaption>The timing result on the full schedule. Left, δ<sub>f</sub> = 2% &lt; μ: every guarantee rate front-loads. Right, δ<sub>f</sub> = 5% &gt; μ: every guarantee rate back-loads. The guarantee moves the level of replacement, but the direction of the tilt follows δ<sub>f</sub> alone. The one visible exception — a high guarantee under a low discount (orange, left), which cuts early funding by a third — is the underfunded corner where the guarantee enters the timing condition too. Source: <code>scenario_suite.py rates</code>.</figcaption>
+</figure>
+<p><strong>The drift of the funding ratio sets the level — and, below the floor, the timing too.</strong></p>
+<table><thead><tr><th align="left"><span class="math tex">\((\mu,\ G)\)</span></th><th align="left"><span class="math tex">\(\mu - G\)</span></th><th align="left">early → late</th><th align="left">avg</th><th align="left">stayer RR</th></tr></thead><tbody><tr><td align="left">(1%, 3%) underwater</td><td align="left">−2%</td><td align="left">2.0% → 15.0%</td><td align="left">7.2%</td><td align="left">0.765</td></tr><tr><td align="left">(3%, 3%) at the money</td><td align="left">0</td><td align="left">4.4% → 14.9%</td><td align="left">9.9%</td><td align="left">0.873</td></tr><tr><td align="left">(5%, 1.75%) floating</td><td align="left">+3.25%</td><td align="left">14.4% → 12.5%</td><td align="left">12.2%</td><td align="left">1.108</td></tr></tbody></table>
+<p>When the reserve out-earns the guarantee, early money compounds and the plan front-loads; underwater it
+waits. The gap alone is not the whole story, though: holding <span class="math tex">\(\mu = G\)</span> and sliding both from 1% to 5%
+moves stayer replacement from 0.680 to 1.102 and turns the schedule from 2.0% → 15.0% into 14.8% → 7.7%.
+The <em>level</em> of the credited return matters in its own right, because it compounds the reserve over 45
+years wherever the guarantee sits.</p>
+<p><strong>The employee discount is not an independent lever.</strong> <span class="math tex">\(\delta_e\)</span> enters the objective only as the
+constant <span class="math tex">\(e^{-\delta_e T}\)</span> on the employee leg, and scaling the whole objective by a positive constant
+never changes which contribution is best. So only the combination <span class="math tex">\(\lambda e^{-\delta_e T}/(1 - \lambda)\)</span>
+is identified, and every <span class="math tex">\((\lambda, \delta_e)\)</span> pair with the same value gives the same policy — the check
+table above confirms it to <span class="math tex">\(10^{-13}\)</span>. Moving <span class="math tex">\(\delta_e\)</span> from 3% to 2% is <em>exactly</em> moving <span class="math tex">\(\lambda\)</span> from
+0.5 to 0.61; in this calibration that alone is enough to pin the schedule to the ceiling. Any figure that
+varies <span class="math tex">\(\delta_e\)</span> is a <span class="math tex">\(\lambda\)</span> figure with the wrong label.</p>
+<h3>what optimising buys</h3>
+<p>Sweeping <span class="math tex">\(\lambda\)</span> and re-solving at each value traces the frontier of the best achievable
+cost–adequacy pairs. The market plans sit inside it, and the distance can be read two ways: what the
+optimum would spend to match a plan's adequacy, and what adequacy it reaches on the plan's budget.</p>
+<table><thead><tr><th align="left">Plan</th><th align="left">its cost</th><th align="left">optimum's cost at the same stayer RR</th><th align="left">its stayer RR</th><th align="left">optimum's stayer RR at the same cost</th></tr></thead><tbody><tr><td align="left">flat 5% of salary</td><td align="left">0.187</td><td align="left">0.110 (−41%)</td><td align="left">0.616</td><td align="left">0.752 (+0.136)</td></tr><tr><td align="left">age scale 3% +1%/10y</td><td align="left">0.143</td><td align="left">0.105 (−27%)</td><td align="left">0.604</td><td align="left">0.684 (+0.080)</td></tr></tbody></table>
+<p>Both readings are interpolations between swept <span class="math tex">\(\lambda\)</span> points. The frontier is concave, so a chord lies
+below it and every gain above is <em>conservative</em> — the true gap is at least this large.</p>
+<p>The gain splits into two halves, and the split is the most useful finding for plan design. The age
+scale comes within a point and a half of the flat plan's adequacy (0.604 against 0.617) for about a
+quarter less (0.143 against 0.187): that saving comes from <em>back-loading at all</em>, which any calendar rule can do. The
+optimum then reaches the age scale's adequacy for another quarter less: that saving comes from making
+the contribution respond to the <em>state</em> — to how the plan is actually funded — which no calendar rule
+can. The optimum is not beating the market by contributing more; it beats it by contributing at the
+right time and in the right states.</p>
+<figure class="post-figure">
+<img src="../img/dp_benchmark_frontier.png" alt="Market designs against the optimised frontier: employee value and stayer replacement against employer cost" loading="lazy">
+<figcaption>The λ-frontier (green) with five market designs placed against it. Left: employee value against employer cost — every design sits below and to the right of the frontier. Right: stayer replacement at each design's own budget; the arrow is the adequacy the optimum reaches for the same money. Source: <code>benchmark_suite.py frontier</code>.</figcaption>
+</figure>
+<h3>where the market plans go wrong</h3>
+<p>The difference between a market plan and the optimum can be localised. For a calendar-driven plan the
+contribution does not depend on <span class="math tex">\((F, \rho)\)</span> at all, so the informative quantity is the gap</p>
+<div class="display-math tex">\[\Delta(t, F, \rho) = a_{\text{design}}(t) - a^\star(t, F, \rho),\]</div>
+<p>read on the states the <em>plan's own</em> careers visit — what it pays there, minus what the optimum would pay
+there. Weighted by how many careers are in each state:</p>
+<table><thead><tr><th align="left">Plan</th><th align="left">year 0</th><th align="left">year 10</th><th align="left">year 22</th><th align="left">year 44</th><th align="left">path-years over-funded</th></tr></thead><tbody><tr><td align="left">flat 5% of salary</td><td align="left">+0.20</td><td align="left">−0.18</td><td align="left">−0.67</td><td align="left">−0.67</td><td align="left">44%</td></tr><tr><td align="left">age scale 3% +1%/10y</td><td align="left">+0.07</td><td align="left">−0.67</td><td align="left">−0.67</td><td align="left">−0.53</td><td align="left">25%</td></tr></tbody></table>
+<p><em><span class="math tex">\(\Delta\)</span> is in units of capacity; multiply by <span class="math tex">\(\Gamma = 15\%\)</span> for percent of salary — −0.67 is ten
+points of salary.</em></p>
+<p>Both plans make the same mistake in opposite halves of the career. They over-fund at the start, when the
+optimum sits at the floor and most of the money reaches members who will leave; and later they under-fund
+by about ten points of salary, exactly when the optimum has moved to capacity — the flat plan from its
+third decade, the age scale already from its second, because at year ten its 4% is still well below the
+flat plan's 5%. The age scale's rising steps point the right way but climb far too slowly. (One caution: <span class="math tex">\(a^\star\)</span> is read
+<em>off-policy</em> on these cells — the plans steer careers into states the optimum's own simulation may
+rarely visit. The rule is defined there, so the comparison is legitimate, but it is an extrapolation of
+the optimum, not an observation of it.)</p>
+<figure class="post-figure">
+<img src="../img/dp_benchmark_misfunding.png" alt="Difference between each design's contribution and the optimum's on the states the design visits, for four career years" loading="lazy">
+<figcaption>Δ = a<sub>design</sub> − a* on the states each design's own careers visit (blank: never visited; contours: 50/90/99th percentile of that year's occupancy). Red over-funds, blue under-funds: both plans are pale red at entry and deep blue from mid-career on. Source: <code>benchmark_suite.py visitation</code>.</figcaption>
+</figure>
+<h3>the negotiation dial</h3>
+<p>The frontier behind those numbers is <em>doubly censored</em> by the contribution band:</p>
+<table><thead><tr><th align="left"><span class="math tex">\(\lambda\)</span></th><th align="left">employer cost</th><th align="left">stayer RR</th><th align="left"></th></tr></thead><tbody><tr><td align="left">≤ 0.15</td><td align="left">0.075</td><td align="left">0.507</td><td align="left">pinned at the 2% floor</td></tr><tr><td align="left">0.18 → 0.57</td><td align="left">0.076 → 0.540</td><td align="left">0.511 → 0.966</td><td align="left">the informative range</td></tr><tr><td align="left">≥ 0.60</td><td align="left">0.562</td><td align="left">0.979</td><td align="left">pinned at the 15% ceiling</td></tr></tbody></table>
+<p>Within the band, <span class="math tex">\(\lambda\)</span> is a remarkably wide dial: from one end to the other the employer's cost rises
+seven-fold and stayer replacement from 0.51 to 0.98. And it is a smooth one. An earlier reading of this
+model expected a <em>threshold</em> — the legal first pillar crowding out second-pillar funding until <span class="math tex">\(\lambda\)</span>
+crossed some critical value. The measured curve has no such kink: the optimal funding rate rises smoothly
+and near-linearly in <span class="math tex">\(\lambda\)</span>, then saturates once the optimum reaches the top of the action range around
+<span class="math tex">\(\lambda \approx 0.6\)</span>. The first pillar lowers the marginal value of funding; it does not switch it off.</p>
+<figure class="post-figure">
+<img src="../img/dp_lambda_threshold.png" alt="Grid-mean and path-weighted optimal funding against the employee weight lambda" loading="lazy">
+<figcaption>Optimal funding against λ, on the unconstrained action range. The grid-mean averages the rule over every state; the path-weighted mean averages what simulated careers pay per career-year, counting zero once a member has left — which is why it is lower and saturates at 0.35. Neither curve has a kink. Source: <code>lambda_dial_suite.py threshold</code>.</figcaption>
+</figure>
+<h3>specification choices, and the price of a smooth schedule</h3>
+<table><thead><tr><th align="left">Variant</th><th align="left">avg</th><th align="left">early → late</th><th align="left">employer cost</th><th align="left">stayer RR</th></tr></thead><tbody><tr><td align="left">committed (<span class="math tex">\(\eta = 2\)</span>, no satiation, <span class="math tex">\(\beta = 0.01\)</span>)</td><td align="left">9.9%</td><td align="left">4.4% → 14.9%</td><td align="left">0.320</td><td align="left">0.873</td></tr><tr><td align="left">stop rewarding above the target</td><td align="left">6.4%</td><td align="left">4.0% → 7.0%</td><td align="left">0.218</td><td align="left"><strong>0.708</strong></td></tr><tr><td align="left">log utility, <span class="math tex">\(\eta = 1\)</span></td><td align="left">11.7%</td><td align="left">8.5% → 15.0%</td><td align="left">0.396</td><td align="left">0.921</td></tr><tr><td align="left">strong risk aversion, <span class="math tex">\(\eta = 5\)</span></td><td align="left">8.4%</td><td align="left">5.6% → 13.1%</td><td align="left">0.278</td><td align="left">0.804</td></tr><tr><td align="left">hard argmax, <span class="math tex">\(\beta = 0\)</span></td><td align="left">9.9%</td><td align="left">4.4% → 14.9%</td><td align="left">0.320</td><td align="left">0.874</td></tr><tr><td align="left">smoother readout, <span class="math tex">\(\beta = 0.1\)</span></td><td align="left">9.5%</td><td align="left">4.5% → 14.0%</td><td align="left">0.311</td><td align="left">0.846</td></tr><tr><td align="left">smoothest readout, <span class="math tex">\(\beta = 0.3\)</span></td><td align="left">8.8%</td><td align="left">5.4% → 11.8%</td><td align="left">0.299</td><td align="left">0.796</td></tr></tbody></table>
+<p><strong>The overshoot is the objective, not a defect.</strong> A CRRA utility keeps rewarding replacement without
+limit, so an optimum that pushes stayers to 0.873 against a 0.70 target is doing what it was asked.
+Capping the utility at the target — <em>satiation</em> — lands stayers at 0.708, essentially on target, for a
+third less employer cost. Whether the plan should stop at &quot;adequate&quot; is a normative choice, and the model
+makes its price explicit rather than hiding it.</p>
+<p><strong>Risk aversion moves funding the way it should.</strong> Replacement falls monotonically in <span class="math tex">\(\eta\)</span>: at <span class="math tex">\(\eta = 1\)</span> marginal utility decays as <span class="math tex">\(1/x\)</span>, slowly enough that overshooting the target keeps paying; at <span class="math tex">\(\eta = 5\)</span> it decays as <span class="math tex">\(1/x^5\)</span> and the plan stops funding sooner.</p>
+<p><strong>A smoother schedule has a measurable price.</strong> At <span class="math tex">\(\beta = 0.01\)</span> the soft readout is indistinguishable
+from the hard argmax. Raising <span class="math tex">\(\beta\)</span> smooths the schedule — its year-on-year roughness falls from 0.56
+to 0.40 at <span class="math tex">\(\beta = 0.1\)</span> and to 0.18 at <span class="math tex">\(\beta = 0.3\)</span> — and costs joint value: 1.4% of the optimum at
+<span class="math tex">\(\beta = 0.1\)</span>, 5.6% at <span class="math tex">\(\beta = 0.3\)</span>. For an employer who values a predictable contribution line, that
+curve is the menu: how much optimality to give up for how much legibility.</p>
+<figure class="post-figure">
+<img src="../img/dp_signal_schedule.png" alt="Contribution schedules read off the value function at several temperatures, and the value gap and roughness against temperature" loading="lazy">
+<figcaption>Left: the same value function read out at increasing β — the schedule flattens and its average falls. Right: the price (red, value gap to the argmax) against the smoothness bought (blue, year-on-year roughness). This figure is solved without the contribution band, so its gaps run slightly larger than the banded figures in the table (7.3% against 5.6% at β = 0.3). Source: <code>contribution_schedule_suite.py signal</code>.</figcaption>
+</figure>
+<h2>interpretation</h2>
+<p>Read together, the results say three things about the problem, and one about the method.</p>
+<p><strong>The optimal plan is a state rule, and its timing is a financing decision.</strong> The shape of the optimum
+is not something the model had to be coaxed into. Back-loading follows from one inequality: the employer
+discounts faster (<span class="math tex">\(\delta_f = 5\%\)</span>) than the reserve grows (<span class="math tex">\(\mu = 3\%\)</span>), so every euro deferred is cheaper
+in today's money than the return it forgoes. Reverse the inequality and the same model front-loads;
+equalise it and the schedule goes flat. Churn, the guarantee and the utility then decide <em>how much</em>, but
+not <em>when</em>. That separation matters for practice, because it tells an employer which of its numbers the
+funding calendar actually depends on: its cost of capital against its insurer's credited rate.</p>
+<p><strong>Most of the value of optimising is in when and where, not how much.</strong> Against the flat plan, the
+optimum reaches the same adequacy for 41% less; against the age scale, for 27% less. Roughly half of that
+gain is available to any plan that simply back-loads, and the other half needs the contribution to react
+to the plan's funding state. The market designs also miss in a characteristic way: over-funding the
+churn-heavy early years and under-funding the years in which careers actually accumulate their pension.</p>
+<p><strong>The adequacy question is a negotiation, and the model prices it.</strong> With no satiation, the optimum
+overshoots the target for stayers, while leavers retire barely above the legal floor under every plan.
+Neither is a defect of the solver. The first is what an unbounded utility asks for, and satiation removes
+it at a price the model states. The second is what a paid-up contract with a service-pro-rated target
+implies: a member who leaves early has accrued little, and nothing in this plan design can change that
+without paying for it. Where the plan should sit is exactly the choice <span class="math tex">\(\lambda\)</span> encodes — and within the
+band it spans the whole range from the legal minimum to full capacity, smoothly.</p>
+<p><strong>The oracle is a benchmark, and it behaves like one.</strong> It returns the known answers at the corners
+(<span class="math tex">\(\lambda = 0\)</span>, <span class="math tex">\(\lambda = 1\)</span>), it identifies the one parameter that is not independent (<span class="math tex">\(\delta_e\)</span>), and
+its numbers barely move when the numerics are refined: seven quadrature nodes instead of five change
+nothing in the third decimal, 41 candidate contributions instead of 20 move no figure by more than 0.001,
+and doubling the grid moves stayer replacement by 0.001 and employer cost from 0.320 to 0.316. The one
+resolution-sensitive quantity is the early part of the schedule — 4.4% on the protocol grid, 4.0% on the
+doubled one — which is why schedule shapes are reported to one decimal and never compared across grids. A benchmark whose error bar is known is what the next rung needs.</p>
+<h2>summary</h2>
+<p>The dynamic-programming oracle solves the churn-aware, risk-averse funding problem exactly on the reduced
+state <span class="math tex">\((t, F, \rho)\)</span> and passes the checks with known answers. Its optimal rule funds at capacity when the
+projected replacement rate is short and at the floor when it is comfortable. At the committed calibration
+that produces a back-loaded schedule — set by the employer's discount rate against the credited return,
+not by churn — that reaches the flat 5% plan's adequacy for 41% less and the age scale's for 27% less.
+The negotiation weight <span class="math tex">\(\lambda\)</span> moves the plan smoothly from the legal minimum to full capacity, the
+employee's discount rate is only <span class="math tex">\(\lambda\)</span> in disguise, and a smoother contribution schedule can be bought
+at a stated fraction of the optimum's value.</p>
+<h2>final thoughts</h2>
+<p>Every number in this post is reproducible, and the quickest way to build intuition for them is to move
+the inputs yourself. The DP oracle runs live in the <a href="https://ignacedecocq.com/playGround.html">Play Ground</a>:
+set the economy, the negotiation weight, the contribution band, the signal readout <span class="math tex">\(\beta\)</span> and the two
+market plans, and it re-solves the problem in a few seconds — the schedule, the policy map with the
+simulated careers on it, the frontier with the market plans placed against it, where those plans misfund,
+and the price of a smoother schedule. Setting <span class="math tex">\(\delta_f\)</span> to 2% and watching the schedule flip is the
+fastest way to see the timing result above; setting the market plans to your own is the fastest way to
+see what optimising would buy them.</p>
 <h2>next steps</h2>
+<p>Three limits of this rung point to the next ones.</p>
+<p><strong>The rates are still constants.</strong> <span class="math tex">\(\mu\)</span> and <span class="math tex">\(G\)</span> are fixed numbers here, and the results show how much
+depends on how they compare. In reality the credited rate follows the insurer's book yield and the
+guarantee follows the WAP formula on the 10-year OLO — the Hull-White model from the earlier posts.
+With both stochastic, the three rate comparisons stop being parameters and become <em>state variables</em>:
+a plan can drift from front-loading to back-loading as rates move, and the timing condition switches
+between <span class="math tex">\(\delta_f - \mu_t\)</span> and <span class="math tex">\(\delta_f - G_t\)</span> each time a path crosses the guarantee. Carrying rates in
+the state costs dimensions the grid cannot afford.</p>
+<p><strong>Which is why the learner comes next.</strong> A grid in <span class="math tex">\((t, F, \rho)\)</span> is feasible; a grid in <span class="math tex">\((t, F, \rho, r_t)\)</span> and beyond is not. The plan from the previous post still stands: a policy-gradient learner (PPO)
+with a function approximator, trained on the same environment and checked against this oracle where the
+oracle can still be computed. The policy map above says where that check has to hold — on the thin ribbon
+of states careers actually visit, not on the whole grid.</p>
+<p><strong>And three modelling assumptions need data.</strong> The first pillar is treated as a flat 43%, while Belgium's
+is regressive — a salary-dependent legal rate would break the degree-zero homogeneity that keeps the state
+two-dimensional, and would have to enter the state in its own right. The market plan levels are
+placeholders that need sourcing before the &quot;what optimising buys&quot; figures can be quoted as representative.
+And the two-tier plan common in Belgium, which splits contributions at the social-security ceiling, is not
+scale-free, so it is left out until the ceiling can be carried as a further ratio.</p>
 
     </article>
   </main>

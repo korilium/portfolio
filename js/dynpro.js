@@ -435,7 +435,7 @@ function renderSweep(sw, d) {
           ${swatch("c-grid", "grid-mean a*")}${swatch("c-path", "path-weighted a*")}
         </figcaption></figure>
       <figure class="chart-figure chart-figure-text">
-        <p>The <strong>grid-mean</strong> averages the rule over every state; the <strong>path-weighted</strong> mean averages it over the states careers actually occupy. They differ because only a thin ribbon of the grid is ever reached — the magenta contours below.</p>
+        <p>The <strong>grid-mean</strong> averages the rule over every state of the grid; the <strong>path-weighted</strong> mean averages what the simulated careers actually pay, per career-year, counting zero once a member has left. They differ because careers reach only a thin ribbon of the grid — the magenta contours below — and because most members leave before retirement.</p>
         <p>Funding rises smoothly with λ and saturates once the optimum is pinned at the top of the action grid; there is no kink. This sweep is unconstrained (no band), as in the thesis, since the band would censor the very rise it shows.</p>
         <p class="chart-subnote">${sw.threshold.lambda.length + sw.frontier.lambda.length} solves on a ${sw.meta.grid.nF}×${sw.meta.grid.nR} grid in ${sw.meta.seconds}s across ${sw.meta.threads} threads.</p>
       </figure>

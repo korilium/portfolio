@@ -21,34 +21,49 @@ function fmtRange(m, digits = 3) {
 }
 
 // --- charts ------------------------------------------------------------------
+// These mirror the thesis's matplotlib figures, including the axis names: an
+// (F, rho) plane with unlabelled ticks is unreadable without the paper open.
+
+// Room for a rotated y-label on the left and a colour bar on the right.
+const LINE_GEOM = { width: 420, height: 300, margin: { top: 26, right: 18, bottom: 46, left: 62 } };
+const MAP_GEOM = { width: 420, height: 300, margin: { top: 26, right: 84, bottom: 46, left: 62 } };
+
+const AX_F = "F = R / L   (funding ratio)";
+const AX_RHO = "ρ = S / L   (log)";
 
 function scheduleChart(years, schedules) {
   const all = schedules.flatMap((s) => s.c_by);
+  const lo = Math.min(0, ...all);
+  const hi = Math.max(...all);
   const { xs, ys, svgHead } = chartFrame({
-    title: "Contribution by career year (% of salary)",
+    ...LINE_GEOM,
+    title: "Optimal funding vs market plans",
     xDomain: [0, years.length - 1],
-    yDomain: padDomain(Math.min(0, ...all), Math.max(...all)),
+    yDomain: padDomain(lo, hi),
     xTickFormat: (v) => `${Math.round(v)}`,
-    yTickLabels: niceTicks(Math.min(0, ...all), Math.max(...all), 4).map((v) => ({
-      v,
-      label: v.toFixed(0),
-    })),
+    yTickLabels: niceTicks(lo, hi, 5).map((v) => ({ v, label: v.toFixed(0) })),
+    xLabel: "career year t",
+    yLabel: "contribution (% of salary)",
   });
   const lines = schedules
     .map((s, i) => `<path d="${pathFrom(s.c_by.map((v, t) => [xs(t), ys(v)]))}" class="chart-line ${SERIES[i % SERIES.length]}" />`)
     .join("");
-  return chartSvg(`${svgHead}${lines}`, "Contribution schedule by career year");
+  return chartSvg(`${svgHead}${lines}`, "Contribution schedule by career year",
+                  LINE_GEOM.width, LINE_GEOM.height);
 }
 
 function adequacyChart(ad) {
   const { edges, stayers, leavers, target, legal } = ad;
   const maxN = Math.max(1, ...stayers, ...leavers);
-  const { xs, ys, svgHead } = chartFrame({
+  const { xs, ys, geom, svgHead } = chartFrame({
+    ...LINE_GEOM,
     title: "Replacement rate at retirement",
     xDomain: [edges[0], edges[edges.length - 1]],
     yDomain: [0, maxN],
     xTickFormat: (v) => v.toFixed(2),
     yTickLabels: niceTicks(0, maxN, 4).map((v) => ({ v, label: `${Math.round(v)}` })),
+    xLabel: "total annual replacement (1st + 2nd pillar)",
+    yLabel: "careers",
   });
   const bars = (counts, cls) =>
     counts
@@ -60,62 +75,200 @@ function adequacyChart(ad) {
         return `<rect x="${x0.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${(ys(0) - y).toFixed(1)}" class="${cls}" />`;
       })
       .join("");
-  const rule = (v, cls) =>
-    v >= edges[0] && v <= edges[edges.length - 1]
-      ? `<line x1="${xs(v).toFixed(1)}" y1="${MARGIN.top}" x2="${xs(v).toFixed(1)}" y2="${MARGIN.top + PLOT_H}" class="${cls}" />`
-      : "";
+  const rule = (v, cls, lab) => {
+    if (!(v >= edges[0] && v <= edges[edges.length - 1])) return "";
+    const x = xs(v).toFixed(1);
+    return `<line x1="${x}" y1="${geom.m.top}" x2="${x}" y2="${geom.m.top + geom.plotH}" class="${cls}" />
+            <text x="${x}" y="${geom.m.top - 4}" class="chart-tick" text-anchor="middle">${lab}</text>`;
+  };
   return chartSvg(
-    `${svgHead}${bars(leavers, "chart-bar-alt")}${bars(stayers, "chart-bar")}${rule(target, "chart-refline")}${rule(legal, "chart-zeroline")}`,
-    "Distribution of replacement rates for stayers and leavers"
+    `${svgHead}${bars(leavers, "chart-bar-alt")}${bars(stayers, "chart-bar")}` +
+      `${rule(target, "chart-refline", "target")}${rule(legal, "chart-zeroline", "legal")}`,
+    "Distribution of replacement rates for stayers and leavers",
+    LINE_GEOM.width, LINE_GEOM.height
   );
 }
 
-/** Policy heatmap: a*(F, rho) for one year, with rho on a log axis.
-    Grid cells are drawn as rects — the shared helpers are line-only. */
-function policyHeatmap(F, rho, M, year, colour) {
-  const { xs, svgHead } = chartFrame({
-    title: `Year ${year}`,
+/** Shared (F, rho) plane: log-rho axis, the F = 1 guide, and a colour bar. */
+function planeChart({ title, F, rho, M, ramp, barLabel, barTicks, extra = "" }) {
+  const { xs, geom, svgHead } = chartFrame({
+    ...MAP_GEOM,
+    title,
     xDomain: [F[0], F[F.length - 1]],
     yDomain: [0, 1],
     xTickFormat: (v) => v.toFixed(1),
-    yTickLabels: [0, 0.5, 1].map((f) => {
-      const lo = Math.log(rho[0]);
-      const hi = Math.log(rho[rho.length - 1]);
-      return { v: f, label: Math.exp(lo + f * (hi - lo)).toFixed(1) };
+    yTickLabels: [0, 0.25, 0.5, 0.75, 1].map((f) => {
+      const a = Math.log(rho[0]);
+      const b = Math.log(rho[rho.length - 1]);
+      const val = Math.exp(a + f * (b - a));
+      return { v: f, label: val >= 10 ? val.toFixed(0) : val.toFixed(2) };
     }),
+    xLabel: AX_F,
+    yLabel: AX_RHO,
   });
-  const lo = Math.log(rho[0]);
-  const hi = Math.log(rho[rho.length - 1]);
-  const yOf = (r) => MARGIN.top + PLOT_H - ((Math.log(r) - lo) / (hi - lo)) * PLOT_H;
+  const a = Math.log(rho[0]);
+  const b = Math.log(rho[rho.length - 1]);
+  const yOf = (r) => geom.m.top + geom.plotH - ((Math.log(r) - a) / (b - a || 1)) * geom.plotH;
+
   let cells = "";
-  for (let i = 0; i < F.length - 1; i++) {
-    for (let j = 0; j < rho.length - 1; j++) {
+  for (let i = 0; i < M.length; i++) {
+    for (let j = 0; j < M[i].length; j++) {
       const v = M[i][j];
       if (v === null || v === undefined) continue;
+      const col = ramp(v);
+      if (col === null) continue;
       const x0 = xs(F[i]);
-      const x1 = xs(F[i + 1]);
-      const y1 = yOf(rho[j]);
+      const w = Math.max(0.8, xs(F[i + 1]) - x0);
       const y0 = yOf(rho[j + 1]);
-      cells += `<rect x="${x0.toFixed(1)}" y="${y0.toFixed(1)}" width="${Math.max(0.6, x1 - x0).toFixed(1)}" height="${Math.max(0.6, y1 - y0).toFixed(1)}" fill="${colour(v)}" />`;
+      const h = Math.max(0.8, yOf(rho[j]) - y0);
+      cells += `<rect x="${x0.toFixed(1)}" y="${y0.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="${col}" />`;
     }
   }
-  const parLine = `<line x1="${xs(1).toFixed(1)}" y1="${MARGIN.top}" x2="${xs(1).toFixed(1)}" y2="${MARGIN.top + PLOT_H}" class="chart-refline" />`;
-  return chartSvg(`${cells}${svgHead}${parLine}`, `Optimal funding rule in year ${year}`);
+  const par = `<line x1="${xs(1).toFixed(1)}" y1="${geom.m.top}" x2="${xs(1).toFixed(1)}" y2="${geom.m.top + geom.plotH}" class="chart-par" />`;
+  const bar = colourBar({
+    x: geom.m.left + geom.plotW + 12, y: geom.m.top, w: 10, h: geom.plotH,
+    ramp: ramp.base || ramp, label: barLabel, ticks: barTicks,
+  });
+  return { svg: `${cells}${svgHead}${par}${extra(xs, yOf, geom)}${bar}`, xs, yOf, geom };
 }
 
-const viridisish = (v) => {
-  const t = Math.max(0, Math.min(1, v));
-  const r = Math.round(30 + 200 * Math.pow(t, 1.6));
-  const g = Math.round(40 + 180 * t);
-  const b = Math.round(120 - 80 * t);
-  return `rgb(${r},${g},${b})`;
-};
+/** Optimal funding rule for one year, with iso-replacement contours.
+ *
+ *  The contours are exact rather than traced: total replacement is
+ *      RR = RR_legal + max(F, 1) / (annuity * rho),
+ *  so the RR level curve is just rho = max(F,1) / (annuity * (RR - RR_legal)).
+ *
+ *  Note these are TOTAL replacement rates. The thesis's policy_map.png contours
+ *  max(F,1)/rho and labels it "RR", which is the annuity factor times the second
+ *  pillar's rate — a different quantity. */
+function policyMap(F, rho, M, year, legal, annuity) {
+  const ramp = (v) => VIRIDIS(v);
+  ramp.base = VIRIDIS;
+  const contours = (xs, yOf, geom) =>
+    [0.5, 0.7, 1.0]
+      .filter((rr) => rr > legal)
+      .map((rr) => {
+        const pts = [];
+        for (let k = 0; k <= 24; k++) {
+          const f = F[0] + (k / 24) * (F[F.length - 1] - F[0]);
+          const r = Math.max(f, 1) / (annuity * (rr - legal));
+          if (r >= rho[0] && r <= rho[rho.length - 1]) pts.push([xs(f), yOf(r)]);
+        }
+        if (pts.length < 2) return "";
+        const [lx, ly] = pts[Math.floor(pts.length / 2)];
+        return `<path d="${pathFrom(pts)}" class="chart-contour" />
+                <text x="${lx.toFixed(1)}" y="${(ly - 3).toFixed(1)}" class="chart-contour-label">RR ${rr.toFixed(2)}</text>`;
+      })
+      .join("");
+  const { svg } = planeChart({
+    title: `Optimal funding a* — year ${year}`,
+    F, rho, M, ramp,
+    barLabel: "a*  (share of capacity)",
+    barTicks: [[0, "0"], [0.5, "0.5"], [1, "1"]],
+    extra: contours,
+  });
+  return chartSvg(svg, `Optimal funding rule in year ${year}`, MAP_GEOM.width, MAP_GEOM.height);
+}
 
-const visitColour = (maxV) => (v) => {
-  if (v <= 0) return "transparent";
-  const t = Math.log1p(v) / Math.log1p(maxV || 1);
-  return `rgba(193,18,31,${(0.15 + 0.85 * t).toFixed(3)})`;
-};
+/** Occupancy of the same plane, on a log colour scale as in the thesis figure. */
+function visitMap(F, rho, M, year, maxV) {
+  const ramp = (v) => (v > 0 ? MAGMA(Math.log1p(v) / Math.log1p(maxV || 1)) : null);
+  ramp.base = MAGMA;
+  const { svg } = planeChart({
+    title: `Careers present — year ${year}`,
+    F, rho, M, ramp,
+    barLabel: "path-years (log)",
+    barTicks: [[0, "1"], [1, `${Math.round(maxV)}`]],
+    extra: () => "",
+  });
+  return chartSvg(svg, `Where careers are in year ${year}`, MAP_GEOM.width, MAP_GEOM.height);
+}
+
+/** The simulation drawn ON the state space: pooled occupancy behind, and the
+    cohort's median path through (F, rho) over the career on top. Quantiles come
+    from the occupancy histogram, so the path is a staircase at node resolution. */
+function stateSpaceChart(F, rho, pooled, traj) {
+  // The axes are set by the TRAJECTORY, not by where the occupancy mass is. Those
+  // differ sharply: the cohort starts at rho ~ 22 for one year then spends 44 years
+  // below 2, so cropping to 99% of path-years would cut off the start of the very
+  // path being drawn.
+  const span = (q) => [
+    Math.min(...traj[q].p10.filter(Number.isFinite)),
+    Math.max(...traj[q].p90.filter(Number.isFinite)),
+  ];
+  const [fLo, fHi] = span("F");
+  const [rLo, rHi] = span("rho");
+  if (!(fHi > fLo) || !(rHi > rLo)) return "";
+
+  let maxV = 0;
+  for (const row of pooled) for (const v of row) if (v > maxV) maxV = v;
+
+  const xDomain = padDomain(fLo, fHi, 0.08);
+  const loR = Math.log(rLo) - 0.2;
+  const hiR = Math.log(rHi) + 0.2;
+
+  const { xs, geom, svgHead } = chartFrame({
+    ...MAP_GEOM,
+    title: "Where the simulated cohort travels",
+    xDomain,
+    yDomain: [0, 1],
+    xTickFormat: (v) => v.toFixed(2),
+    yTickLabels: [0, 0.25, 0.5, 0.75, 1].map((f) => {
+      const val = Math.exp(loR + f * (hiR - loR));
+      return { v: f, label: val >= 10 ? val.toFixed(0) : val.toFixed(2) };
+    }),
+    xLabel: AX_F,
+    yLabel: AX_RHO,
+  });
+  const yOf = (r) => geom.m.top + geom.plotH - ((Math.log(r) - loR) / (hiR - loR || 1)) * geom.plotH;
+
+  let cells = "";
+  for (let i = 0; i < pooled.length; i++) {
+    for (let j = 0; j < pooled[i].length; j++) {
+      const v = pooled[i][j];
+      if (!v) continue;
+      const x0 = xs(F[i]);
+      const w = Math.max(0.8, xs(F[i + 1]) - x0);
+      const y0 = yOf(rho[j + 1]);
+      const h = Math.max(0.8, yOf(rho[j]) - y0);
+      cells += `<rect x="${x0.toFixed(1)}" y="${y0.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="${MAGMA(Math.log1p(v) / Math.log1p(maxV))}" opacity="0.55" />`;
+    }
+  }
+
+  const pts = traj.F.p50.map((f, t) => [xs(f), yOf(traj.rho.p50[t])]);
+  const path = `<path d="${pathFrom(pts)}" class="chart-line chart-traj" />`;
+
+  const marks = [0, 10, 22, 44]
+    .filter((t) => t < pts.length)
+    .map((t) => {
+      const [cx, cy] = pts[t];
+      const xlo = xs(traj.F.p10[t]);
+      const xhi = xs(traj.F.p90[t]);
+      const ylo = yOf(traj.rho.p10[t]);
+      const yhi = yOf(traj.rho.p90[t]);
+      return `<line x1="${xlo.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${xhi.toFixed(1)}" y2="${cy.toFixed(1)}" class="chart-whisker" />
+              <line x1="${cx.toFixed(1)}" y1="${ylo.toFixed(1)}" x2="${cx.toFixed(1)}" y2="${yhi.toFixed(1)}" class="chart-whisker" />
+              <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="3.2" class="chart-marker" />
+              <text x="${(cx + 6).toFixed(1)}" y="${(cy - 5).toFixed(1)}" class="chart-tick">t = ${t}</text>`;
+    })
+    .join("");
+
+  const par =
+    xDomain[0] <= 1 && xDomain[1] >= 1
+      ? `<line x1="${xs(1).toFixed(1)}" y1="${geom.m.top}" x2="${xs(1).toFixed(1)}" y2="${geom.m.top + geom.plotH}" class="chart-par" />
+         <text x="${(xs(1) + 3).toFixed(1)}" y="${(geom.m.top + 9).toFixed(1)}" class="chart-tick">F = 1</text>`
+      : "";
+
+  const bar = colourBar({
+    x: geom.m.left + geom.plotW + 12, y: geom.m.top, w: 10, h: geom.plotH,
+    ramp: MAGMA, label: "path-years (log)",
+    ticks: [[0, "1"], [1, `${Math.round(maxV)}`]],
+  });
+
+  return chartSvg(`${cells}${svgHead}${par}${path}${marks}${bar}`,
+                  "Median path of the simulated cohort through the funding and salary ratios",
+                  MAP_GEOM.width, MAP_GEOM.height);
+}
 
 // --- render ------------------------------------------------------------------
 
@@ -171,7 +324,6 @@ function render(d) {
     1,
     ...d.policy_maps.maps.flatMap((m) => m.visits.flatMap((row) => row))
   );
-  const vc = visitColour(maxVisit);
 
   results.innerHTML = `
     <div class="chart-row">
@@ -185,16 +337,24 @@ function render(d) {
         </figcaption></figure>
     </div>
     ${renderTable(d.table)}
+    <h3 class="chart-section">The simulation on the state space
+      <span class="chart-subnote">median path through (F, ρ); crosses are the 10th–90th percentile spread; shading is total occupancy</span></h3>
+    <div class="chart-row">
+      <figure class="chart-figure chart-figure-wide">
+        ${stateSpaceChart(d.policy_maps.F, d.policy_maps.rho, d.policy_maps.pooled_visits, d.trajectory)}
+        <figcaption class="chart-caption">Contributions enter the reserve and the guarantee equally, so they carry F = 1 and pull the plan towards par: F stays near 1 while ρ = S/L falls as the liability builds against salary.</figcaption>
+      </figure>
+    </div>
     <h3 class="chart-section">Optimal funding rule <span class="chart-subnote">a*(F, ρ) — dotted line is full funding, F = 1</span></h3>
     <div class="chart-row">
       ${d.policy_maps.maps
-        .map((m) => `<figure class="chart-figure">${policyHeatmap(d.policy_maps.F, d.policy_maps.rho, m.a, m.year, viridisish)}</figure>`)
+        .map((m) => `<figure class="chart-figure">${policyMap(d.policy_maps.F, d.policy_maps.rho, m.a, m.year, d.adequacy.legal, d.meta.annuity)}</figure>`)
         .join("")}
     </div>
     <h3 class="chart-section">Where careers actually go <span class="chart-subnote">occupancy of the same state space</span></h3>
     <div class="chart-row">
       ${d.policy_maps.maps
-        .map((m) => `<figure class="chart-figure">${policyHeatmap(d.policy_maps.F, d.policy_maps.rho, m.visits, m.year, vc)}</figure>`)
+        .map((m) => `<figure class="chart-figure">${visitMap(d.policy_maps.F, d.policy_maps.rho, m.visits, m.year, maxVisit)}</figure>`)
         .join("")}
     </div>
     ${renderNotes(d)}

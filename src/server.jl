@@ -113,14 +113,76 @@ function moving_average(v::AbstractVector, window::Integer)
     return out
 end
 
-"""Thin a matrix to at most `n` rows and columns by taking every k-th node —
-the policy map is 73x71 and only needs to be legible, not exact, in the browser.
-n = 28 keeps the eight heatmaps to ~6k SVG rects; at 40 the rendered markup was
-750 KB, which is a lot of DOM to hand a phone for a picture that coarse."""
-function thin(M::AbstractMatrix, n::Integer=28)
-    ri = 1:max(1, cld(size(M, 1), n)):size(M, 1)
-    ci = 1:max(1, cld(size(M, 2), n)):size(M, 2)
-    return collect(ri), collect(ci), [M[i, j] for i in ri, j in ci]
+# Reducing a 73x71 grid to something a browser should draw. n = 28 keeps the
+# heatmaps to a few thousand SVG rects; at 40 the rendered markup was 750 KB.
+#
+# The reduction differs by WHAT is being reduced, and getting this wrong is not
+# cosmetic. A policy surface is smooth, so sampling every k-th node represents it
+# faithfully. An occupancy histogram is not: sampling it DISCARDS the counts in
+# between, which silently deletes mass — it cropped the state-space plot to
+# rho <= 1.9 when the cohort starts near 22. Histograms are block-SUMMED instead.
+
+"""Block starts and the cell edges for reducing an axis of `nodes` to <= n cells."""
+function blocks(nodes::AbstractVector, n::Integer=28)
+    k = max(1, cld(length(nodes) - 1, n))
+    starts = collect(1:k:(length(nodes) - 1))
+    edges = vcat([nodes[i] for i in starts], nodes[end])
+    return starts, k, edges
+end
+
+"""Subsample a smooth field at the block starts (for the policy surface)."""
+sample_at(M::AbstractMatrix, si, sj) = [M[i, j] for i in si, j in sj]
+
+"""Sum a histogram over blocks, so no count is lost (for occupancy). The two axes
+can reduce by different factors, so both block sizes are passed."""
+function pool(M::AbstractMatrix, si, ki::Integer, sj, kj::Integer)
+    out = zeros(eltype(M), length(si), length(sj))
+    for (a, i) in enumerate(si), (b, j) in enumerate(sj)
+        out[a, b] = sum(@view M[i:min(i + ki - 1, size(M, 1)),
+                                j:min(j + kj - 1, size(M, 2))])
+    end
+    return out
+end
+
+"""Weighted quantile of `nodes` under the counts `w`."""
+function wquantile(nodes::AbstractVector, w::AbstractVector, q::Real)
+    tot = sum(w)
+    tot <= 0 && return NaN
+    acc = 0.0
+    for i in eachindex(nodes)
+        acc += w[i]
+        acc >= q * tot && return float(nodes[i])
+    end
+    return float(nodes[end])
+end
+
+"""The cohort's path through the state space, read off the per-year occupancy
+histogram rather than from the paths themselves.
+
+Doing it this way keeps `simulate` a faithful port — it returns exactly what the
+Python returns — at the cost of node resolution: these quantiles land on grid
+nodes, so the curve is a staircase on a coarse grid rather than smooth. That is
+the honest trade, and the plot is about where the cohort GOES, not about the
+third decimal of where it is."""
+function trajectory(visits, Fg, rg)
+    T = length(visits)
+    out = Dict("F" => Dict{String,Vector{Float64}}(), "rho" => Dict{String,Vector{Float64}}(),
+               "present" => Float64[])
+    for key in ("p10", "p50", "p90")
+        out["F"][key] = Float64[]
+        out["rho"][key] = Float64[]
+    end
+    for t in 1:T
+        V = visits[t]
+        fw = vec(sum(V, dims=2))        # marginal over rho -> distribution of F
+        rw = vec(sum(V, dims=1))        # marginal over F   -> distribution of rho
+        push!(out["present"], sum(V))
+        for (key, q) in (("p10", 0.1), ("p50", 0.5), ("p90", 0.9))
+            push!(out["F"][key], wquantile(Fg, fw, q))
+            push!(out["rho"][key], wquantile(rg, rw, q))
+        end
+    end
+    return out
 end
 
 """Counts of `v` over `nbins` equal-width bins spanning [lo, hi]."""
@@ -264,9 +326,14 @@ end
     lea_counts, _ = histogram(rr[.!stay], p.RR_LEGAL, hi_rr)
 
     years = [y for y in DYNPRO_YEARS if y <= p.T - 1]
-    fi, rj, _ = thin(out.policy[1])
-    maps = [Dict("year" => y, "a" => thin(out.policy[y + 1])[3],
-                 "visits" => thin(first_opt[:visits][y + 1])[3]) for y in years]
+    si, ki, Fedges = blocks(Fg)
+    sj, kj, Redges = blocks(rg)
+    maps = [Dict("year" => y,
+                 "a" => sample_at(out.policy[y + 1], si, sj),
+                 "visits" => pool(first_opt[:visits][y + 1], si, ki, sj, kj))
+            for y in years]
+    pooled = pool(reduce(+, first_opt[:visits]), si, ki, sj, kj)
+    traj = trajectory(first_opt[:visits], Fg, rg)
 
     # A band-pinned schedule is set by the constraint, not by the trade-off, and a
     # lambda slider that does nothing reads as broken unless the page says why.
@@ -280,12 +347,16 @@ end
         "adequacy" => Dict("edges" => edges, "stayers" => sty_counts,
                            "leavers" => lea_counts,
                            "target" => p.RR_TARGET, "legal" => p.RR_LEGAL),
-        "policy_maps" => Dict("F" => Fg[fi], "rho" => rg[rj], "maps" => maps),
+        "policy_maps" => Dict("F" => Fedges, "rho" => Redges, "maps" => maps,
+                              "pooled_visits" => pooled),
+        "trajectory" => traj,
         "meta" => Dict("solve_seconds" => round(t_solve, digits=2),
                        "grid" => Dict("nF" => nF, "nR" => nR, "na" => na, "nq" => nq),
                        "n_paths" => n_paths, "n_seeds" => n_seeds,
                        "years_at_cap" => at_cap, "years_at_floor" => at_floor,
-                       "band" => [r.band_lo, r.band_hi]),
+                       "band" => [r.band_lo, r.band_hi],
+                       # the client draws iso-replacement contours on the policy map
+                       "annuity" => p.ANNUITY, "gamma" => p.GAMMA),
     ))
 end
 

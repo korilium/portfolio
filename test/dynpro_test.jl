@@ -121,6 +121,37 @@ end
         check_sim(r, FIX["sim_nochurn"])
     end
 
+    @testset "survival and the hazard match" begin
+        @test maximum(abs.([tenure_hazard(t) for t in 0:(P.T - 1)] .- vec64(FIX["hazard"]))) < TOL
+        @test maximum(abs.(survival(tenure_hazard, P) .- vec64(FIX["survival"]))) < TOL
+    end
+
+    @testset "track and visits outputs match" begin
+        # These paths are not reached by the value comparisons above: `visits` is the
+        # occupancy histogram the state-space plot draws, and `track` feeds the median
+        # rho curve. A nearest-node assignment is easy to get subtly wrong (log-rho vs
+        # rho, ties, the clip at the edges), so it is compared cell by cell.
+        lo, hi = 0.02 / P.GAMMA, 0.15 / P.GAMMA
+        band_ag = collect(range(lo, hi; length=FIX["grid"]["na"]))
+        pol = solve(Fg, rg, band_ag, P; n_quad=NQ, beta=0.0).policy
+        r = simulate(pol, Fg, rg, P; R0=R0, L0=L0, S0=S0, band=(lo, hi),
+                     n_paths=NPATH, shocks=SH, track=true, visits=true)
+        want = FIX["sim_banded_track"]
+
+        @test isapprox(r[:mean_a], want["mean_a"]; atol=TOL, rtol=0)
+        @test maximum(abs.(r[:rho_med] .- vec64(want["rho_med"]))) < TOL
+        # the Python writes -1.0 where no path is present and a_by_t is NaN
+        got_a = [isnan(x) ? -1.0 : x for x in r[:a_by_t]]
+        @test maximum(abs.(got_a .- vec64(want["a_by_t"]))) < TOL
+
+        pooled = reduce(+, r[:visits])
+        @test sum(pooled) == sum(vec64(want["visits_by_year"]))
+        @test maximum(abs.(pooled .- mat64(want["visits_pooled"]))) == 0.0
+        for t in 1:P.T
+            @test sum(r[:visits][t]) == want["visits_by_year"][t]
+        end
+    end
+
     # --- invariants: properties required of the solver, not of the fixture ----
 
     @testset "scale invariance of RR under (R,L,S)*k" begin

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Optimal Pension Funding - Ignace Decocq</title>
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem("theme");
+            if (savedTheme === "light") {
+                document.documentElement.setAttribute("data-theme", savedTheme);
+            }
+        })();
+    </script>
+    <!-- Favicon -->
+    <link rel="icon" href="img/favicon.svg">
+    <!-- Stylesheet -->
+    <link href="css/styles/stylePlayground.css" rel="stylesheet">
+
+</head>
+
+
+<body id="page-top" data-spy="scroll" data-target=".side-menu">
+    <!-- Header -->
+    <header class="header">
+        <nav class="menu-container" aria-label="Main Navigation">
+            <ul class="menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="blog/posts/generated/index.html">Blog</a></li>
+                <li><a href="playGround.html" aria-current="page">Playground</a></li>
+                <li><a href="project.html">Peccon</a></li>
+            </ul>
+        </nav>
+        <label class="theme-switch" aria-label="Toggle light and dark theme">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider"></span>
+        </label>
+    </header>
+
+    <main class="page playground">
+        <p class="tool-breadcrumb"><a href="playGround.html">&larr; Play Ground</a></p>
+
+        <section class="playground-intro">
+            <h1 class="subtitles-short">Optimal pension funding (DP oracle)</h1>
+            <p>Dynamic programming over the funding ratio <em>F&nbsp;=&nbsp;R/L</em> and the salary ratio
+                <em>&rho;&nbsp;=&nbsp;S/L</em>: given the economics, what <em>should</em> an employer contribute
+                each year, and how does that compare with the flat and age-related plans used in practice?
+                Set the assumptions, then run it.</p>
+            <p class="tool-note"><strong>This is a model explorer, not advice.</strong> The two market plans are
+                illustrative defaults, not sourced from Belgian plan data &mdash; change them to your own. Every
+                simulated figure is shown with the range across five random seeds. The DP solve takes a couple of
+                seconds.</p>
+        </section>
+
+        <section class="playground-panel">
+            <form id="dynpro-form" class="playground-form">
+                <fieldset class="field-group economy-fields">
+                    <legend>Economy</legend>
+                    <label>Guarantee rate (G)
+                        <input type="number" step="any" name="G" value="0.03">
+                    </label>
+                    <label>Credited tariff (&mu;)
+                        <input type="number" step="any" name="MU" value="0.03">
+                    </label>
+                    <label>Salary growth (W)
+                        <input type="number" step="any" name="W" value="0.025">
+                    </label>
+                    <label>Employer discount (&delta;<sub>f</sub>)
+                        <input type="number" step="any" name="DISC_ER" value="0.05">
+                    </label>
+                    <label>Employee discount (&delta;<sub>e</sub>)
+                        <input type="number" step="any" name="DISC_EMP" value="0.03">
+                    </label>
+                    <label>Return volatility (&sigma;<sub>R</sub>)
+                        <input type="number" step="0.01" min="0" name="SIGMA_R" value="0.05">
+                    </label>
+                </fieldset>
+
+                <fieldset class="field-group economy-fields">
+                    <legend>Preferences and adequacy</legend>
+                    <label>Employee weight (&lambda;)
+                        <input type="number" step="0.05" min="0" max="1" name="LAMBDA" value="0.5">
+                    </label>
+                    <label>Risk aversion (&eta;)
+                        <input type="number" step="0.5" min="0" name="ETA" value="2.0">
+                    </label>
+                    <label>Funding capacity (&Gamma;)
+                        <input type="number" step="0.01" min="0.01" name="GAMMA" value="0.15">
+                    </label>
+                    <label>1st-pillar replacement
+                        <input type="number" step="0.01" min="0" name="RR_LEGAL" value="0.43">
+                    </label>
+                    <label>Total target replacement
+                        <input type="number" step="0.01" min="0" name="RR_TARGET" value="0.70">
+                    </label>
+                    <label class="field-check">
+                        <input type="checkbox" name="SATIATE"> Stop rewarding above the target
+                    </label>
+                </fieldset>
+
+                <fieldset class="field-group economy-fields">
+                    <legend>Contribution band (% of salary)</legend>
+                    <label>Minimum
+                        <input type="number" step="0.01" min="0" name="band_lo" value="0.02">
+                    </label>
+                    <label>Maximum
+                        <input type="number" step="0.01" min="0" name="band_hi" value="0.15">
+                    </label>
+                </fieldset>
+
+                <fieldset class="field-group economy-fields">
+                    <legend>Market plans to compare against <span class="field-flag">illustrative</span></legend>
+                    <label>Flat rate
+                        <input type="number" step="0.01" min="0" max="1" name="flat_rate" value="0.05">
+                    </label>
+                    <label>Age scale: starting rate
+                        <input type="number" step="0.01" min="0" max="1" name="age_rate0" value="0.03">
+                    </label>
+                    <label>Age scale: step per band
+                        <input type="number" step="0.01" name="age_step" value="0.01">
+                    </label>
+                    <label>Age scale: band length (years)
+                        <input type="number" step="1" min="1" name="age_band" value="10">
+                    </label>
+                </fieldset>
+
+                <button type="submit">Run</button>
+            </form>
+
+            <div id="dynpro-results" class="playground-results" aria-live="polite">
+                <p class="playground-placeholder">Run the model to see the optimal contribution schedule.</p>
+            </div>
+        </section>
+    </main>
+    </main>
+
+    <footer class="footer">
+        <div class="socials">
+            <div class="socials-icon">
+                <a href="mailto:igance.decocq@hotmail.com" aria-label="Email"><img src="img/socials/Email.jpg"
+                        alt="Email"></a>
+            </div>
+            <div class="socials-icon">
+                <a href="https://www.linkedin.com/in/ignace-decocq-7a47472aa/" aria-label="LinkedIn"
+                    rel="noopener noreferrer" target="_blank"><img src="img/socials/linkedin.png"
+                        alt="LinkedIn"></a>
+            </div>
+            <div class="socials-icon">
+                <a href="https://github.com/korilium" aria-label="GitHub" rel="noopener noreferrer"
+                    target="_blank"><img src="img/socials/github.svg" alt="GitHub"></a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+<script src="js/toggleTheme.js"></script>
+<script src="js/apiConfig.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/dynpro.js"></script>
+
+</html>

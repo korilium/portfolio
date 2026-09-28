@@ -302,3 +302,125 @@
   font-weight: 600;
   color: var(--image-lightcolor);
 }
+
+/* --- DP oracle tool (dynProModel.html) ----------------------------------- */
+/* Additions only: the line, swatch and table classes above are reused as-is. */
+
+.chart-line-muted {
+  stroke: var(--text-color);
+  opacity: 0.45;
+  stroke-dasharray: 4 3;
+}
+
+.swatch-muted {
+  background-color: var(--text-color);
+  opacity: 0.45;
+}
+
+.chart-bar {
+  fill: var(--image-accentcolor);
+  opacity: 0.75;
+}
+
+.chart-bar-alt {
+  fill: var(--text-color);
+  opacity: 0.35;
+}
+
+.swatch-bar,
+.swatch-bar-alt,
+.swatch-target {
+  height: 8px;
+  border-radius: 2px;
+}
+
+.swatch-bar {
+  background-color: var(--image-accentcolor);
+  opacity: 0.75;
+}
+
+.swatch-bar-alt {
+  background-color: var(--text-color);
+  opacity: 0.35;
+}
+
+.swatch-target {
+  height: 2px;
+  background-color: var(--link-hover);
+}
+
+/* Charts wrap rather than scroll, so the four policy maps stay readable on a
+   phone as a 2x2 instead of shrinking to nothing. */
+.chart-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.chart-figure {
+  flex: 1 1 260px;
+  min-width: 240px;
+  margin: 0;
+}
+
+.chart-section {
+  font-size: 0.95rem;
+  margin: 1.2rem 0 0.4rem;
+}
+
+.chart-subnote {
+  font-weight: 400;
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.result-table .range {
+  opacity: 0.6;
+  font-size: 0.8em;
+  white-space: nowrap;
+}
+
+/* The caveats that keep the output honest -- band pinning, target overshoot,
+   grid resolution. Set apart from the charts so they are not read as decoration. */
+.tool-note,
+.tool-notes {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  line-height: 1.5;
+}
+
+.tool-note {
+  border-left: 3px solid var(--link-hover);
+  padding-left: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.tool-notes {
+  margin: 1rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.tool-notes li {
+  margin-bottom: 0.45rem;
+}
+
+.field-flag {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 1px solid var(--link-hover);
+  border-radius: 3px;
+  padding: 0 4px;
+  opacity: 0.8;
+}
+
+.field-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.field-check input {
+  width: auto;
+}

@@ -219,9 +219,33 @@ end
     return json(Dict("tools" => TOOLS))
 end
 
+# Accepted parameter ranges, identical to the min/max on dynProModel.html's inputs.
+# The page enforces them; the server CLAMPS to them as well, since the API is
+# reachable without the page. They are the economically sensible region, not just
+# the numerically safe one (e.g. G within reach of the WAP corridor, eta > 0).
+const DYNPRO_BOUNDS = (G=(0.0, 0.05), MU=(0.0, 0.08), W=(0.0, 0.05), DISC_ER=(0.0, 0.10),
+    DISC_EMP=(0.0, 0.10), SIGMA_R=(0.0, 0.20), SIGMA_L=(0.0, 0.10), LAMBDA=(0.0, 1.0),
+    ETA=(0.5, 10.0), GAMMA=(0.01, 0.30), RR_LEGAL=(0.0, 0.80), RR_TARGET=(0.30, 1.20),
+    BETA=(0.0, 1.0), band_lo=(0.0, 0.15), band_hi=(0.01, 0.30), flat_rate=(0.0, 0.30),
+    age_rate0=(0.0, 0.30), age_step=(0.0, 0.05), age_band=(1, 45))
+
+"""The request with every bounded field clamped into DYNPRO_BOUNDS, and the two
+cross-field constraints (target above the legal floor, band max above min) forced."""
+function bounded(r::DynProRequest)
+    kw = Dict{Symbol,Any}(f => getfield(r, f) for f in fieldnames(DynProRequest))
+    for (f, (lo, hi)) in pairs(DYNPRO_BOUNDS)
+        v = kw[f]
+        kw[f] = v isa Integer ? clamp(v, lo, hi) : clamp(float(v), lo, hi)
+    end
+    kw[:RR_TARGET] = max(kw[:RR_TARGET], kw[:RR_LEGAL] + 0.01)
+    kw[:band_hi] = max(kw[:band_hi], kw[:band_lo] + 0.001)
+    return DynProRequest(; kw...)
+end
+
 """What both DP endpoints share: the parameters, the grids, the band, and the two
 market designs as rate-of-salary schedules. `cap` bounds the grid."""
 function dynpro_setup(r::DynProRequest; cap=DYNPRO_MAX)
+    r = bounded(r)
     p = DynPro.Params(T=r.T, G=r.G, MU=r.MU, W=r.W, DISC_EMP=r.DISC_EMP,
                       DISC_ER=r.DISC_ER, SIGMA_R=r.SIGMA_R, SIGMA_L=r.SIGMA_L,
                       GAMMA=r.GAMMA, LAMBDA=r.LAMBDA, ETA=r.ETA, ANNUITY=r.ANNUITY,
@@ -252,6 +276,7 @@ design_policy(rate_of_t, s) =
 roughness(c_by) = mean(diff(c_by) .^ 2)   # signal_schedule's "mean sq. yr-on-yr change"
 
 function dynpro_evaluate(r::DynProRequest)
+    r = bounded(r)
     s = dynpro_setup(r)
     p, Fg, rg, n_paths = s.p, s.Fg, s.rg, s.n_paths
     n_seeds = clamp(r.n_seeds, 1, DYNPRO_MAX.n_seeds)
@@ -367,6 +392,7 @@ Dockerfile passes --threads=auto,1); `Params` is a value, not module state, whic
 is what makes that safe. Kept out of /dynpro/evaluate so the main result is not held
 up behind them: the page requests both and draws each as it lands."""
 function dynpro_sweep(r::DynProRequest)
+    r = bounded(r)
     s = dynpro_setup(r; cap=SWEEP_MAX)
     p, Fg, rg, n_paths = s.p, s.Fg, s.rg, s.n_paths
     R0, L0, S0 = new_plan_init(n_paths, Xoshiro(r.seed))

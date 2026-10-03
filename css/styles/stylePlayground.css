@@ -619,3 +619,17 @@
   font-weight: 700;
   fill: var(--text-color);
 }
+
+/* The DP page's intro runs the full width of the parameter panel below it,
+   rather than the 60ch reading column the other tool uses. */
+.playground-intro-wide p {
+  max-width: none;
+}
+
+/* the accepted range, shown beside each parameter's name */
+.field-range {
+  font-size: 0.72rem;
+  opacity: 0.6;
+  margin-left: 0.4rem;
+  white-space: nowrap;
+}

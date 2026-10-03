@@ -452,6 +452,29 @@ async function postJSON(path, payload) {
   return response.json();
 }
 
+// Accepted ranges. The inputs carry min/max (mirrored server-side in DYNPRO_BOUNDS,
+// which clamps whatever arrives); here they are shown beside each label, and the
+// two constraints that span fields are checked before a run.
+for (const el of form.querySelectorAll("input[type=number][min][max]")) {
+  const hint = document.createElement("span");
+  hint.className = "field-range";
+  hint.textContent = `${el.min} – ${el.max}`;
+  el.before(hint);
+}
+
+function crossCheck() {
+  const f = form.elements;
+  const pairs = [
+    [f.RR_TARGET, +f.RR_TARGET.value > +f.RR_LEGAL.value,
+     "The total target must be above the 1st-pillar replacement."],
+    [f.band_hi, +f.band_hi.value > +f.band_lo.value,
+     "The band maximum must be above its minimum."],
+  ];
+  for (const [el, ok, msg] of pairs) el.setCustomValidity(ok ? "" : msg);
+}
+form.addEventListener("input", crossCheck);
+crossCheck();
+
 // A second click while a run is in flight must not let the older run's slower
 // sweep land on the newer run's page.
 let runId = 0;

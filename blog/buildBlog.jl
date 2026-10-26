@@ -18,7 +18,7 @@ const POSTS = [
    title = "Belgian Government Bonds",
    summary = "How Belgian government bonds (OLOs) are priced in the market, and how their yield curve is derived.",
    date = Date(2026, 7), series = "Interest rates", status = ""),
-  (file = "02.intermezzo: Stochastic Calculus.md", slug = "02.StochasticCalculus",
+  (file = "02.StochasticCalculus.md", slug = "02.StochasticCalculus",
    title = "From Theory to the Vasicek Model",
    summary = "A first-principles route from the short rate and stochastic calculus to bond prices under the Vasicek model.",
    date = Date(2026, 10), series = "Interest rates", status = "In progress"),

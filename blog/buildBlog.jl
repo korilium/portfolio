@@ -21,7 +21,7 @@ const POSTS = [
   (file = "02.intermezzo: Stochastic Calculus.md", slug = "02.StochasticCalculus",
    title = "From Theory to the Vasicek Model",
    summary = "A first-principles route from the short rate and stochastic calculus to bond prices under the Vasicek model.",
-   date = Date(2026, 10), series = "Interest rates", status = ""),
+   date = Date(2026, 10), series = "Interest rates", status = "In progress"),
   (file = "04.optimalPensionDesign_I.md", slug = "04.optimalPensionDesign_I",
    title = "Optimal Pension Design I: A Naive Approach",
    summary = "A simple environment in which a Monte Carlo RL agent learns whether contributing to a pension plan is optimal.",

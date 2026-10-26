@@ -355,6 +355,29 @@ mjx-container[display="true"] {
   font-family: var(--font-sans);
 }
 
+/* The inline SVG diagrams were drawn for a dark background (mid-tone text that
+   has to read both on the figure background and inside the dark boxes). In the
+   light theme they keep the dark-theme figure palette and sit on a dark card,
+   instead of ending up with dark text on dark boxes. */
+:root[data-theme="light"] .post-body svg {
+  --text-color: #e2ebe7;
+  --link-hover: #e2a85c;
+  --text-colorBox: #22443e;
+  --image-darkcolor: #055445;
+  --image-lightcolor: #80c3b7;
+  --image-accentcolor: #60987a;
+  --img-bg: #132a25;
+  --nav-link: #a8d8cf;
+  --surface-soft: #c1ddd6;
+  --text-on-accent: #22443e;
+  background: #132a25;
+  border-radius: var(--radius-sm);
+}
+
+:root[data-theme="light"] .post-body svg svg {
+  background: none;
+}
+
 /* Result figures exported from the thesis repo. They are matplotlib PNGs on a
    white background, so on the dark theme they sit on a rounded white card rather
    than as a bright rectangle with hard edges. */
@@ -371,6 +394,11 @@ mjx-container[display="true"] {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 6px;
+}
+
+/* pure-white plots are glaring on the softer light theme */
+:root[data-theme="light"] .post-body .post-figure img {
+  filter: brightness(0.94);
 }
 
 .post-body figcaption {

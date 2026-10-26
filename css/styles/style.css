@@ -39,14 +39,15 @@
 }
 
 :root[data-theme="light"] {
-  --bg: #f7f9f8;
-  --surface: #ffffff;
-  --surface-2: #eef3f1;
-  --border: #dfe7e3;
-  --border-strong: #c7d4ce;
-  --text: #13241e;
-  --text-muted: #4d6259;
-  --text-faint: #7a8c84;
+  /* a muted sage "paper" rather than pure white, so it is easier on the eyes */
+  --bg: #e9eee9;
+  --surface: #f2f5f1;
+  --surface-2: #dfe6e0;
+  --border: #d0dad3;
+  --border-strong: #b9c7be;
+  --text: #1c2e27;
+  --text-muted: #4b5f56;
+  --text-faint: #6f8178;
   --accent: #1d6e58;
   --accent-strong: #145443;
   --accent-soft: rgba(29, 110, 88, 0.08);

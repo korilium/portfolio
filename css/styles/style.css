@@ -52,7 +52,7 @@
   --accent-strong: #145443;
   --accent-soft: rgba(29, 110, 88, 0.08);
   --on-accent: #ffffff;
-  --warm: #a3560f;
+  --warm: #d1b81b;
   --shadow: 0 1px 2px rgba(16, 36, 30, 0.06), 0 8px 24px rgba(16, 36, 30, 0.07);
 
   color-scheme: light;
@@ -82,15 +82,18 @@
   --text-on-accent: #22443e;
 }
 
+/* Light theme: the interactive post charts and the playground follow the site's
+   own light surfaces. (The inline SVG diagrams keep the dark figure palette; see
+   styleBlog.css.) */
 :root[data-theme="light"] {
-  --text-colorBox: #123f39;
-  --image-darkcolor: #0a4a40ef;
-  --image-lightcolor: #86c2af;
-  --image-accentcolor: hwb(169 1% 65% / 0.656);
-  --img-bg: #9fc9bd;
-  --nav-link: hwb(169 5% 82%);
-  --surface-soft: #e6f2ee;
-  --text-on-accent: #123b34;
+  --text-colorBox: var(--text);
+  --image-darkcolor: var(--accent-strong);
+  --image-lightcolor: var(--surface-2);
+  --image-accentcolor: var(--accent);
+  --img-bg: var(--surface);
+  --nav-link: var(--text-muted);
+  --surface-soft: var(--surface-2);
+  --text-on-accent: var(--text);
 }
 
 /* ==========================================================================

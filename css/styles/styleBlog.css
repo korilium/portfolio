@@ -378,6 +378,12 @@ mjx-container[display="true"] {
   background: none;
 }
 
+/* Interactive chart fragments (Chart.js) in the posts */
+.post-body [class^="fig-"] {
+  border: 1px solid var(--border);
+  margin-bottom: 1.75rem;
+}
+
 /* Result figures exported from the thesis repo. They are matplotlib PNGs on a
    white background, so on the dark theme they sit on a rounded white card rather
    than as a bright rectangle with hard edges. */

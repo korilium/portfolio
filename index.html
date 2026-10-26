@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ignace Decocq — Actuarial &amp; quantitative modelling</title>
+  <title>Δ/t — Ignace Decocq</title>
   <meta name="description"
     content="Ignace Decocq — actuarial analyst writing about and building models for pensions, interest rates and long-horizon financial risk.">
   <meta property="og:title" content="Ignace Decocq — Actuarial &amp; quantitative modelling">
@@ -30,7 +30,7 @@
 
   <header class="site-header">
     <div class="container site-header__inner">
-      <a class="brand" href="index.html"><span class="brand__mark" aria-hidden="true"><span>Δ</span><span>t</span></span>Ignace Decocq</a>
+      <a class="brand" href="index.html"><img class="brand__logo" src="img/pecconProject/logoMark.png" alt="" width="32" height="32">Ignace Decocq</a>
       <nav class="site-nav" aria-label="Main">
         <ul>
           <li><a href="index.html" aria-current="page">Home</a></li>
@@ -47,29 +47,11 @@
   </header>
 
   <main id="content">
-    <!-- Hero -->
-    <section class="hero">
-      <div class="container hero__grid">
-        <div class="hero__copy">
-          <div class="author-chip">
-            <img src="img/profilePic.jpg" alt="Portrait of Ignace Decocq" width="794" height="1123">
-            <div>
-              <strong>Ignace Decocq</strong>
-              <span>Actuarial analyst · Quantitative modelling</span>
-            </div>
-          </div>
-          <h1>Better models for long-horizon financial decisions.</h1>
-          <p class="lede">I derive financial models, argue for their assumptions in writing, and put them online so
-            you can run them yourself — mostly on pensions, interest rates and long-horizon risk.</p>
-          <div class="hero__actions">
-            <a class="button button--primary" href="blog/posts/generated/index.html">Read the blog</a>
-            <a class="button button--ghost" href="playGround.html">Open the playground</a>
-          </div>
-        </div>
-
-        <!-- Δ/t: the change over time. Behind it, short-rate paths simulated live by js/deltaT.js -->
+    <!-- Δ / t over simulated short-rate paths (js/deltaT.js), with the portrait set into its lower edge -->
+    <section class="band">
+      <div class="container">
         <figure class="delta-t">
-          <svg class="delta-t__chart" id="delta-t-chart" viewBox="0 0 480 360" preserveAspectRatio="none"
+          <svg class="delta-t__chart" id="delta-t-chart" viewBox="0 0 960 400" preserveAspectRatio="none"
             aria-hidden="true"></svg>
           <div class="delta-t__frac" aria-hidden="true">
             <span class="delta-t__sym">Δ</span>
@@ -78,132 +60,110 @@
           </div>
           <figcaption class="delta-t__caption">
             <span class="delta-t__eq">dr<sub>t</sub> = κ(θ − r<sub>t</sub>) dt + σ dW<sub>t</sub></span>
-            <button class="delta-t__redraw" id="delta-t-redraw" type="button" aria-label="Simulate new paths">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/></svg>
-              Simulate
-            </button>
+            <button class="delta-t__redraw" id="delta-t-redraw" type="button">resimulate</button>
           </figcaption>
         </figure>
+
+        <div class="identity">
+          <img class="identity__photo" src="img/profilePic.jpg" alt="Portrait of Ignace Decocq" width="794"
+            height="1123">
+          <div>
+            <h1 class="identity__name">Ignace Decocq</h1>
+            <p class="identity__role">Actuarial analyst — models for pensions, interest rates and long-horizon risk</p>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Approach -->
-    <section class="section">
-      <div class="container approach">
-        <div>
-          <span class="eyebrow">Approach</span>
-          <h2 class="section-title">The method is the common thread, not the subject.</h2>
-        </div>
-        <div class="approach__body">
+    <div class="container">
+      <blockquote class="quote">
+        <p>One has to keep a particular openness of mind. Solving a problem is like going to a strange place, not to
+          subdue it, but simply to spend time there, to preserve one's openness, to wait for the signals, to wait
+          for the strangeness to dissolve into sense.</p>
+        <footer>— <cite>Peter Whittle</cite></footer>
+      </blockquote>
+
+      <section class="chapter">
+        <h2>In Short</h2>
+        <div class="chapter__body prose">
           <p>The aim here is to find out what better models look like — most of them financial. Finance is where
-            this starts, not where it stops. Anything I can model and put under stress tends to end up here:
-            planning simulations, optimal design, the monetary system, whatever I'm currently trying to
-            understand well enough to build.</p>
+            this starts, not where it stops. Anything I can model and put under stress tends to end up here —
+            planning simulations, optimal design, monetary system, whatever I'm currently trying to understand well
+            enough to build. The common thread is the method, not the subject.</p>
           <p>Most of what's here is a first attempt — how a model breaks is usually more informative than the fact
-            that it worked. The <a class="text-link" href="blog/posts/generated/index.html">blog</a> derives each
-            model and argues for it: the assumptions, why they were chosen, where they break. The
-            <a class="text-link" href="playGround.html">playground</a> is where it runs, so you can change the
-            inputs and see for yourself. Nothing here asks to be taken on trust — the arithmetic is on the page,
-            and the reasoning is yours to check.</p>
-          <blockquote class="quote">
-            <p>“One has to keep a particular openness of mind. Solving a problem is like going to a strange place,
-              not to subdue it, but simply to spend time there, to preserve one's openness, to wait for the
-              signals, to wait for the strangeness to dissolve into sense.”</p>
-            <footer>— <cite>Peter Whittle</cite></footer>
-          </blockquote>
+            that it worked, and pensions and long-horizon risk are where I know the ground best, so that's where
+            most experiments start. The <a href="blog/posts/generated/index.html">blog</a> derives each model and
+            argues for it: the assumptions, why they were chosen, where they break. The
+            <a href="playGround.html">playground</a> is where it runs, so once you know what it's doing you can
+            change the inputs and see for yourself. Nothing here asks to be taken on trust — the arithmetic is on
+            the page, and the reasoning is yours to check.</p>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Areas -->
-    <section class="section">
-      <div class="container">
-        <div class="section-head">
+      <section class="chapter">
+        <h2>What I do</h2>
+        <dl class="chapter__body ledger">
           <div>
-            <span class="eyebrow">What you'll find here</span>
-            <h2 class="section-title">Write it down, then run it</h2>
+            <dt><a href="playGround.html">Product-centric financial tools</a></dt>
+            <dd>Developing calculators, models, and interactive prototypes that make complex planning more
+              approachable.</dd>
           </div>
-        </div>
-        <div class="card-grid">
-          <a class="card" href="blog/posts/generated/index.html">
-            <span class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5v14z"/><path d="M20 17v4H6.5A2.5 2.5 0 0 1 4 19.5"/></svg></span>
-            <h3>Research-backed writing</h3>
-            <p>Long-form derivations on bond pricing, short-rate models, pension design and portfolio theory —
-              assumptions stated, failure modes included.</p>
-          </a>
-          <a class="card" href="playGround.html">
-            <span class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 6-6"/></svg></span>
-            <h3>Interactive models</h3>
-            <p>The models behind the posts, running on a live backend. Change the assumptions and watch how the
-              results move.</p>
-          </a>
-          <a class="card" href="project.html">
-            <span class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 22V12M21 7l-9 5-9-5"/></svg></span>
-            <h3>Peccon</h3>
-            <p>A platform for financial planning that brings literacy, planning tools and products together.
-              Currently in development.</p>
-          </a>
-        </div>
-      </div>
-    </section>
+          <div>
+            <dt><a href="blog/posts/generated/index.html">Research-backed writing</a></dt>
+            <dd>Publishing insights on time-value frameworks, actuarial thinking, and practical financial
+              decision-making.</dd>
+          </div>
+          <div>
+            <dt><a href="project.html">Peccon</a></dt>
+            <dd>The platform for financial planning. <span class="tag tag--warm">to be developed</span></dd>
+          </div>
+        </dl>
+      </section>
 
-    <!-- Latest writing: the list between the markers is rewritten by blog/buildBlog.jl -->
-    <section class="section">
-      <div class="container">
-        <div class="section-head">
-          <div>
-            <span class="eyebrow">Latest writing</span>
-            <h2 class="section-title">From the blog</h2>
-          </div>
-          <a class="text-link" href="blog/posts/generated/index.html">All posts →</a>
-        </div>
+      <section class="chapter">
+        <h2>Recent writing</h2>
+        <div class="chapter__body">
         <!-- latest-posts:start -->
         <ol class="post-list">
 <li>
   <a href="blog/posts/generated/02.StochasticCalculus.html">
-    <span class="meta">October 2026</span>
-    <div>
-      <h3>From Theory to the Vasicek Model <span class="tag tag--warm">In progress</span></h3>
-      <p>A first-principles route from the short rate and stochastic calculus to bond prices under the Vasicek model.</p>
-    </div>
+    <span class="num">02</span>
+    <span class="line">
+      <h3>From Theory to the Vasicek Model</h3> <span class="tag tag--warm">in progress</span>
+      <span class="leader"></span>
+      <span class="meta">October 2026</span>
+    </span>
+    <p>A first-principles route from the short rate and stochastic calculus to bond prices under the Vasicek model.</p>
   </a>
 </li>
 <li>
   <a href="blog/posts/generated/05.optimalPensionDesign_II.html">
-    <span class="meta">July 2026</span>
-    <div>
-      <h3>Optimal Pension Design II: A High-Dimensional Take <span class="tag tag--warm">In progress</span></h3>
-      <p>Bringing in the risk and variability a pension plan faces, and how they change its valuation.</p>
-    </div>
+    <span class="num">05</span>
+    <span class="line">
+      <h3>Optimal Pension Design II: A High-Dimensional Take</h3> <span class="tag tag--warm">in progress</span>
+      <span class="leader"></span>
+      <span class="meta">July 2026</span>
+    </span>
+    <p>Bringing in the risk and variability a pension plan faces, and how they change its valuation.</p>
   </a>
 </li>
 <li>
   <a href="blog/posts/generated/04.optimalPensionDesign_I.html">
-    <span class="meta">July 2026</span>
-    <div>
-      <h3>Optimal Pension Design I: A Naive Approach <span class="tag tag--warm">In progress</span></h3>
-      <p>A simple environment in which a Monte Carlo RL agent learns whether contributing to a pension plan is optimal.</p>
-    </div>
+    <span class="num">04</span>
+    <span class="line">
+      <h3>Optimal Pension Design I: A Naive Approach</h3> <span class="tag tag--warm">in progress</span>
+      <span class="leader"></span>
+      <span class="meta">July 2026</span>
+    </span>
+    <p>A simple environment in which a Monte Carlo RL agent learns whether contributing to a pension plan is optimal.</p>
   </a>
 </li>
         </ol>
         <!-- latest-posts:end -->
-      </div>
-    </section>
-
-    <!-- Contact -->
-    <section class="section">
-      <div class="container contact">
-        <div>
-          <h2 class="section-title">Get in touch</h2>
-          <p class="lede">Questions about a model, a correction, or an idea worth testing? I'd like to hear it.</p>
+          <p class="more"><a class="text-link" href="blog/posts/generated/index.html">all posts →</a></p>
         </div>
-        <div class="hero__actions">
-          <a class="button button--primary" href="mailto:igance.decocq@hotmail.com">Send an email</a>
-          <a class="button button--ghost" href="https://github.com/korilium" rel="noopener noreferrer" target="_blank">GitHub</a>
-        </div>
-      </div>
-    </section>
+      </section>
+    </div>
   </main>
 
   <footer class="site-footer">

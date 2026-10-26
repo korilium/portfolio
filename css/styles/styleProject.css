@@ -60,7 +60,6 @@
 }
 
 .tag--muted {
-  background: var(--surface-2);
   color: var(--text-faint);
 }
 

@@ -32,7 +32,7 @@
 
   <header class="site-header">
     <div class="container site-header__inner">
-      <a class="brand" href="../../../index.html"><span class="brand__mark" aria-hidden="true"><span>Δ</span><span>t</span></span>Ignace Decocq</a>
+      <a class="brand" href="../../../index.html"><img class="brand__logo" src="../../../img/pecconProject/logoMark.png" alt="" width="32" height="32">Ignace Decocq</a>
       <nav class="site-nav" aria-label="Main">
         <ul>
           <li><a href="../../../index.html">Home</a></li>
@@ -51,8 +51,8 @@
   <main id="content" class="container post-layout">
     <article class="post">
       <header class="post-header">
-        <a class="post-back" href="index.html">← All posts</a>
-        <p class="post-kicker"><span class="tag">Interest rates</span></p>
+        <a class="post-back" href="index.html">← the peccon blog</a>
+        <p class="post-kicker meta">no. 01 · interest rates</p>
         <h1>Belgian Government Bonds</h1>
         <p class="post-summary">How Belgian government bonds (OLOs) are priced in the market, and how their yield curve is derived.</p>
         <p class="meta">July 2026 · 13 min read</p>
@@ -68,20 +68,20 @@ embedded options.<a href="#footnote-1" class="footnote">1</a> The full descripti
 <p>OLOs are dematerialised: there is no physical certificate representing the bond. Ownership exists purely as a book entry in an electronic securities-settlement system — the National Bank of Belgium's system, to which the international central securities depositories Euroclear and Clearstream have access. The name &quot;linear&quot; comes from the way the bond is built. A single OLO is a <em>line</em> defined by one fixed coupon.<a href="#footnote-2" class="footnote">2</a> and one fixed maturity date, and it is issued in successive tranches: the outstanding amount of a given line grows with each tranche. This is what creates liquidity — capital is funnelled into a few very large, standardised lines that are actively traded, rather than fragmented across many small bonds.</p>
 <p>The &quot;linear&quot; property follows from the fact that every security in a line carries the same nominal coupon rate and redemption date, regardless of which tranche or auction it came from. The contractual terms are identical across tranches; only the issue price differs from one auction to the next, depending mainly on market conditions. A closely related property is <em>fungibility</em>: because all securities in a line are contractually identical, any unit is interchangeable with any other, which is what allows tranches issued at different times to merge into one consolidated line. A final property is that an OLO's components — each coupon and the principal — can be separated and traded as individual zero-coupon securities. This is called stripping (Separate Trading of Registered Interest and Principal Securities, STRIPS), producing coupon strips and a principal strip. Only fixed-rate OLOs can be stripped, because each detached piece must be a known amount payable on a known date.</p>
 <p>The picture below shows the lifecycle of such an OLO.</p>
-<svg width="100%" viewBox="0 0 680 560" role="img" style="display:block; width:100%; height:auto; max-width:820px; margin:1.5rem auto;" xmlns="http://www.w3.org/2000/svg" >
+<svg class="olo-lifecycle" width="100%" viewBox="0 0 680 560" role="img" style="display:block; width:100%; height:auto; max-width:820px; margin:1.5rem auto;" xmlns="http://www.w3.org/2000/svg" >
 <title>Lifecycle of an OLO bond line</title>
 <desc>A diagram showing how a single OLO line is built from successive tranches, traded in the secondary market, pays coupons, and is redeemed at maturity.</desc>
 <style>
-  svg { font-family: inherit; }
-  text { font-family: inherit; }
-  .step { fill: var(--text-color, #6a8d7e); font-weight: 500; }
-  .h    { fill: var(--text-colorBox, #5dab9d); font-weight: 500; }
-  .sub  { fill: var(--text-colorBox, #22443e); opacity: .78; }
-  .arrow{ stroke: var(--image-accentcolor, #60987a); fill: none; }
-  .card { fill: var(--image-lightcolor, #80c3b7); stroke: var(--image-darkcolor, #055445); stroke-opacity: .4; stroke-width: 1; }
-  .rail { fill: var(--image-accentcolor, #60987a); }
-  .card-hi { fill: var(--image-lightcolor, #80c3b7); stroke: var(--link-hover, #f0a500); stroke-width: 1.5; }
-  .rail-hi { fill: var(--link-hover, #f0a500); }
+  .olo-lifecycle { font-family: inherit; }
+  .olo-lifecycle text { font-family: inherit; }
+  .olo-lifecycle .step { fill: var(--text-color, #6a8d7e); font-weight: 500; }
+  .olo-lifecycle .h    { fill: var(--text-colorBox, #5dab9d); font-weight: 500; }
+  .olo-lifecycle .sub  { fill: var(--text-colorBox, #22443e); opacity: .78; }
+  .olo-lifecycle .arrow{ stroke: var(--image-accentcolor, #60987a); fill: none; }
+  .olo-lifecycle .card { fill: var(--image-lightcolor, #80c3b7); stroke: var(--image-darkcolor, #055445); stroke-opacity: .4; stroke-width: 1; }
+  .olo-lifecycle .rail { fill: var(--image-accentcolor, #60987a); }
+  .olo-lifecycle .card-hi { fill: var(--image-lightcolor, #80c3b7); stroke: var(--link-hover, #f0a500); stroke-width: 1.5; }
+  .olo-lifecycle .rail-hi { fill: var(--link-hover, #f0a500); }
 </style>
 <defs>
   <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -141,21 +141,21 @@ embedded options.<a href="#footnote-1" class="footnote">1</a> The full descripti
 </svg>
 <h3>Primary Market mechanics of the OLO</h3>
 <p>The Belgian Debt Agency issues new OLOs and tranches according to a published <a href="https://www.debtagency.be/en/datafederalstateissues">calander</a> of auction dates. At an auction the Treasury either reopens an existing line or launches a new one, and bidding is open to its primary dealers. Each dealer submits <em>competitive bids</em>, where a bid is a pair: a <em>price</em> and the <em>quantity</em> the dealer will buy at that price. Because the line's coupon and maturity are fixed, dealers compete only on price, which maps directly (and inversely) to yield. The Treasury ranks the bids from highest price to lowest and fills from the top down until it has sold its target amount; the lowest price still accepted is the stop price. Because this is a <em>multiple-price</em> auction, each successful bidder pays the price it actually bid, so the weighted-average price paid sits above the stop price. Separately, primary dealers hold a privilege — a <em>non-competitive subscription</em> — that lets them take an additional allotment at the weighted-average price without bidding a specific price. Auction results are published on the <a href="https://www.debtagency.be/en/datafederalstateissues">BDA website</a>.  An example of the process can be seen below.</p>
-<svg width="100%" viewBox="0 0 680 400" role="img" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%; height:auto; max-width:820px; margin:1.5rem auto;" >
+<svg class="olo-auction" width="100%" viewBox="0 0 680 400" role="img" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%; height:auto; max-width:820px; margin:1.5rem auto;" >
 <title>Multiple-price auction bid ladder for an OLO reopening</title>
 <desc>Competitive bids sorted from highest price to lowest. The Treasury fills bids from the top down until the target amount is sold; the lowest accepted price is the stop price. Bids above are filled in full, the marginal bid is pro-rated, bids below are rejected.</desc>
 <style>
-  svg { font-family: inherit; }
-  text { font-family: inherit; }
-  .h    { fill: var(--text-color, #6a8d7e); font-weight: 500; }
-  .cap  { fill: var(--text-color, #6a8d7e); opacity: .82; }
-  .axis { stroke: var(--text-color, #6a8d7e); fill: none; }
-  .stop   { stroke: var(--link-hover, #f0a500); }
-  .stop-t { fill: var(--link-hover, #f0a500); }
-  .accept-t { fill: var(--image-accentcolor, #60987a); }
-  .reject-t { fill: var(--text-color, #6a8d7e); opacity: .7; }
-  .bar-fill { fill: var(--image-accentcolor, #60987a); stroke: var(--image-darkcolor, #055445); stroke-width: 1; }
-  .bar-open { fill: none; stroke: var(--text-color, #6a8d7e); stroke-opacity: .5; stroke-width: 1; }
+  .olo-auction { font-family: inherit; }
+  .olo-auction text { font-family: inherit; }
+  .olo-auction .h    { fill: var(--text-color, #6a8d7e); font-weight: 500; }
+  .olo-auction .cap  { fill: var(--text-color, #6a8d7e); opacity: .82; }
+  .olo-auction .axis { stroke: var(--text-color, #6a8d7e); fill: none; }
+  .olo-auction .stop   { stroke: var(--link-hover, #f0a500); }
+  .olo-auction .stop-t { fill: var(--link-hover, #f0a500); }
+  .olo-auction .accept-t { fill: var(--image-accentcolor, #60987a); }
+  .olo-auction .reject-t { fill: var(--text-color, #6a8d7e); opacity: .7; }
+  .olo-auction .bar-fill { fill: var(--image-accentcolor, #60987a); stroke: var(--image-darkcolor, #055445); stroke-width: 1; }
+  .olo-auction .bar-open { fill: none; stroke: var(--text-color, #6a8d7e); stroke-opacity: .5; stroke-width: 1; }
 </style>
 <defs>
   <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">

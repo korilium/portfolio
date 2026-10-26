@@ -9,17 +9,10 @@
 }
 
 .series h2 {
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 1rem;
-}
-
-.post-list h3 .tag {
-  margin-left: 0.4rem;
-  vertical-align: 0.15em;
+  font-size: 1.35rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
 }
 
 /* ==========================================================================
@@ -48,7 +41,8 @@
 
 .post-back {
   display: inline-block;
-  font-size: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
   color: var(--text-muted);
   margin-bottom: 1.5rem;
 }
@@ -59,19 +53,21 @@
 
 .post-kicker {
   display: flex;
-  gap: 0.4rem;
-  margin-bottom: 1rem;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
 }
 
 .post-header h1 {
-  font-size: clamp(2rem, 4.5vw, 2.7rem);
+  font-size: clamp(2rem, 4.5vw, 2.8rem);
   line-height: 1.12;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.015em;
   margin-bottom: 1rem;
 }
 
 .post-summary {
-  font-size: 1.15rem;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.2rem;
   color: var(--text-muted);
   margin-bottom: 1rem;
 }
@@ -88,10 +84,10 @@
 }
 
 .post-aside h2 {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 400;
+  letter-spacing: 0;
   color: var(--text-faint);
   margin-bottom: 0.75rem;
 }
@@ -202,7 +198,7 @@
 .post-body h2,
 .post-body h3,
 .post-body h4 {
-  font-family: var(--font-sans);
+  font-family: var(--font-serif);
   line-height: 1.25;
   margin: 2.6rem 0 0.9rem;
 }
@@ -355,13 +351,16 @@ mjx-container[display="true"] {
   font-family: var(--font-sans);
 }
 
-/* The inline SVG diagrams were drawn for a dark background (mid-tone text that
-   has to read both on the figure background and inside the dark boxes). In the
-   light theme they keep the dark-theme figure palette and sit on a dark card,
-   instead of ending up with dark text on dark boxes. */
+/* The inline SVG diagrams were drawn for a dark background, and their colour
+   variables play different roles from figure to figure (the same variable is a
+   box fill in one and text in another), so no single light palette fits them
+   all. In the light theme they therefore keep the dark-theme figure palette,
+   and the whole diagram is mirrored: invert the brightness, then rotate the hue
+   back. Every contrast relationship flips with it, so the result is a light
+   diagram that stays as readable as the dark one. */
 :root[data-theme="light"] .post-body svg {
-  --text-color: #e2ebe7;
-  --link-hover: #e2a85c;
+  --text-color: #c8d5cf;
+  --link-hover: #ddc632;
   --text-colorBox: #22443e;
   --image-darkcolor: #055445;
   --image-lightcolor: #80c3b7;
@@ -372,10 +371,12 @@ mjx-container[display="true"] {
   --text-on-accent: #22443e;
   background: #132a25;
   border-radius: var(--radius-sm);
+  filter: invert(1) hue-rotate(180deg);
 }
 
 :root[data-theme="light"] .post-body svg svg {
   background: none;
+  filter: none;              /* the outer svg's filter already applies */
 }
 
 /* Interactive chart fragments (Chart.js) in the posts */

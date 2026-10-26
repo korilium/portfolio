@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap");
 
 /* ==========================================================================
    Design tokens
@@ -13,8 +13,10 @@
   --surface-2: #193128;
   --border: rgba(214, 235, 226, 0.09);
   --border-strong: rgba(214, 235, 226, 0.18);
-  --text: #e2ebe7;
-  --text-muted: #9bb1a8;
+  /* body text deliberately not near-white: easier to read for long stretches */
+  --text: #c8d5cf;
+  --text-strong: #dce6e1;   /* headings */
+  --text-muted: #97aba2;
   --text-faint: #6f877d;
   --accent: #6cc2a4;
   --accent-strong: #93dcc1;
@@ -24,15 +26,15 @@
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
 
   /* type */
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
-  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
 
   /* layout */
   --page-width: 1120px;
   --gutter: clamp(1rem, 4vw, 2rem);
-  --radius: 12px;
-  --radius-sm: 8px;
+  --radius: 6px;
+  --radius-sm: 4px;
   --header-h: 64px;
 
   color-scheme: dark;
@@ -46,6 +48,7 @@
   --border: #d0dad3;
   --border-strong: #b9c7be;
   --text: #1c2e27;
+  --text-strong: var(--text);
   --text-muted: #4b5f56;
   --text-faint: #6f8178;
   --accent: #1d6e58;
@@ -150,9 +153,11 @@ textarea {
 }
 
 h1, h2, h3, h4 {
+  color: var(--text-strong);
+  font-family: var(--font-serif);
   line-height: 1.2;
-  letter-spacing: -0.015em;
-  font-weight: 650;
+  letter-spacing: -0.01em;
+  font-weight: 600;
 }
 
 p {
@@ -206,13 +211,16 @@ p {
 }
 
 .eyebrow {
-  display: inline-block;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--text-faint);
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 0.6rem;
 }
 
 .section-head {
@@ -251,9 +259,7 @@ p {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: color-mix(in srgb, var(--bg) 85%, transparent);
-  backdrop-filter: saturate(160%) blur(10px);
-  -webkit-backdrop-filter: saturate(160%) blur(10px);
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
 
@@ -273,32 +279,11 @@ p {
   white-space: nowrap;
 }
 
-.brand__mark {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+/* the Peccon emblem */
+.brand__logo {
   width: 32px;
   height: 32px;
-  border-radius: 8px;
-  background: var(--accent);
-  color: var(--on-accent);
-  font-family: var(--font-serif);
-  font-size: 0.8rem;
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: 0;
-}
-
-/* a small Δ over t, like the fraction on the home page */
-.brand__mark span:first-child {
-  padding: 0 3px 1px;
-  border-bottom: 1.5px solid currentColor;
-}
-
-.brand__mark span:last-child {
-  padding-top: 1px;
-  font-style: italic;
+  flex-shrink: 0;
 }
 
 .site-nav {
@@ -314,22 +299,21 @@ p {
 .site-nav a {
   display: block;
   padding: 0.45rem 0.75rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.925rem;
+  font-size: 0.95rem;
   font-weight: 500;
   color: var(--text-muted);
-  transition: color 150ms ease, background-color 150ms ease;
+  transition: color 150ms ease;
 }
 
 .site-nav a:hover {
-  color: var(--text);
-  background: var(--accent-soft);
+  color: var(--text-strong);
 }
 
 .site-nav a[aria-current="page"] {
-  color: var(--text);
-  background: var(--accent-soft);
-  box-shadow: inset 0 -2px 0 var(--accent);
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 8px;
 }
 
 .theme-toggle {
@@ -397,11 +381,11 @@ p {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.7rem 1.2rem;
+  padding: 0.6rem 1.1rem;
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.2;
   cursor: pointer;
   transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
@@ -449,8 +433,6 @@ p {
 
 a.card:hover {
   border-color: var(--accent);
-  box-shadow: var(--shadow);
-  transform: translateY(-2px);
 }
 
 .card h3 {
@@ -486,76 +468,93 @@ a.card:hover {
   height: 20px;
 }
 
+/* status notes: plain mono text in brackets, not pills */
 .tag {
-  display: inline-block;
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  background: var(--accent-soft);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 400;
   color: var(--accent);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
+.tag::before { content: "["; }
+.tag::after  { content: "]"; }
+
 .tag--warm {
-  background: color-mix(in srgb, var(--warm) 14%, transparent);
   color: var(--warm);
 }
 
 .meta {
-  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
   color: var(--text-faint);
 }
 
 /* ==========================================================================
-   Post list (home page and blog index, generated by blog/buildBlog.jl)
+   Post list: a numbered contents page (home page and blog index,
+   generated by blog/buildBlog.jl)
    ========================================================================== */
 
 .post-list {
   list-style: none;
-  border-top: 1px solid var(--border);
-}
-
-.post-list li {
-  border-bottom: 1px solid var(--border);
 }
 
 .post-list a {
   display: grid;
-  grid-template-columns: 9rem minmax(0, 1fr);
-  gap: 1.5rem;
-  padding: 1.25rem 0.5rem;
-  transition: background-color 150ms ease;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  column-gap: 0.75rem;
+  padding: 0.9rem 0;
 }
 
-.post-list a:hover {
-  background: var(--accent-soft);
+.post-list .num {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-faint);
+  padding-top: 0.3rem;
+}
+
+.post-list .line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.post-list h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  transition: color 150ms ease;
+}
+
+/* dotted leader between the title and the date */
+.post-list .leader {
+  flex: 1;
+  min-width: 1.5rem;
+  border-bottom: 1px dotted var(--border-strong);
+  transform: translateY(-0.3em);
+}
+
+.post-list .meta {
+  white-space: nowrap;
+}
+
+.post-list p {
+  grid-column: 2;
+  margin: 0.2rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
 }
 
 .post-list a:hover h3 {
   color: var(--accent);
 }
 
-.post-list h3 {
-  font-size: 1.1rem;
-  margin-bottom: 0.25rem;
-  transition: color 150ms ease;
-}
+@media (max-width: 600px) {
+  .post-list .line {
+    flex-wrap: wrap;
+  }
 
-.post-list p {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 0.95rem;
-}
-
-.post-list .meta {
-  padding-top: 0.2rem;
-}
-
-@media (max-width: 720px) {
-  .post-list a {
-    grid-template-columns: 1fr;
-    gap: 0.25rem;
+  .post-list .leader {
+    display: none;
   }
 }
 

@@ -7,8 +7,8 @@
   if (!svg) return;
 
   const NS = "http://www.w3.org/2000/svg";
-  const W = 480, H = 360;           // viewBox
-  const STEPS = 160, PATHS = 7;
+  const W = svg.viewBox.baseVal.width, H = svg.viewBox.baseVal.height;
+  const STEPS = 240, PATHS = 8;
   const KAPPA = 1.1, THETA = 0.5, SIGMA = 0.2, DT = 1 / 40;   // rates in [0, 1] = chart height
 
   function gauss() {

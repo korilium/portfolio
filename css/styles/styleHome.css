@@ -1,87 +1,26 @@
 @import url("style.css");
 
 /* ==========================================================================
-   Hero
+   Band: Δ / t over simulated short-rate paths (js/deltaT.js)
    ========================================================================== */
 
-.hero {
-  padding: clamp(3rem, 8vw, 6rem) 0 clamp(3rem, 7vw, 5rem);
-  background:
-    radial-gradient(60rem 30rem at 85% -10%, var(--accent-soft), transparent 70%),
-    var(--bg);
+.band {
+  padding-top: clamp(1.5rem, 4vw, 2.5rem);
 }
-
-.hero__grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-  gap: clamp(2rem, 5vw, 4rem);
-  align-items: center;
-}
-
-.hero h1 {
-  font-size: clamp(2.2rem, 5vw, 3.4rem);
-  line-height: 1.08;
-  letter-spacing: -0.03em;
-  margin-bottom: 1.25rem;
-  max-width: 18ch;
-}
-
-.hero .lede {
-  margin-bottom: 2rem;
-}
-
-.hero__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-/* ==========================================================================
-   Author chip
-   ========================================================================== */
-
-.author-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.75rem;
-  padding: 0.35rem 1rem 0.35rem 0.35rem;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface);
-}
-
-.author-chip img {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  object-fit: cover;
-  object-position: 55% 72%;
-}
-
-.author-chip strong {
-  display: block;
-  font-size: 0.95rem;
-  line-height: 1.2;
-}
-
-.author-chip span {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-
-/* ==========================================================================
-   Δ/t panel: the fraction over simulated short-rate paths (js/deltaT.js)
-   ========================================================================== */
 
 .delta-t {
-  --caption-h: 52px;
+  --caption-h: 40px;
   position: relative;
-  aspect-ratio: 4 / 3;
+  height: clamp(300px, 42vw, 440px);
   border: 1px solid var(--border);
-  border-radius: 20px;
-  background: var(--surface);
-  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+  /* graph paper */
+  background-color: var(--surface);
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: -1px -1px;
   overflow: hidden;
 }
 
@@ -93,29 +32,27 @@
 }
 
 .delta-t__chart .grid {
-  stroke: var(--border);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
+  display: none;            /* the graph paper is the grid */
 }
 
 .delta-t__chart .mean {
   stroke: var(--warm);
   stroke-width: 1.25;
   stroke-dasharray: 5 6;
-  opacity: 0.7;
+  opacity: 0.75;
   vector-effect: non-scaling-stroke;
 }
 
 .delta-t__chart .path {
   fill: none;
   stroke: var(--text-faint);
-  stroke-width: 1.25;
+  stroke-width: 1.1;
   stroke-linejoin: round;
-  opacity: 0.45;
+  opacity: 0.5;
   vector-effect: non-scaling-stroke;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  animation: draw-path 2.6s cubic-bezier(0.3, 0.6, 0.3, 1) forwards;
+  animation: draw-path 2.8s cubic-bezier(0.3, 0.6, 0.3, 1) forwards;
 }
 
 .delta-t__chart .path--hi {
@@ -128,7 +65,7 @@
   to { stroke-dashoffset: 0; }
 }
 
-/* the fraction itself, as in the original Δ / t */
+/* the fraction itself: Δ over a bar over t, as on the original page */
 .delta-t__frac {
   position: absolute;
   inset: 0 0 var(--caption-h) 0;
@@ -136,9 +73,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem;
-  background: radial-gradient(closest-side, var(--surface) 45%, transparent 100%);
-  background-size: 60% 95%;
+  gap: 0.4rem;
+  background: radial-gradient(closest-side, var(--surface) 50%, transparent 100%);
+  background-size: 34% 100%;
   background-repeat: no-repeat;
   background-position: center;
   pointer-events: none;
@@ -152,13 +89,13 @@
     var(--warm) 60%,
     var(--accent-strong) 100%);
   background-size: 200% auto;
-  animation: flow-glow 12s linear infinite;
+  animation: flow-glow 14s linear infinite;
 }
 
 .delta-t__sym {
   font-family: var(--font-serif);
-  font-size: clamp(3.6rem, 8vw, 7rem);
-  font-weight: 600;
+  font-size: clamp(4rem, 9vw, 7.5rem);
+  font-weight: 700;
   line-height: 0.9;
   color: transparent;
   -webkit-background-clip: text;
@@ -167,12 +104,13 @@
 
 .delta-t__sym--t {
   font-style: italic;
+  font-weight: 600;
 }
 
 .delta-t__bar {
-  width: clamp(110px, 14vw, 170px);
-  height: 6px;
-  border-radius: 6px;
+  width: clamp(110px, 13vw, 160px);
+  height: 5px;
+  border-radius: 3px;
 }
 
 @keyframes flow-glow {
@@ -185,83 +123,104 @@
   left: 0;
   right: 0;
   bottom: 0;
+  height: var(--caption-h);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  height: var(--caption-h);
+  justify-content: flex-end;
+  gap: 1.25rem;
   padding: 0 1rem;
   border-top: 1px solid var(--border);
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: var(--surface);
 }
 
 .delta-t__eq {
   font-family: var(--font-serif);
   font-style: italic;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: var(--text-muted);
   white-space: nowrap;
 }
 
 .delta-t__redraw {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.35rem 0.7rem;
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--text-muted);
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--font-mono);
   font-size: 0.8rem;
-  font-weight: 600;
+  color: var(--accent);
   cursor: pointer;
-  transition: color 150ms ease, border-color 150ms ease;
+}
+
+.delta-t__redraw::before {
+  content: "↻ ";
 }
 
 .delta-t__redraw:hover {
-  color: var(--accent);
-  border-color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* the portrait sits on the band's lower edge, like the original page */
+.identity {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.25rem;
+  margin-top: calc(-1 * clamp(55px, 7vw, 75px));
+  padding-left: clamp(1rem, 3vw, 2rem);
+  position: relative;
+  pointer-events: none;
+}
+
+.identity__photo {
+  flex-shrink: 0;
+  width: clamp(110px, 14vw, 150px);
+  height: clamp(110px, 14vw, 150px);
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: 55% 72%;
+  border: 4px solid var(--bg);
+  outline: 1px solid var(--border-strong);
+  background: var(--surface-2);
+}
+
+.identity__name {
+  font-size: clamp(1.7rem, 3.5vw, 2.4rem);
+  line-height: 1.1;
+}
+
+.identity__role {
+  margin: 0.35rem 0 0.4rem;
+  font-size: 1rem;
+  color: var(--text-muted);
 }
 
 /* ==========================================================================
-   Approach
+   Quote and chapters
    ========================================================================== */
 
-.approach {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
-  gap: clamp(1.5rem, 5vw, 4rem);
-}
-
-.approach__body p {
-  color: var(--text-muted);
-  font-size: 1.05rem;
-  line-height: 1.75;
-}
-
 .quote {
-  margin-top: 2rem;
-  padding: 1.25rem 1.5rem;
-  border-left: 3px solid var(--accent);
-  background: var(--surface);
-  border-radius: 0 var(--radius) var(--radius) 0;
+  max-width: 44rem;
+  margin: clamp(3rem, 7vw, 4.5rem) auto;
+  text-align: center;
   font-family: var(--font-serif);
   font-style: italic;
+  font-size: clamp(1.1rem, 2vw, 1.3rem);
+  line-height: 1.6;
+  color: var(--text-muted);
 }
 
 .quote p {
   margin: 0;
-  font-size: 1.05rem;
-  color: var(--text);
 }
 
+.quote p::before { content: "“"; }
+.quote p::after  { content: "”"; }
+
 .quote footer {
-  margin-top: 0.75rem;
-  font-family: var(--font-sans);
+  margin-top: 1rem;
+  font-family: var(--font-mono);
   font-style: normal;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   color: var(--text-faint);
 }
 
@@ -269,20 +228,89 @@
   font-style: normal;
 }
 
-/* ==========================================================================
-   Contact
-   ========================================================================== */
-
-.contact {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 2rem;
-  flex-wrap: wrap;
+/* heading in the margin, text in a reading column */
+.chapter {
+  display: grid;
+  grid-template-columns: 13rem minmax(0, 44rem);
+  gap: 1rem 2.5rem;
+  padding: 2.5rem 0;
+  border-top: 1px solid var(--border);
 }
 
-.contact .lede {
-  margin: 0.5rem 0 0;
+.chapter h2 {
+  font-size: 1.4rem;
+}
+
+.prose {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  line-height: 1.75;
+}
+
+.prose p:last-child {
+  margin-bottom: 0;
+}
+
+/* a drop cap on the opening paragraph */
+.prose p:first-child::first-letter {
+  float: left;
+  font-size: 3.4em;
+  line-height: 0.85;
+  font-weight: 600;
+  padding: 0.08em 0.1em 0 0;
+  color: var(--accent);
+}
+
+.prose a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  text-underline-offset: 3px;
+}
+
+.prose a:hover {
+  text-decoration-color: var(--accent);
+}
+
+/* What I do: a plain ledger, not cards */
+.ledger > div {
+  padding: 0.9rem 0;
+  border-bottom: 1px dotted var(--border-strong);
+}
+
+.ledger > div:first-child {
+  padding-top: 0;
+}
+
+.ledger dt {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.ledger dt a:hover {
+  color: var(--accent);
+}
+
+.ledger dd {
+  color: var(--text-muted);
+}
+
+.ledger .tag {
+  margin-left: 0.3rem;
+}
+
+.chapter .post-list li:first-child a {
+  padding-top: 0;
+}
+
+.more {
+  margin: 0.5rem 0 0 3.25rem;
+}
+
+.chapter:last-child {
+  padding-bottom: 4rem;
 }
 
 /* ==========================================================================
@@ -290,8 +318,21 @@
    ========================================================================== */
 
 @media (max-width: 800px) {
-  .hero__grid,
-  .approach {
+  .chapter {
     grid-template-columns: 1fr;
+  }
+
+  .delta-t__caption {
+    justify-content: space-between;
+  }
+
+  .identity {
+    margin-top: 1rem;
+    padding-left: 0;
+    align-items: center;
+  }
+
+  .delta-t__eq {
+    font-size: 0.8rem;
   }
 }

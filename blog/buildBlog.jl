@@ -49,7 +49,8 @@ function slugify(s)
   strip(s, '-')
 end
 
-status_tag(p) = isempty(p.status) ? "" : """ <span class="tag tag--warm">$(esc(p.status))</span>"""
+status_tag(p) = isempty(p.status) ? "" : """ <span class="tag tag--warm">$(esc(lowercase(p.status)))</span>"""
+postnum(p) = first(split(p.slug, "."))          # "01.BelgiumBonds" -> "01"
 
 # Rewrites the relative links of a snippet taken from the home page so they work
 # from `prefix` (absolute URLs, mailto: and #anchors are left alone).
@@ -73,11 +74,13 @@ function post_list(posts, prefix)
     """
           <li>
             <a href="$(prefix)$(p.slug).html">
-              <span class="meta">$(fmtdate(p.date))</span>
-              <div>
-                <h3>$(esc(p.title))$(status_tag(p))</h3>
-                <p>$(esc(p.summary))</p>
-              </div>
+              <span class="num">$(postnum(p))</span>
+              <span class="line">
+                <h3>$(esc(p.title))</h3>$(status_tag(p))
+                <span class="leader"></span>
+                <span class="meta">$(fmtdate(p.date))</span>
+              </span>
+              <p>$(esc(p.summary))</p>
             </a>
           </li>"""
   end
@@ -165,8 +168,8 @@ function post_page(shell, i, body, toc, minutes)
   <main id="content" class="container post-layout">
     <article class="post">
       <header class="post-header">
-        <a class="post-back" href="index.html">← All posts</a>
-        <p class="post-kicker"><span class="tag">$(esc(p.series))</span>$(status_tag(p))</p>
+        <a class="post-back" href="index.html">← the peccon blog</a>
+        <p class="post-kicker meta">no. $(postnum(p)) · $(esc(lowercase(p.series)))$(status_tag(p))</p>
         <h1>$(esc(p.title))</h1>
         <p class="post-summary">$(esc(p.summary))</p>
         <p class="meta">$(fmtdate(p.date)) · $(minutes) min read</p>
@@ -220,8 +223,7 @@ function index_page(shell)
 
   <main id="content" class="container">
     <header class="page-head">
-      <span class="eyebrow">Blog</span>
-      <h1>Writing</h1>
+      <h1>The Peccon Blog</h1>
       <p class="lede">Writing on time, money, and the decisions that connect them. I cover financial planning,
         investment, and the occasional detour into whatever I'm testing in the playground — always with an eye on
         how things behave in practice.</p>

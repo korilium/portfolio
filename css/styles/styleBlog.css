@@ -1,292 +1,448 @@
 @import url("style.css");
 
-body {
-  display: flex;
-  font-family: sans-serif;
-  margin: 0;
+/* ==========================================================================
+   Blog index
+   ========================================================================== */
+
+.series {
+  padding-bottom: 3rem;
 }
 
-aside {
-  width: 220px;
-  background: var(--text-color);
-  padding: 1rem;
-  height: 100vh;
+.series h2 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+
+.post-list h3 .tag {
+  margin-left: 0.4rem;
+  vertical-align: 0.15em;
+}
+
+/* ==========================================================================
+   Post layout: article + sticky aside (table of contents, all posts)
+   ========================================================================== */
+
+.post-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+  padding-top: clamp(2rem, 5vw, 3rem);
+  padding-bottom: 4rem;
+}
+
+.post {
+  min-width: 0;             /* wide formulas/tables scroll inside their own box */
+  max-width: 72ch;
+}
+
+.post-header {
+  padding-bottom: 2rem;
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.post-back {
+  display: inline-block;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.post-back:hover {
+  color: var(--accent);
+}
+
+.post-kicker {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.post-header h1 {
+  font-size: clamp(2rem, 4.5vw, 2.7rem);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  margin-bottom: 1rem;
+}
+
+.post-summary {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.post-aside {
   position: sticky;
-  top: 0;
-}
-
-aside h2 {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-}
-
-aside ul {
-  list-style: none;
-  padding: 0;
-}
-
-aside li {
-  margin: 0.5rem 0;
-}
-
-aside a {
-  text-decoration: none;
-  color: var(--link-color);
-  /* theme-aware link color */
-  font-family: inherit;
-  /* use the page font (Arial from style.css) */
-  font-size: 0.95rem;
-  font-weight: 500;
-  line-height: 1.35;
-  letter-spacing: 0.01em;
-
-  display: block;
-  /* full-row hit area */
-  padding: 0.4rem 0.6rem;
-  border-radius: 6px;
-  background: transparent;
-
-  transition: color 0.18s ease, background-color 0.18s ease, transform 0.12s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Hover / focus (mouse + keyboard) */
-aside a:hover,
-aside a:focus {
-  color: var(--link-hover);
-  transform: translateX(3px);
-  background-color: rgba(255, 255, 255, 0.04);
-  /* subtle highlight in dark theme */
-}
-
-
-
-/* Current / active page link: visible accent without mixing colors */
-aside a.current {
-  font-weight: 700;
-  color: var(--image-accentcolor);
-  border-left: 3px solid var(--image-accentcolor);
-  padding-left: calc(0.6rem - 3px);
-  /* keep padding visually aligned after the border */
-  background: transparent;
-}
-
-/* Keyboard focus visible but not noisy */
-aside a:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px var(--link-color);
-  /* uses theme-aware link color */
-  border-radius: 6px;
-}
-
-
-
-main {
-  flex: 1;
-  /* A flex item will not shrink below its content by default, so one wide image
-     or formula widened the whole column and scrolled the page sideways; with 0
-     the column keeps its width and wide content scrolls inside its own box. */
-  min-width: 0;
-  padding: 2rem;
-}
-
-/* Top bar (menu + theme toggle) */
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-/* Hide buttons on desktop by default */
-#open-sidebar,
-#close-sidebar {
-  display: none;
-}
-
-/* Blog content */
-/* Blog content inside main */
-body.index {
+  top: calc(var(--header-h) + 1.5rem);
+  max-height: calc(100vh - var(--header-h) - 3rem);
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  /* stack header + blog vertically */
-  font-family: sans-serif;
-  margin: 0;
+  gap: 2rem;
+  font-size: 0.875rem;
 }
 
-
-article p {
-  margin-bottom: 1.5rem;
-  /* more space between paragraphs */
-  line-height: 1.3;
-  /* easier to read */
+.post-aside h2 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 0.75rem;
 }
 
-
-/* --- Sidebar toggle --- */
-
-/* Responsive Sidebar (for small screens) */
-@media (max-width: 800px) {
-  body {
-    flex-direction: column;
-  }
-
-  aside {
-    position: fixed;
-    top: 0;
-    left: -250px;
-    width: 220px;
-    height: 100vh;
-    box-shadow: 4px 0 10px var(--shadow-color);
-    transition: left 0.3s ease;
-    z-index: 1000;
-  }
-
-  aside.active {
-    left: 0;
-  }
-
-  #open-sidebar {
-    display: inline-block;
-    font-size: 1.5rem;
-    background: none;
-    color: var(--link-color);
-    border: none;
-    cursor: pointer;
-  }
-
-  #close-sidebar {
-    display: block;
-    font-size: 2rem;
-    background: none;
-    color: var(--link-color);
-    border: none;
-    cursor: pointer;
-    position: absolute;
-    top: 0.5rem;
-    right: 1rem;
-  }
-
-  main {
-    padding: 1rem;
-  }
+.post-aside ol,
+.post-aside ul {
+  list-style: none;
+  border-left: 1px solid var(--border);
 }
 
-/* Paragraph spacing for readability */
-article p {
-  margin-bottom: 1.5rem;
-  line-height: 1.5;
-}
-
-
-article a {
-  color: var(--link-color);
-  text-decoration: none;
-  font-weight: 500;
-  position: relative;
-  transition: color 0.3s ease;
-}
-
-/* Subtle animated underline using ::after */
-article a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 0%;
-  height: 2px;
-  background-color: var(--link-hover);
-  transition: width 0.3s ease;
-  border-radius: 2px;
-}
-.article svg {
+.post-aside a {
   display: block;
-  width: 100%;
+  padding: 0.3rem 0 0.3rem 0.9rem;
+  margin-left: -1px;
+  border-left: 2px solid transparent;
+  color: var(--text-muted);
+  line-height: 1.4;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+
+.post-aside a:hover {
+  color: var(--text);
+  border-left-color: var(--border-strong);
+}
+
+.post-aside a[aria-current="page"] {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  font-weight: 600;
+}
+
+.post-pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.post-pager a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-weight: 600;
+  transition: border-color 150ms ease;
+}
+
+.post-pager a:hover {
+  border-color: var(--accent);
+}
+
+.post-pager .pager-next {
+  text-align: right;
+}
+
+@media (max-width: 1000px) {
+  .post-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .post {
+    max-width: none;
+  }
+
+  /* below the article: the table of contents is no longer useful there */
+  .post-aside {
+    position: static;
+    max-height: none;
+    border-top: 1px solid var(--border);
+    padding-top: 2rem;
+  }
+
+  .post-aside .toc {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .post-pager {
+    grid-template-columns: 1fr;
+  }
+
+  .post-pager .pager-next {
+    text-align: left;
+  }
+}
+
+/* ==========================================================================
+   Article text
+   ========================================================================== */
+
+.post-body {
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  line-height: 1.7;
+}
+
+.post-body p {
+  margin: 0 0 1.4rem;
+}
+
+/* Headings: more space above than below, so a heading belongs to what follows */
+.post-body h1,
+.post-body h2,
+.post-body h3,
+.post-body h4 {
+  font-family: var(--font-sans);
+  line-height: 1.25;
+  margin: 2.6rem 0 0.9rem;
+}
+
+.post-body h2 { font-size: 1.6rem; }
+.post-body h3 { font-size: 1.25rem; }
+.post-body h4 { font-size: 1.05rem; }
+
+/* Lists.
+   Without explicit padding the markers ("1.", "2.") hung outside the text
+   column; this keeps them inside and aligned with the paragraph text. */
+.post-body ol,
+.post-body ul {
+  padding-left: 1.6em;
+  margin: 0 0 1.4rem;
+}
+
+.post-body li {
+  margin: 0.3rem 0;
+}
+
+.post-body li::marker {
+  color: var(--accent);
+}
+
+/* Loose lists (blank lines between items) wrap each item in <p>;
+   the full paragraph gap is too large inside a list. */
+.post-body li > p {
+  margin-bottom: 0.5rem;
+}
+
+/* Nested lists sit tight under their parent item */
+.post-body li > ol,
+.post-body li > ul {
+  margin: 0.25rem 0;
+}
+
+/* Footnote references and sub/superscripts no longer push lines apart */
+.post-body sup,
+.post-body sub {
+  line-height: 0;
+}
+
+/* Footnotes block */
+.post-body .footnotes {
+  font-size: 0.95rem;
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.post-body blockquote {
+  margin: 0 0 1.4rem;
+  padding: 0.9rem 1.25rem;
+  border-left: 3px solid var(--accent);
+  background: var(--surface);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--text-muted);
+}
+
+.post-body blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.post-body hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2.5rem 0;
+}
+
+/* Inline code and code blocks */
+.post-body code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: var(--surface-2);
+}
+
+.post-body pre {
+  overflow-x: auto;         /* long lines scroll inside the block, not the page */
+  padding: 1rem 1.25rem;
+  margin: 0 0 1.4rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  line-height: 1.5;
+  background: var(--surface);
+}
+
+.post-body pre code {
+  padding: 0;
+  background: none;
+  font-size: 0.85rem;
+}
+
+/* Any image in a post stays inside the column */
+.post-body img {
+  max-width: 100%;
   height: auto;
-  max-width: 900px;
-  margin: 1.5rem auto;
 }
-article table {
-  border-collapse: collapse;
-  width: 100%;
-  margin: 1.5em 0;
-  font-size: 0.95em;
-  border-radius: 8px;
-  overflow: hidden;                /* clips the corners of inner cells */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+/* ==========================================================================
+   Links
+   ========================================================================== */
+
+.post-body a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 150ms ease;
 }
+
+.post-body a:hover {
+  text-decoration-color: var(--accent);
+}
+
+/* No underline under linked images or figures */
+.post-body a:has(img),
+.post-body a:has(svg) {
+  text-decoration: none;
+}
+
+/* ==========================================================================
+   Maths (MathJax)
+   ========================================================================== */
+
 mjx-container[display="true"] {
   overflow-x: auto;
   overflow-y: hidden;
   max-width: 100%;
-}
-article thead th {
-  background: var(--accent, var(--shadow-color));   /* your Peccon purple as default */
-  color: var(--text-color);
-  font-weight: 600;
-  text-align: left;
-  padding: 0.65em 0.9em;
-  letter-spacing: 0.02em;
+  padding: 0.2em 0;         /* stops descenders and the scrollbar from clipping */
 }
 
-article td {
-  padding: 0.55em 0.9em;
-  border-top: 1px solid var(--border, var(--text-color));
-  vertical-align: top;
-}
+/* ==========================================================================
+   Figures
+   ========================================================================== */
 
-/* zebra striping for readability on wide tables */
-article tbody tr:nth-child(even) {
-  background: var(--row-alt, rgba(0, 0, 0, 0.025));
-}
-
-article tbody tr:hover {
-  background: var(--row-hover, rgba(119, 41, 83, 0.06));
-}
-article a:hover {
-  color: var(--link-hover);
-}
-
-article a:hover::after {
+/* Inline SVG figures placed directly in a post or a <figure>, without
+   touching MathJax's own SVGs. */
+.article svg,
+.post-body > svg,
+.post-body figure > svg {
+  display: block;
   width: 100%;
+  height: auto;
+  max-width: 900px;
+  margin: 1.75rem auto;
+  font-family: var(--font-sans);
 }
 
-/* Optional: better contrast for visited links */
-article a:visited {
-  color: var(--image-accentcolor);
-}
 /* Result figures exported from the thesis repo. They are matplotlib PNGs on a
    white background, so on the dark theme they sit on a rounded white card rather
    than as a bright rectangle with hard edges. */
-article .post-figure {
-  margin: 1.5rem 0;
+.post-body .post-figure {
+  margin: 1.75rem 0;
 }
 
-article .post-figure img {
+.post-body .post-figure img {
   display: block;
   max-width: 100%;
   height: auto;
   margin: 0 auto;
   background: #ffffff;
-  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   padding: 6px;
-  box-sizing: border-box;
 }
 
-article .post-figure figcaption {
+.post-body figcaption {
+  font-family: var(--font-sans);
   font-size: 0.85rem;
   line-height: 1.5;
-  opacity: 0.8;
-  margin-top: 0.5rem;
+  color: var(--text-muted);
+  margin-top: 0.6rem;
 }
 
 /* A row of eight small panels is unreadable when shrunk to the column, so it
    scrolls sideways inside its own box instead; the page itself never does. */
-article .post-figure-scroll {
+.post-body .post-figure-scroll {
   overflow-x: auto;
 }
 
-article .post-figure-scroll img {
+.post-body .post-figure-scroll img {
   max-width: none;
   width: 2200px;
+}
+
+.post-body iframe {
+  max-width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+
+.post-body table {
+  /* "separate" with zero spacing looks identical to "collapse",
+     but unlike "collapse" it lets border-radius round the corners. */
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  margin: 1.75rem 0;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;         /* clips the corners of inner cells */
+  font-variant-numeric: tabular-nums;
+}
+
+.post-body thead th {
+  background: var(--surface-2);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.65em 0.9em;
+}
+
+.post-body td {
+  padding: 0.55em 0.9em;
+  border-top: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.post-body tbody tr:hover {
+  background: var(--accent-soft);
+}
+
+@media (max-width: 800px) {
+  .post-body {
+    font-size: 1.05rem;
+  }
+
+  /* Wide tables scroll inside their own box instead of being clipped */
+  .post-body table {
+    display: block;
+    overflow-x: auto;
+  }
 }

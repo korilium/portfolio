@@ -3,144 +3,118 @@
 
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Project - PECCON</title>
-
-  <!-- Favicon -->
+  <title>Peccon — Ignace Decocq</title>
+  <meta name="description" content="Peccon (Pecunia Consilium) — a platform for financial planning, in development.">
   <link rel="icon" href="img/favicon.svg">
   <script>
-  (function () {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "light") {
-      document.documentElement.setAttribute("data-theme", savedTheme);
-    }
-  })();
-</script>
-  <!-- Stylesheet -->
+    (function () {
+      var t;
+      try { t = localStorage.getItem("theme"); } catch (e) { }
+      if (!t) t = window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", t);
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="css/styles/styleProject.css" rel="stylesheet">
 </head>
 
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
 
-<body id="page-top" data-spy="scroll" data-target=".side-menu">
-  <!-- Header -->
-  <header class="header">
-    <nav class="menu-container" aria-label="Main Navigation">
-      <ul class="menu">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="blog/posts/generated/index.html">Blog</a></li>
-        <li><a href="playGround.html">Playground</a></li>
-        <li><a href="project.html" aria-current="page">Peccon</a></li>
-      </ul>
-    </nav>
-    <label class="theme-switch" aria-label="Toggle light and dark theme">
-      <input type="checkbox" id="theme-toggle">
-      <span class="slider"></span>
-    </label>
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="index.html"><span class="brand__mark" aria-hidden="true"><span>Δ</span><span>t</span></span>Ignace Decocq</a>
+      <nav class="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="blog/posts/generated/index.html">Blog</a></li>
+          <li><a href="playGround.html">Playground</a></li>
+          <li><a href="project.html" aria-current="page">Peccon</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </div>
   </header>
 
-  <!-- Main Content -->
-  <div class="page">
-    <div class="title">
-      <h1>to be developed</h1>
-    </div>
-    <div class="grid">
-      <div class="FullLogoContainer">
-        <div class="FullLogo">
-          <img class="FullLogoImage" src="img/pecconProject/logofinal.png" alt="Peccon Logo">
+  <main id="content">
+    <section class="project-hero">
+      <div class="container project-hero__grid">
+        <div>
+          <span class="tag tag--warm">In development</span>
+          <h1>Peccon</h1>
+          <p class="project-latin">Pecunia Consilium</p>
+          <p class="lede">The platform for financial planning — bringing financial literacy, planning tools and
+            products together in one place.</p>
         </div>
+        <img class="project-logo" src="img/pecconProject/logofinal.png" alt="Peccon logo" width="1200"
+          height="1200">
       </div>
-      <div class="FullLogoContainer2">
-        <div class="dots"> </div>
-        <div class="descriptionFull"  >
-          <p>
-            the platform for financial planning.         </p>
-        </div>
-      </div>
-      <div class="connector1">
-        <div class="vertical-line">
-          <div class="pulse"></div> <!-- Pulse effect -->
-        </div>
-        <div class="horizontal-lines">
-          <div class="horizontal-line" data-index = "1" >
-            <div class="secondary-pulse1"></div>
-          </div>
-          <div class="horizontal-line" data-index = "2" >
-            <div class="secondary-pulse2"></div>
-          </div>
-          <div class="horizontal-line" data-index = "3" >
-            <div class="secondary-pulse3"></div>
-          </div>
-          <div class="horizontal-line" data-index = "4" >
-            <div class="secondary-pulse4"></div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Building blocks</span>
+            <h2 class="section-title">Four pillars</h2>
           </div>
         </div>
-      </div>
 
-      <div class="logoContainer">
-        <div class="Logo">
-          <img class="LogoImage" src="img/pecconProject/AthenaNoStars.svg" alt="Peccon Logo">
-        </div>
-        <div class="LogoDescription">
-          <p>
-            Literacy
-          </p>
-        </div>
-      </div>
-
-      <div class="logoContainer">
-        <div class="Logo">
-          <img class="LogoImage" src="img/pecconProject/bull.svg" alt="Peccon Logo">
-        </div>
-        <div class="LogoDescription">
-          <p>
-            Planning tools
-          </p>
-        </div>
-      </div>
-
-      <div class="logoContainer">
-        <div class="Logo">
-          <img class="LogoImage" src="img/pecconProject/stars.svg" alt="Peccon Logo">
-        </div>
-        <div class="LogoDescription">
-          <p>
-            The fund
-          </p>
-        </div>
-      </div>
-
-      <div class="logoContainer">
-        <div class="Logo">
-          <img class="LogoImage" src="img/pecconProject/logoBackground.svg" alt="Peccon Logo">
-        </div>
-        <div class="LogoDescription">
-          <p>
-            Products
-          </p>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- Footer -->
-    <div class="footer">
-      <div class="socials">
-        <div class="socials-icon">
-          <a href="mailto:igance.decocq@hotmail.com" aria-label="Facebook"><img src="img/socials/Email.jpg" alt="Email"></a>
-        </div>
-        <div class="socials-icon">
-          <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer">
-            <img src="img/socials/linkedin.png" alt="linkedin">
+        <div class="pillars">
+          <a class="card pillar" href="blog/posts/generated/index.html">
+            <img src="img/pecconProject/AthenaNoStars.svg" alt="" width="1200" height="1200">
+            <div>
+              <h3>Literacy</h3>
+              <p>Writing that explains how financial products and models work.</p>
+            </div>
+            <span class="tag">Live — the blog</span>
           </a>
-        </div>
-        <div class="socials-icon">
-          <a href="https://github.com/korilium" target="_blank" rel="noopener noreferrer">
-            <img src="img/socials/github.svg" alt="github">
+          <a class="card pillar" href="playGround.html">
+            <img src="img/pecconProject/bull.svg" alt="" width="1200" height="1200">
+            <div>
+              <h3>Planning tools</h3>
+              <p>Interactive models you can run with your own assumptions.</p>
+            </div>
+            <span class="tag">Live — the playground</span>
           </a>
+          <div class="card pillar">
+            <img src="img/pecconProject/stars.svg" alt="" width="1200" height="1200">
+            <div>
+              <h3>The fund</h3>
+              <p>Details to follow.</p>
+            </div>
+            <span class="tag tag--muted">Planned</span>
+          </div>
+          <div class="card pillar">
+            <img src="img/pecconProject/logoBackground.svg" alt="" width="1200" height="1200">
+            <div>
+              <h3>Products</h3>
+              <p>Details to follow.</p>
+            </div>
+            <span class="tag tag--muted">Planned</span>
+          </div>
         </div>
       </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <p>© 2026 Ignace Decocq</p>
+      <ul class="social-links">
+        <li><a href="mailto:igance.decocq@hotmail.com" aria-label="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg></a></li>
+        <li><a href="https://www.linkedin.com/in/ignace-decocq-7a47472aa/" aria-label="LinkedIn" rel="noopener noreferrer" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg></a></li>
+        <li><a href="https://github.com/korilium" aria-label="GitHub" rel="noopener noreferrer" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.3-3.1-.2-.4-.6-1.6 0-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.8.1 3.2.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.6-5.5 5.9.5.4.9 1.1.9 2.2v3.3c0 .3.1.7.8.6A12 12 0 0 0 12 .3"/></svg></a></li>
+      </ul>
     </div>
+  </footer>
+
+  <script src="js/toggleTheme.js"></script>
 </body>
-<script src="js/toggleTheme.js"></script>
+
 </html>

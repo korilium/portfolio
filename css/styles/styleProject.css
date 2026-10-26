@@ -1,359 +1,77 @@
 @import url("style.css");
 
-
-.page {
-    padding: 5%;
+.project-hero {
+  padding: clamp(3rem, 8vw, 5.5rem) 0 clamp(2.5rem, 6vw, 4rem);
+  background:
+    radial-gradient(50rem 26rem at 80% 0%, var(--accent-soft), transparent 70%),
+    var(--bg);
 }
 
-
-.title {
-    font-size: 1.5em;
-    text-align: center;
-    margin-top: 20px;
-    /* Darker color for better contrast */
-    margin-bottom: 5%;
-    /* Add some space between the header and the menu */
+.project-hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: clamp(2rem, 6vw, 4rem);
+  align-items: center;
 }
 
-.grid {
-    display: grid;
-    grid-template-columns: 20% 1fr;
-    /* Space between grid items */
-    margin-top: 20px;
-    /* Space above the grid */
-    width: 100%;
-    /* Full width of the container */
+.project-hero h1 {
+  font-size: clamp(2.4rem, 5vw, 3.4rem);
+  letter-spacing: -0.03em;
+  margin-top: 1rem;
 }
 
-/* FullLogoContainer section below title */
-.FullLogoContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 20px;
-    grid-column-start: 1;
-    /* Start from the first column */
-    grid-column-end: 2;
-    /* Span all four columns */
-    padding: 10px;               /* space around image */
-    border-radius: 12px;         /* rounded corners for smooth blending */
-    background: radial-gradient(
-        circle,var(--image-accentcolor),   /* semi-transparent in center */
-        var(--img-bg) 140%             /* fades to page background */
-    );                            /* subtle gradient fade */
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* soft shadow for depth */
-    transition: background 0.3s ease, box-shadow 0.3s ease; 
+.project-latin {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--text-faint);
+  margin-bottom: 1.25rem;
 }
 
-/* FullLogoImage */
-.FullLogoImage {
-    width: 100%;
-    /* Default width for larger screens */
-    height: 100%;
-    max-width: 100%;
-    /* Maximum width for the image */
-    display: block;
-    /* Ensure it's a block element for centering */
-    background-color: 1px solid var(--img-bg); /* Border color for light mode */
+.project-logo {
+  justify-self: end;
+  width: 100%;
+  max-width: 300px;
 }
 
-/* FullLogoDescription */
-.FullLogoContainer2 {
-    display: flex;
-    /* Use flexbox to place dots and description side by side */
-    justify-content: flex-start;
-    /* Ensure enough space between the two elements */
-    align-items: center;
-    /* Vertically center the items */
-    margin-top: 20px;
-    /* Ensure it's a block element for centering */
+.pillars {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.25rem;
 }
 
-.dots {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 30%;
-    /* Width of the dots section */
-    height: 100%;
-    /* Full height */
-    font-size: 3em;
-    /* Make dots large */
-    color: var(--image-accentcolor);
-    /* Dot color */
-    margin-right: 20px;
-    /* Space between dots and description */
-    margin-bottom: 7%;
+.pillar {
+  gap: 1rem;
 }
 
-/* Create big dots */
-.dots::before {
-    /* Add the dots */
-    font-size: 2em;
-    /* Make the dots larger */
-    color: var(--image-accentcolor);
-    /* Dot color */
-    position: relative;
-    left: 40%;
-    /* Center the dots */
-    transform: translateX(-50%);
-    /* Adjust for centering */
+.pillar img {
+  width: 72px;
+  height: 72px;
+  padding: 8px;
+  border-radius: var(--radius);
+  background: #0d2a16;      /* the logo's green: the icons are white/gold, in both themes */
 }
 
-/* Full Description Styling */
-.descriptionFull {
-    width: 65%;
-    /* Adjust width of the description section */
-    font-size: 1.2em;
-    /* Text size */
-    text-align: center;
-    /* Align text to the left */
-    border-radius: 8px;
-    background-color: var(--image-accentcolor);
-    color: var(--text-colorBox);
-    /* Ensure text is visible */
-    box-shadow: 0 0 10px rgba(1, 22, 18, 0.1);
-    font-size: 1rem;
-    padding: 20px;
+.pillar > div {
+  flex: 1;
 }
 
-
-
-.connector1 {
-    display: flex;
-    flex-direction: column;
-    /* Stack the vertical line and the horizontal lines */
-    align-items: center;
-    /* Center the lines horizontally */
-    position: relative;
-    height: 100%;
-    /* Occupy full height of the parent container */
-    width: 1%;
-    /* Thickness of the vertical line */
-    /* Color of the vertical line */
-    grid-column-start: 1;
-    grid-row-start: 2;
-    grid-row-end: 6;
-    /* Span all four rows */
-    margin-left: 50%;
+.pillar .tag {
+  align-self: flex-start;
 }
 
-.vertical-line {
-    position: relative;
-    width: 16%;
-    height: 100%;
+.tag--muted {
+  background: var(--surface-2);
+  color: var(--text-faint);
 }
 
-.pulse {
-    position: absolute;
-    width: 5px;
-    /* Size of the pulse */
-    height: 5px;
-    background-color: var(--image-accentcolor);
-    box-shadow: var(--image-accentcolor) 0 0 0 20px var(--image-lightcolor);
-    /* Pulse color */
-    border-radius: 50%;
-    transform: scale(1);
-    animation: pulse-move 10s linear infinite;
-    /* Infinite loop */
-}
+@media (max-width: 720px) {
+  .project-hero__grid {
+    grid-template-columns: 1fr;
+  }
 
-.secondary-pulse1,
-.secondary-pulse2,
-.secondary-pulse3,
-.secondary-pulse4 {
-    position: absolute;
-    width: 5px;
-    height: 5px;
-   background-color: var(--image-accentcolor);
-    box-shadow: var(--image-accentcolor) 0 0 0 0px var(--image-lightcolor);    border-radius: 50%;
-    opacity: 0;
-    animation: secondary-pulse 10s linear infinite;
-}
-
-.secondary-pulse1 { animation-delay: 0.2; }
-.secondary-pulse2 { animation-delay: 2.5s; }
-.secondary-pulse3 { animation-delay: 5s; }
-.secondary-pulse4 { animation-delay: 7.3s; }
-
-
-
-/* Smooth horizontal secondary pulse */
-@keyframes secondary-pulse {
-    5% {
-        left: 5%;
-        transform: scale(0.8);
-        opacity: 0;
-        box-shadow: 0 0 0 0px var(--image-darkcolor);
-    }
-    50% {
-        left: 50%;
-        transform: scale(1.2);
-        opacity: 0.4;
-        box-shadow: 0 0 4px var(--image-darkcolor);
-    }
-    90% {
-        left: 100%;
-        transform: scale(0.8);
-        opacity: 0;
-        box-shadow: 0 0 0 0px var(--image-darkcolor);
-    }
-}
-
-/* Smooth vertical main pulse */
-@keyframes pulse-move {
-    0% {
-        top: 0%;
-        transform: scale(0.8);
-        opacity: 0;
-        box-shadow: 0 0 0 0px var(--image-darkcolor);
-    }
-    15% {
-        top: 15%;
-        transform: scale(1.2);
-        opacity: 0.6;
-        box-shadow: 0 0 8px var(--image-darkcolor);
-    }
-    40% {
-        top: 40%;
-        transform: scale(1);
-        opacity: 0.4;
-        box-shadow: 0 0 6px var(--image-darkcolor);
-    }
-    70% {
-        top: 65%;
-        transform: scale(1.1);
-        opacity: 0.6;
-        box-shadow: 0 0 8px var(--image-darkcolor);
-    }
-    100% {
-        top: 100%;
-        transform: scale(0.8);
-        opacity: 0;
-        box-shadow: 0 0 0 0px var(--image-d);
-    }
-}
-
-/* Optional: smoother timing */
-.pulse, .secondary-pulse1, .secondary-pulse2, .secondary-pulse3, .secondary-pulse4 {
-    animation-timing-function: ease-in-out;
-}
-
-
-
-.horizontal-line {
-    position: absolute;
-    width: 8000%;
-    /* Length of the horizontal lines */
-    height: 0.1%;
-
-}
-
-/* Positioning Individual Horizontal Lines */
-.horizontal-line:nth-child(1) {
-    top: 17%;
-    /* Connect to the first logo */
-    left: 50%;
-}
-
-.horizontal-line:nth-child(2) {
-    top: 41.5%;
-    /* Connect to the second logo */
-    left: 50%;
-}
-
-.horizontal-line:nth-child(3) {
-    top: 67%;
-    /* Connect to the third logo */
-    left: 50%;
-}
-
-.horizontal-line:nth-child(4) {
-    top: 91%;
-    /* Connect to the fourth logo */
-    left: 50%;
-}
-
-
-
-
-.logoContainer {
-    display: flex;
-    /* Use flexbox to place dots and description side by side */
-    justify-content: flex-start;
-    /* Ensure enough space between the two elements */
-    width: 100%;
-    /* Full width of the container */
-    gap: 20px;
-    /* Space between logo and description */
-    
-
-}
-
-
-
-.Logo {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 40%;
-    /* Full width of the container */
-    height: 100%;
-    max-width: 100%;
-    /* Adjust the max-width as needed */
-    margin-top: 20px;
-    /* Space above the logo */
-    grid-column-start: 1;
-    /* Start from the first column */
-    grid-column-end: 2;
-    /* Span all four columns */
-}
-
-.LogoImage {
-    display: flex;
-    position: relative;
-    width: 60%;
-    height: 70%;
-    max-width: 100%;
-    /* Adjust the max-width as needed */
-    margin-left: 30%;
-    margin-bottom: 10%;
-    display: block;
-    /* Ensure it's a block element for centering */
-    border: 1px solid var(--img-border);
-        padding: 10px;               /* space around image */
-    border-radius: 12px;         /* rounded corners for smooth blending */
-    background: radial-gradient(
-        circle,var(--image-accentcolor),   /* semi-transparent in center */
-        var(--img-bg) 140%             /* fades to page background */
-    );                            /* subtle gradient fade */
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* soft shadow for depth */
-    transition: background 0.3s ease, box-shadow 0.3s ease; 
-}
-
-.LogoDescription {
-    margin-top: 8%;
-    width: 80%;
-    /* Adjust the width as needed */
-    height: 50%;
-    max-width: none;
-    /* Remove any maximum width constraints */
-    display: flex;
-    /* Enable Flexbox */
-    justify-content: center;
-    /* Horizontally center the text */
-    align-items: center;
-    /* Vertically center the text */
-    text-align: left;
-    /* Center the text inside the container */
-    position: relative;
-    /* Ensures the text is centered inside the element */
-    border-radius: 8px;
-    background-color: var(--image-accentcolor);
-    color: var(--text-colorBox);
-    /* Ensure text is visible */
-    box-shadow: 0 0 10px var(--shadow-color);
-    font-size: 1rem;
-    padding: 20px;
-
+  .project-logo {
+    order: -1;
+    justify-self: start;
+    max-width: 120px;
+  }
 }

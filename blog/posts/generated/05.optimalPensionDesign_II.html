@@ -1,69 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>05.optimalPensionDesign II</title>
-  <!-- Favicon -->
-  <link rel="icon" href="../../../img/favicon.svg">
-    <script>
-  (function () {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "light") {
-      document.documentElement.setAttribute("data-theme", savedTheme);
-    }
-  })();
-</script>
-  <!-- Stylesheet -->
-  <link href="../../../css/styles/styleBlog.css" rel="stylesheet">
-  <script>
-    MathJax = {
-    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
-    svg: { fontCache: 'global' }
-    };
-  </script>
-  <script>
-    // Immediately set theme before rendering
-    (function() {
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme === "light") {
-        document.documentElement.classList.add("light");
-      }
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Optimal Pension Design II: A High-Dimensional Take — Ignace Decocq</title>
+<meta name="description" content="Bringing in the risk and variability a pension plan faces, and how they change its valuation.">
+<link rel="icon" href="../../../img/favicon.svg">
+<script>
+    (function () {
+      var t;
+      try { t = localStorage.getItem("theme"); } catch (e) { }
+      if (!t) t = window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", t);
     })();
   </script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
-
-
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="../../../css/styles/styleBlog.css" rel="stylesheet">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" async></script>
 </head>
-<body>
-  <aside id="sidebar">
-      <button id="close-sidebar" aria-label="Close menu">&times;</button>
-    <h2>The peccon blog </h2>
-    <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="01.BelgiumBonds.html">01.BelgiumBonds</a></li>
-<li><a href="02.Vasicek.html">02.Vasicek</a></li>
-<li><a href="03.Hull-White.html">03.Hull-White</a></li>
-<li><a href="04.optimalPensionDesign_I.html">04.optimalPensionDesign_I</a></li>
-<li><a href="05.optimalPensionDesign_II.html">05.optimalPensionDesign_II</a></li>
-<li><a href="06.MPT.html">06.MPT</a></li>
-    </ul>
-  </aside>
-  <main>
-    <button id="open-sidebar" aria-label="Open menu">&#9776;</button>
 
-    <label class="theme-switch">
-      <input type="checkbox" id="theme-toggle">
-      <span class="slider"></span>
-    </label>
-    <article>
-      <h1>IN PROGRESS: Optimal Pension Design: A high dimensional take-away</h1>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="../../../index.html"><span class="brand__mark" aria-hidden="true"><span>Δ</span><span>t</span></span>Ignace Decocq</a>
+      <nav class="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="../../../index.html">Home</a></li>
+          <li><a href="index.html" aria-current="page">Blog</a></li>
+          <li><a href="../../../playGround.html">Playground</a></li>
+          <li><a href="../../../project.html">Peccon</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="content" class="container post-layout">
+    <article class="post">
+      <header class="post-header">
+        <a class="post-back" href="index.html">← All posts</a>
+        <p class="post-kicker"><span class="tag">Pension design</span> <span class="tag tag--warm">In progress</span></p>
+        <h1>Optimal Pension Design II: A High-Dimensional Take</h1>
+        <p class="post-summary">Bringing in the risk and variability a pension plan faces, and how they change its valuation.</p>
+        <p class="meta">July 2026 · 61 min read</p>
+      </header>
+      <div class="post-body">
 <p>In the following posts we will take the problem to the next level and consider the aspect of stochasticity and the inherent risks a pension plan faces.</p>
-<h2>The Issue at Hand</h2>
+<h2 id="the-issue-at-hand">The Issue at Hand</h2>
 <p>In the previous post on optimal pension design, we looked at a deliberately naive
 setup: a Monte Carlo agent decides each year whether or not to fund the pension
-plan, optimizing that binary action against a predetermined value function. It
+plan, optimizing that binary action against a predetermined reward function. It
 worked — but only because we had quietly stripped the problem of the thing that
 makes pensions hard in the first place: risk.</p>
 <p>A real Belgian plan is stochastic on both sides of the balance sheet. On the asset
@@ -79,11 +78,11 @@ surprises.</p>
 a name: the Markov property. More precisely, the Markov property relates to the
 information one needs to make a well-informed decision in the predetermined dynamics
 of the modelling world.</p>
-<h2>from last time: the objective, made recursive</h2>
+<h2 id="from-last-time-the-objective-made-recursive">from last time: the objective, made recursive</h2>
 <p>The Markov property is a statement about <em>information</em> — how much of the past a
 decision needs in order to be made well informed. But a decision is always toward some
 objective, and before we can ask what information it needs, we should be clear about
-what it is optimizing. So let us recover the value function from the previous post and
+what it is optimizing. So let us recover the reward function from the previous post and
 reshape it into something a solver in a stochastic modelling environment can actually
 work with.</p>
 <p>Last time we scored an entire career with a single number — the joint value to
@@ -142,7 +141,7 @@ discount twice.)</p>
 three continuous numbers evolving at random, and this is exactly where the Markov
 property, teased above, comes into play. The next section is about dimensionality
 reduction — restructuring the value function to our advantage.</p>
-<h2>redefining the value function in high dimensional space</h2>
+<h2 id="redefining-the-value-function-in-high-dimensional-space">redefining the value function in high dimensional space</h2>
 <p>Start with what &quot;fixed rates&quot; actually bought us. In a world without shocks, if you
 tell me the calendar year, I can tell you everything else. The plan's assets, its
 liabilities, its funding position all follow a single deterministic path, so standing
@@ -162,6 +161,9 @@ number the whole problem pivots on, because the employer's legal guarantee makes
 the plan is fine and the option they wrote expires worthless; below 1 they owe the
 shortfall. The optimal decision differs on the two sides of that line, so the moment
 <span class="math tex">\(F\)</span> can straddle it, <span class="math tex">\(F\)</span> has to be part of the state.</p>
+<blockquote>
+<p><em>Update (October 2026): the model no longer treats the guarantee as a written put to be priced. It is the shortfall <span class="math tex">\((L_\tau - R_T)^+\)</span> the employer bears at retirement, assessed by its expected value.</em></p>
+</blockquote>
 <p>The <em>true</em> state of the plan is really the triple <span class="math tex">\((R_t, L_t, S_t)\)</span> — reserves,
 liabilities, and salary — a three-dimensional object evolving at random. Solving a
 control problem over a 3-D continuous state is a different sport from solving one over a
@@ -281,7 +283,7 @@ and, as the next section shows, the linear objective is not quite the one we wan
 reassuring news, which we will earn rather than assume, is that fixing it need not cost us
 the reduction at all. But the fix is subtle enough to deserve its own section, and it is
 where the funding decision finally becomes interesting.</p>
-<h2>putting curvature in: risk aversion over the replacement rate</h2>
+<h2 id="putting-curvature-in-risk-aversion-over-the-replacement-rate">putting curvature in: risk aversion over the replacement rate</h2>
 <p>Start with what the linear objective does to the <em>decision</em>. The employee benefit as
 written is linear in the money funded — and a linear objective has no interior trade-off.
 Every euro of funding is worth the same as the last, so the best contribution rule rails
@@ -511,7 +513,7 @@ numéraire as the stayer's.</p>
 <p>This churn-aware value function — not a certain-tenure simplification of it — is the object
 every result below is computed against. The remaining question is how to compute
 <span class="math tex">\(v_t(F,\rho)\)</span> over its two-coordinate state. That is the next section</p>
-<h2>the dynamic programming approach</h2>
+<h2 id="the-dynamic-programming-approach">the dynamic programming approach</h2>
 <p>We have the value function <span class="math tex">\(v_t(F, \rho)\)</span> and dynamics that close. What we do not yet
 have is a way to <em>compute</em> it. The definition is circular in the way every
 sequential-decision problem is circular: the value of standing here depends on the
@@ -700,14 +702,17 @@ mesh than a moderate one (<span class="math tex">\(\eta = 2\)</span>) for the sa
 can be off by tens of percent. This is exactly what the grid-doubling check is for:
 refine the mesh, watch the value settle toward the Monte-Carlo cross-check, and read the
 remaining movement as the benchmark's error bar. The cost is real but controllable — and
-it falls on the oracle, not on the learner it exists to certify.</p>
+it falls on the reference, not on the learner it exists to certify.</p>
 <p>And the benchmark still earns its keep in a second mode. The same engine runs with the
 contribution rule held <em>fixed</em> to a given plan's actual policy rather than optimised,
 pricing any real plan on precisely the same grid. The gap between the two — what an
 existing plan is worth versus the risk-optimal contribution rule — is the number the
 whole apparatus exists to produce.</p>
-<h2>results</h2>
-<p>The oracle exists to answer three questions, in order. Does it compute what it claims to — does it
+<h2 id="results">results</h2>
+<blockquote>
+<p><em>These results belong to the model now frozen as <code>legacy_v1</code> (contribution-level action, <span class="math tex">\((t, F, \rho)\)</span> state, reserve shock <span class="math tex">\(\sigma_R\)</span>). The current baseline chooses the Branch 21 share of a fixed premium on an exact nine-variable state.</em></p>
+</blockquote>
+<p>The reference exists to answer three questions, in order. Does it compute what it claims to — does it
 return the answers we can work out without it? Given that, what does the risk-optimal contribution
 rule look like, and what shapes it? And what is that rule worth against the plans employers actually
 run? Everything below is computed on one protocol, so every number can be compared with every other.</p>
@@ -730,7 +735,7 @@ schedule instead of optimising it: a <strong>flat</strong> 5% of salary, and an 
 rising one point every ten years. Their levels are illustrative placeholders chosen to bracket
 Belgian practice, not sourced plan data — the same caveat as in the previous post.</p>
 <h3>the checks that come first</h3>
-<p>Before reading anything off the oracle, it has to pass the cases whose answer is known without
+<p>Before reading anything off the reference, it has to pass the cases whose answer is known without
 running it. These play the role the indifference control <code>neut2</code> played in the previous post.</p>
 <table><thead><tr><th align="left">Check</th><th align="left">Prediction</th><th align="left">Result</th></tr></thead><tbody><tr><td align="left"><span class="math tex">\(\lambda = 0\)</span>: only the employer counts</td><td align="left">fund the legal minimum — the band floor, every year</td><td align="left">2.0% every year · stayer RR 0.507</td></tr><tr><td align="left"><span class="math tex">\(\lambda = 1\)</span>: only the employee counts</td><td align="left">fund to capacity — the band ceiling, every year</td><td align="left">15.0% every year · stayer RR 0.981</td></tr><tr><td align="left"><span class="math tex">\(\delta_e = 2\%\)</span> at <span class="math tex">\(\lambda = 0.5\)</span>, against <span class="math tex">\(\delta_e = 3\%\)</span> at the predicted equivalent <span class="math tex">\(\lambda = 0.6106\)</span></td><td align="left">identical policies</td><td align="left">schedules equal to <span class="math tex">\(10^{-13}\)</span></td></tr><tr><td align="left"><span class="math tex">\(\sigma_R = \sigma_L = 0\)</span></td><td align="left">same schedule; slightly lower replacement, the call <span class="math tex">\(\max(R, L)\)</span> losing its option value</td><td align="left">same shape · stayer RR 0.849 vs 0.873</td></tr></tbody></table>
 <p>All four hold. The third deserves a sentence of its own: it is a <em>negative</em> result, and it
@@ -765,7 +770,7 @@ ten onward the cohort sits right <em>on</em> the boundary — the optimum funds 
 projected replacement there, no more. And because the careers sit where the rule is generous, the
 rule averaged over the states careers occupy (<span class="math tex">\(a^\star = 0.665\)</span>) is well above its average over the
 whole grid (<span class="math tex">\(0.527\)</span>). A policy's behaviour off the ribbon is never exercised, which is exactly the
-caution a learned policy will need: agreement with the oracle only matters where careers go.</p>
+caution a learned policy will need: agreement with the reference only matters where careers go.</p>
 <figure class="post-figure">
 <div class="post-figure-scroll"><img src="../img/dp_policy_map.png" alt="Optimal funding rule a-star over the funding ratio and the salary ratio for eight career years, with iso-replacement contours and the simulated cohort's occupancy" loading="lazy"></div>
 <figcaption>The optimal rule a*(F, ρ) for eight career years on a finer 145 × 101 grid — yellow is fund at capacity, purple at the floor. White lines are iso total-replacement contours, the gold one the 0.70 target; magenta contours are where the simulated cohort actually is that year (50/90/99th percentile of occupancy). From year ten the cohort rides the boundary. Scroll sideways for all eight years. Source: <code>contribution_schedule_suite.py policy</code>.</figcaption>
@@ -873,7 +878,7 @@ curve is the menu: how much optimality to give up for how much legibility.</p>
 <img src="../img/dp_signal_schedule.png" alt="Contribution schedules read off the value function at several temperatures, and the value gap and roughness against temperature" loading="lazy">
 <figcaption>Left: the same value function read out at increasing β — the schedule flattens and its average falls. Right: the price (red, value gap to the argmax) against the smoothness bought (blue, year-on-year roughness). This figure is solved without the contribution band, so its gaps run slightly larger than the banded figures in the table (7.3% against 5.6% at β = 0.3). Source: <code>contribution_schedule_suite.py signal</code>.</figcaption>
 </figure>
-<h2>interpretation</h2>
+<h2 id="interpretation">interpretation</h2>
 <p>Read together, the results say three things about the problem, and one about the method.</p>
 <p><strong>The optimal plan is a state rule, and its timing is a financing decision.</strong> The shape of the optimum
 is not something the model had to be coaxed into. Back-loading follows from one inequality: the employer
@@ -894,15 +899,15 @@ it at a price the model states. The second is what a paid-up contract with a ser
 implies: a member who leaves early has accrued little, and nothing in this plan design can change that
 without paying for it. Where the plan should sit is exactly the choice <span class="math tex">\(\lambda\)</span> encodes — and within the
 band it spans the whole range from the legal minimum to full capacity, smoothly.</p>
-<p><strong>The oracle is a benchmark, and it behaves like one.</strong> It returns the known answers at the corners
+<p><strong>The reference is a benchmark, and it behaves like one.</strong> It returns the known answers at the corners
 (<span class="math tex">\(\lambda = 0\)</span>, <span class="math tex">\(\lambda = 1\)</span>), it identifies the one parameter that is not independent (<span class="math tex">\(\delta_e\)</span>), and
 its numbers barely move when the numerics are refined: seven quadrature nodes instead of five change
 nothing in the third decimal, 41 candidate contributions instead of 20 move no figure by more than 0.001,
 and doubling the grid moves stayer replacement by 0.001 and employer cost from 0.320 to 0.316. The one
 resolution-sensitive quantity is the early part of the schedule — 4.4% on the protocol grid, 4.0% on the
 doubled one — which is why schedule shapes are reported to one decimal and never compared across grids. A benchmark whose error bar is known is what the next rung needs.</p>
-<h2>summary</h2>
-<p>The dynamic-programming oracle solves the churn-aware, risk-averse funding problem exactly on the reduced
+<h2 id="summary">summary</h2>
+<p>The dynamic-programming first-principles reference solves the churn-aware, risk-averse funding problem exactly on the reduced
 state <span class="math tex">\((t, F, \rho)\)</span> and passes the checks with known answers. Its optimal rule funds at capacity when the
 projected replacement rate is short and at the floor when it is comfortable. At the committed calibration
 that produces a back-loaded schedule — set by the employer's discount rate against the credited return,
@@ -910,16 +915,16 @@ not by churn — that reaches the flat 5% plan's adequacy for 41% less and the a
 The negotiation weight <span class="math tex">\(\lambda\)</span> moves the plan smoothly from the legal minimum to full capacity, the
 employee's discount rate is only <span class="math tex">\(\lambda\)</span> in disguise, and a smoother contribution schedule can be bought
 at a stated fraction of the optimum's value.</p>
-<h2>final thoughts</h2>
+<h2 id="final-thoughts">final thoughts</h2>
 <p>Every number in this post is reproducible, and the quickest way to build intuition for them is to move
-the inputs yourself. The DP oracle runs live in the <a href="https://ignacedecocq.com/playGround.html">Play Ground</a>:
+the inputs yourself. The DP reference runs live in the <a href="https://ignacedecocq.com/playGround.html">Play Ground</a>:
 set the economy, the negotiation weight, the contribution band, the signal readout <span class="math tex">\(\beta\)</span> and the two
 market plans, and it re-solves the problem in a few seconds — the schedule, the policy map with the
 simulated careers on it, the frontier with the market plans placed against it, where those plans misfund,
 and the price of a smoother schedule. Setting <span class="math tex">\(\delta_f\)</span> to 2% and watching the schedule flip is the
 fastest way to see the timing result above; setting the market plans to your own is the fastest way to
 see what optimising would buy them.</p>
-<h2>next steps</h2>
+<h2 id="next-steps">next steps</h2>
 <p>Three limits of this rung point to the next ones.</p>
 <p><strong>The rates are still constants.</strong> <span class="math tex">\(\mu\)</span> and <span class="math tex">\(G\)</span> are fixed numbers here, and the results show how much
 depends on how they compare. In reality the credited rate follows the insurer's book yield and the
@@ -929,8 +934,8 @@ a plan can drift from front-loading to back-loading as rates move, and the timin
 between <span class="math tex">\(\delta_f - \mu_t\)</span> and <span class="math tex">\(\delta_f - G_t\)</span> each time a path crosses the guarantee. Carrying rates in
 the state costs dimensions the grid cannot afford.</p>
 <p><strong>Which is why the learner comes next.</strong> A grid in <span class="math tex">\((t, F, \rho)\)</span> is feasible; a grid in <span class="math tex">\((t, F, \rho, r_t)\)</span> and beyond is not. The plan from the previous post still stands: a policy-gradient learner (PPO)
-with a function approximator, trained on the same environment and checked against this oracle where the
-oracle can still be computed. The policy map above says where that check has to hold — on the thin ribbon
+with a function approximator, trained on the same environment and checked against this reference where the
+reference can still be computed. The policy map above says where that check has to hold — on the thin ribbon
 of states careers actually visit, not on the whole grid.</p>
 <p><strong>And three modelling assumptions need data.</strong> The first pillar is treated as a flat 43%, while Belgium's
 is regressive — a salary-dependent legal rate would break the degree-zero homogeneity that keeps the state
@@ -939,9 +944,53 @@ placeholders that need sourcing before the &quot;what optimising buys&quot; figu
 And the two-tier plan common in Belgium, which splits contributions at the social-security ceiling, is not
 scale-free, so it is left out until the ceiling can be carried as a further ratio.</p>
 
+      </div>
+      <nav class="post-pager" aria-label="More posts">
+  <a class="pager-prev" href="04.optimalPensionDesign_I.html" rel="prev"><span class="meta">← Previous</span>Optimal Pension Design I: A Naive Approach</a>
+  <a class="pager-next" href="06.MPT.html" rel="next"><span class="meta">Next →</span>Modern Portfolio Theory</a>
+</nav>
     </article>
+
+    <aside class="post-aside"><nav class="toc" aria-label="On this page">
+  <h2>On this page</h2>
+  <ol>
+    <li><a href="#the-issue-at-hand">The Issue at Hand</a></li>
+          <li><a href="#from-last-time-the-objective-made-recursive">from last time: the objective, made recursive</a></li>
+          <li><a href="#redefining-the-value-function-in-high-dimensional-space">redefining the value function in high dimensional space</a></li>
+          <li><a href="#putting-curvature-in-risk-aversion-over-the-replacement-rate">putting curvature in: risk aversion over the replacement rate</a></li>
+          <li><a href="#the-dynamic-programming-approach">the dynamic programming approach</a></li>
+          <li><a href="#results">results</a></li>
+          <li><a href="#interpretation">interpretation</a></li>
+          <li><a href="#summary">summary</a></li>
+          <li><a href="#final-thoughts">final thoughts</a></li>
+          <li><a href="#next-steps">next steps</a></li>
+  </ol>
+</nav>
+      <nav class="series-nav" aria-label="All posts">
+        <h2>All posts</h2>
+        <ul>
+          <li><a href="01.BelgiumBonds.html">Belgian Government Bonds</a></li>
+          <li><a href="02.StochasticCalculus.html">From Theory to the Vasicek Model</a></li>
+          <li><a href="04.optimalPensionDesign_I.html">Optimal Pension Design I: A Naive Approach</a></li>
+          <li><a href="05.optimalPensionDesign_II.html" aria-current="page">Optimal Pension Design II: A High-Dimensional Take</a></li>
+          <li><a href="06.MPT.html">Modern Portfolio Theory</a></li>
+        </ul>
+      </nav>
+    </aside>
   </main>
-<script src="../../../js/toggleTheme.js"></script>
-<script src="../../../js/toggleSideBar.js"></script>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <p>© 2026 Ignace Decocq</p>
+      <ul class="social-links">
+        <li><a href="mailto:igance.decocq@hotmail.com" aria-label="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg></a></li>
+        <li><a href="https://www.linkedin.com/in/ignace-decocq-7a47472aa/" aria-label="LinkedIn" rel="noopener noreferrer" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg></a></li>
+        <li><a href="https://github.com/korilium" aria-label="GitHub" rel="noopener noreferrer" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.3-3.1-.2-.4-.6-1.6 0-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.8.1 3.2.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.6-5.5 5.9.5.4.9 1.1.9 2.2v3.3c0 .3.1.7.8.6A12 12 0 0 0 12 .3"/></svg></a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="../../../js/toggleTheme.js"></script>
 </body>
+
 </html>

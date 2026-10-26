@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From Theory to the Vasicek Model — Ignace Decocq</title>
+<meta name="description" content="A first-principles route from the short rate and stochastic calculus to bond prices under the Vasicek model.">
+<link rel="icon" href="../../../img/favicon.svg">
+<script>
+    (function () {
+      var t;
+      try { t = localStorage.getItem("theme"); } catch (e) { }
+      if (!t) t = window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", t);
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="../../../css/styles/styleBlog.css" rel="stylesheet">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" async></script>
+</head>
+
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="../../../index.html"><span class="brand__mark" aria-hidden="true"><span>Δ</span><span>t</span></span>Ignace Decocq</a>
+      <nav class="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="../../../index.html">Home</a></li>
+          <li><a href="index.html" aria-current="page">Blog</a></li>
+          <li><a href="../../../playGround.html">Playground</a></li>
+          <li><a href="../../../project.html">Peccon</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="content" class="container post-layout">
+    <article class="post">
+      <header class="post-header">
+        <a class="post-back" href="index.html">← All posts</a>
+        <p class="post-kicker"><span class="tag">Interest rates</span></p>
+        <h1>From Theory to the Vasicek Model</h1>
+        <p class="post-summary">A first-principles route from the short rate and stochastic calculus to bond prices under the Vasicek model.</p>
+        <p class="meta">October 2026 · 23 min read</p>
+      </header>
+      <div class="post-body">
+<h2 id="modelling-the-yield-curve">Modelling the yield curve</h2>
+<p>In our previous post on Belgian government debt (OLOs), we introduced the yield curve, which determines the prices of bonds of different maturities. Equivalently, it determines what one euro paid at a future date <span class="math tex">\(T\)</span> is worth today. This value is the <em>discount factor</em>; it equals the price <span class="math tex">\(P(t,T)\)</span> at time <span class="math tex">\(t\)</span> of a zero-coupon bond paying one euro at <span class="math tex">\(T\)</span>.</p>
+<p>The yield curve moves over time, driven by the factors discussed in the previous post, so we need a model of how it may evolve. Modelling the entire curve directly is difficult, since it is a whole function of maturity. Instead, we model a single quantity, the <em>short rate</em> <span class="math tex">\(r_t\)</span>: the interest rate earned over an infinitesimally short period starting at time <span class="math tex">\(t\)</span>. Under the assumption of no arbitrage, the whole curve can then be reconstructed from the short rate.</p>
+<p>If the future path of the short rate were known, one euro paid at <span class="math tex">\(T\)</span> would be worth, at time <span class="math tex">\(t\)</span>, its value discounted at the continuously compounded short rate:</p>
+<div class="display-math tex">\[D(t,T)=\exp\!\Big(-\int_t^T r_s\,\mathrm ds\Big).\]</div>
+<p>The future path is not known, however, so <span class="math tex">\(D(t,T)\)</span> is random. The bond price is obtained by averaging the discount factor over all possible future paths, given the information available today:</p>
+<div class="display-math tex">\[P(t,T)=\mathbb E^{\mathbb Q}\Big[\exp\!\Big(-\int_t^T r_s\,\mathrm ds\Big)\,\Big|\,\mathcal F_t\Big].\]</div>
+<p>Two features of this formula require explanation: the expectation is taken under a particular probability measure <span class="math tex">\(\mathbb Q\)</span>, the <em>risk-neutral measure</em>, and it is conditional on <span class="math tex">\(\mathcal F_t\)</span>, the information available at time <span class="math tex">\(t\)</span>. Both are introduced step by step below.</p>
+<p>We model the short rate with the <em>Vasicek</em> stochastic differential equation (SDE):</p>
+<div class="display-math tex">\[\mathrm dr_t=\kappa(\theta-r_t)\,\mathrm dt+\sigma\,\mathrm dW_t .\]</div>
+<p>It consists of two building blocks.</p>
+<ul>
+<li><strong>Drift:</strong> <span class="math tex">\(\kappa(\theta-r_t)\,\mathrm dt\)</span>. Here <span class="math tex">\(\mathrm dt\)</span> is an infinitesimal increment of time, <span class="math tex">\(\kappa>0\)</span> is the speed of mean reversion, <span class="math tex">\(\theta\)</span> is the long-run level and <span class="math tex">\(r_t\)</span> is the current short rate. Given the current rate, the drift is known exactly: it pulls the rate towards <span class="math tex">\(\theta\)</span>, downwards when <span class="math tex">\(r_t>\theta\)</span> and upwards when <span class="math tex">\(r_t<\theta\)</span>. It is not deterministic over time, however, since <span class="math tex">\(r_t\)</span> is itself random.</li>
+<li><strong>Noise:</strong> <span class="math tex">\(\sigma\,\mathrm dW_t\)</span>. Here <span class="math tex">\(\sigma\)</span> is the volatility and <span class="math tex">\(\mathrm dW_t\)</span> is an infinitesimal increment of a Brownian motion (Wiener process) <span class="math tex">\(W\)</span>.[¹]</li>
+</ul>
+<p>Over a small but finite time step <span class="math tex">\(\Delta t\)</span>, the equation is approximated by</p>
+<div class="display-math tex">\[r_{t+\Delta t}-r_t\;\approx\;\underbrace{\kappa(\theta-r_t)\,\Delta t}_{\text{drift}\,\propto\,\Delta t}\;+\;\underbrace{\sigma\sqrt{\Delta t}\;\varepsilon}_{\text{noise}\,\propto\,\sqrt{\Delta t}},\qquad \varepsilon\sim\mathcal N(0,1),\]</div>
+<p>with a new, independent <span class="math tex">\(\varepsilon\)</span> drawn at every step. This approximation, the <em>Euler–Maruyama scheme</em>, is also how the model is simulated in practice: draw <span class="math tex">\(\varepsilon\)</span>, update the rate, and repeat.</p>
+<p>Before we can use this equation to simulate future yield curves, we need to make precise what a scenario is, what a probability is, what it means for a quantity to be random, and how an equation involving <span class="math tex">\(\mathrm dW_t\)</span> should be read. The following sections build up this framework.</p>
+<h2 id="the-probability-space">The probability space</h2>
+<p>In stochastic calculus we work with a <em>probability space</em> <span class="math tex">\((\Omega,\mathcal F,\mathbb P)\)</span>.</p>
+<p><span class="math tex">\(\Omega\)</span> is the <em>sample space</em>: the set of all possible scenarios. Its elements <span class="math tex">\(\omega\in\Omega\)</span> are the individual scenarios. In the interest-rate setting, a scenario is a complete future path of the short rate, so <span class="math tex">\(\Omega\)</span> is typically uncountably infinite, for instance the set of all continuous paths.</p>
+<p><span class="math tex">\(\mathcal F\)</span> is a collection of subsets of <span class="math tex">\(\Omega\)</span>, that is, <span class="math tex">\(\mathcal F\subseteq 2^{\Omega}\)</span>. Its elements <span class="math tex">\(A\in\mathcal F\)</span> are called <em>events</em>. An event formalises a statement about scenarios, such as &quot;the short rate exceeds 4% within the next five years&quot;, by identifying it with the set of scenarios in which the statement is true. When <span class="math tex">\(\Omega\)</span> is uncountable, probabilities cannot in general be assigned consistently to <em>every</em> subset (we return to this point below). We therefore restrict attention to a collection of subsets with suitable closure properties, studied in the branch of mathematics called <a href="https://en.wikipedia.org/wiki/Measure_(mathematics)">measure theory</a>: a σ-algebra.[²]</p>
+<p><strong>Definition 1.1.1 (σ-algebra).</strong> <span class="math tex">\(\mathcal F\)</span> is a σ-algebra if</p>
+<ol>
+<li><span class="math tex">\(\emptyset\in\mathcal F\)</span>;</li>
+<li><span class="math tex">\(A\in\mathcal F\Rightarrow A^{c}\in\mathcal F\)</span>;</li>
+<li><span class="math tex">\(A_1,A_2,\ldots\in\mathcal F\Rightarrow\bigcup_{n=1}^{\infty}A_n\in\mathcal F\)</span>.</li>
+</ol>
+<p>These conditions ensure that statements can be combined. If a statement is an event, so is its negation (condition 2). If each of a sequence of statements is an event, so is the statement that at least one of them holds (condition 3). By De Morgan's laws, the statement that all of them hold is then an event as well.</p>
+<p>Once the events are fixed, we assign probabilities to them through a probability measure.</p>
+<p><strong>Definition 1.1.2 (probability measure).</strong> <span class="math tex">\(\mathbb P:\mathcal F\to[0,1]\)</span> is a probability measure if</p>
+<ol>
+<li><span class="math tex">\(\mathbb P(\Omega)=1\)</span>;</li>
+<li>for pairwise disjoint <span class="math tex">\(A_1,A_2,\ldots\in\mathcal F\)</span>: <span class="math tex">\(\mathbb P\big(\bigcup_n A_n\big)=\sum_n\mathbb P(A_n)\)</span> (countable additivity).</li>
+</ol>
+<p>Consequences: <span class="math tex">\(\mathbb P(\emptyset)=0\)</span>; <span class="math tex">\(\mathbb P(A^{c})=1-\mathbb P(A)\)</span>; <span class="math tex">\(A\subseteq B\Rightarrow\mathbb P(A)\le\mathbb P(B)\)</span> (monotonicity); and <span class="math tex">\(\mathbb P\big(\bigcup_n A_n\big)=\lim_n\mathbb P(A_n)\)</span> for <span class="math tex">\(A_1\subseteq A_2\subseteq\cdots\)</span> (continuity from below).</p>
+<p>The triple <span class="math tex">\((\Omega,\mathcal F,\mathbb P)\)</span> is a <strong>probability space</strong>:</p>
+<div class="display-math tex">\[\underbrace{\Omega}_{\text{possible scenarios}} \qquad \underbrace{\mathcal{F}}_{\text{statements one can make about them}} \qquad \underbrace{\mathbb{P}}_{\text{how likely each statement is}}\]</div>
+<blockquote>
+<p><strong>Application.</strong> The same pair <span class="math tex">\((\Omega,\mathcal F)\)</span> can carry several probability measures. Two of them matter here.</p>
+<ul>
+<li><span class="math tex">\(\mathbb P\)</span>, the <strong>real-world measure</strong>, describes how likely the various interest-rate scenarios are believed to be. It is a model, calibrated to historical data and expert judgement, and it is used for projections. The scenarios in the reinforcement-learning environment are generated under <span class="math tex">\(\mathbb P\)</span>.</li>
+<li><span class="math tex">\(\mathbb Q\)</span>, the <strong>risk-neutral measure</strong>, is used for pricing. Bond prices, and hence the OLO yields, are <span class="math tex">\(\mathbb Q\)</span>-expectations, as in the bond-price formula above.</li>
+<li>Random variables, such as the short rate <span class="math tex">\(r_t\)</span>, are the same functions under both measures; only their distributions differ. The precise relation between <span class="math tex">\(\mathbb P\)</span> and <span class="math tex">\(\mathbb Q\)</span> is the subject of the section on change of measure.</li>
+</ul>
+</blockquote>
+<h2 id="random-variables">Random variables</h2>
+<p><strong>Definition (random variable).</strong> Let <span class="math tex">\((\Omega,\mathcal F,\mathbb P)\)</span> be a probability space. A <em>random variable</em> is a function <span class="math tex">\(X:\Omega\to\mathbb R\)</span> such that</p>
+<div class="display-math tex">\[\{X\in B\}:=\{\omega\in\Omega : X(\omega)\in B\}\in\mathcal F\qquad\text{for every } B\in\mathcal B(\mathbb R).\]</div>
+<p>This property is called <span class="math tex">\(\mathcal F/\mathcal B(\mathbb R)\)</span>-<em>measurability</em>. Note that it involves only <span class="math tex">\(\mathcal F\)</span>, not <span class="math tex">\(\mathbb P\)</span>.</p>
+<p><strong>Interpretation.</strong> A random variable assigns a real number to each scenario. <span class="math tex">\(X(\omega)\)</span> is the value that the quantity of interest, for instance the annual return on a pension reserve, takes in scenario <span class="math tex">\(\omega\)</span>. Distinct scenarios may produce the same value, so <span class="math tex">\(X\)</span> need not be invertible.</p>
+<p>Not every function qualifies. Each set <span class="math tex">\(B\)</span> of values represents a question about <span class="math tex">\(X\)</span>, for instance &quot;does the return fall below the guaranteed rate?&quot;. The set <span class="math tex">\(\{X\in B\}\)</span> collects precisely the scenarios in which the answer is affirmative. Since <span class="math tex">\(\mathbb P\)</span> assigns probabilities only to sets in <span class="math tex">\(\mathcal F\)</span>, the requirement <span class="math tex">\(\{X\in B\}\in\mathcal F\)</span> ensures that every such question has a well-defined probability.</p>
+<p><strong>The Borel σ-algebra.</strong> The questions <span class="math tex">\(B\)</span> are drawn from <span class="math tex">\(\mathcal B(\mathbb R)\)</span>, the Borel σ-algebra: the smallest σ-algebra on <span class="math tex">\(\mathbb R\)</span> containing all intervals. It contains every interval and is <em>closed under</em> complements, countable unions and countable intersections. That is, applying any of these operations to Borel sets, including sets that were themselves obtained through earlier such operations, always yields another Borel set. Here <em>countable</em> means that the sets involved can be listed as a sequence <span class="math tex">\(B_1,B_2,B_3,\dots\)</span>. The Borel σ-algebra does not contain every subset of <span class="math tex">\(\mathbb R\)</span>.</p>
+<p><strong>Why the Borel σ-algebra.</strong> The collection of admissible sets <span class="math tex">\(B\)</span> determines which questions about <span class="math tex">\(X\)</span> are required to have a probability. Its choice involves a trade-off. If the collection is too small, natural questions cannot be asked. If it is too large, probabilities can no longer be assigned to all of them consistently. The Borel σ-algebra resolves this trade-off.</p>
+<p><em>Why not fewer sets.</em> The most basic question about a quantity is whether it lies at or below a given threshold <span class="math tex">\(x\)</span>, that is, whether <span class="math tex">\(X\le x\)</span>. Answering this for every threshold yields the distribution function <span class="math tex">\(F_X(x)=\mathbb P(X\le x)\)</span>. Combining threshold questions produces further questions. For example, &quot;is the return above 0% but at most 2.5%?&quot; corresponds to the set <span class="math tex">\((-\infty,2.5\%]\)</span> with <span class="math tex">\((-\infty,0\%]\)</span> removed. Some natural questions require infinitely many threshold questions. &quot;Is the return <em>strictly</em> below 2.5%?&quot; cannot be expressed through finitely many questions of the form <span class="math tex">\(X\le x\)</span>. It is answered affirmatively exactly when the return lies at or below <span class="math tex">\(2.5\%-\tfrac1n\%\)</span> for at least one <span class="math tex">\(n=1,2,3,\dots\)</span>, that is, at or below 1.5%, or 2%, or 2.17%, and so on, approaching 2.5% from below without reaching it. This is a countable union:</p>
+<div class="display-math tex">\[(-\infty,\,2.5\%)=\bigcup_{n=1}^{\infty}\big(-\infty,\,2.5\%-\tfrac1n\%\big].\]</div>
+<p>Similarly, &quot;is the return exactly 2.5%?&quot; requires a countable intersection. Closure under countable operations ensures that all such questions are available, and the Borel σ-algebra is the smallest collection that contains the threshold sets and has this property.</p>
+<p><em>Why not more sets.</em> Closure is restricted to <em>countable</em> combinations deliberately. Every subset of <span class="math tex">\(\mathbb R\)</span> is a union of single points, so permitting arbitrary unions would admit every subset. That is too demanding. It is known that <span class="math tex">\(\mathbb R\)</span> contains highly irregular subsets to which no sensible notion of length can be assigned; their existence can be proven, but they cannot be described explicitly and have no practical interpretation. Requiring a probability for every such set would rule out even the simplest continuous distributions, such as a return drawn uniformly between 0% and 10%. Restricting to Borel sets excludes these pathological cases while retaining every set that arises in practice.[³]</p>
+<p><em>Practical consequence.</em> Because every Borel set is obtained from threshold sets through countable combinations, it suffices to verify that <span class="math tex">\(\{X\le x\}\in\mathcal F\)</span> for every <span class="math tex">\(x\in\mathbb R\)</span>. Measurability for all Borel sets then follows automatically.</p>
+<h3>How <span class="math tex">\(X\)</span> links the probability space to the value space</h3>
+<div class="display-math tex">\[(\Omega,\mathcal F,\mathbb P)\ \xrightarrow{\ X\ }\ (\mathbb R,\mathcal B(\mathbb R),\mu_X).\]</div>
+<p>The random variable plays three roles:</p>
+<ol>
+<li><strong>Outcomes are mapped forward</strong>, element by element:
+$$\omega\ \longmapsto\ X(\omega).$$</li>
+<li><strong>Questions are pulled back</strong>, set by set:
+$<span class="math tex">\(B\ \longmapsto\ \{X\in B\}=X^{-1}(B)\in\mathcal F.$$ Here\)</span>X^{-1}(B)<span class="math tex">\(denotes the *preimage* of\)</span>B<span class="math tex">\(, the set of all scenarios whose value lies in\)</span>B$. It is defined for every function, invertible or not, and should not be confused with an inverse function.</li>
+<li><strong>Probability is transported forward</strong>:
+$$\mu_X(B):=\mathbb P{X\in B},\qquad B\in\mathcal B(\mathbb R).$$</li>
+</ol>
+<p>The first two roles are linked by</p>
+<div class="display-math tex">\[\omega\in\{X\in B\}\iff X(\omega)\in B.\]</div>
+<h3>The distribution of <span class="math tex">\(X\)</span></h3>
+<p><span class="math tex">\(\mu_X\)</span> is a probability measure on <span class="math tex">\((\mathbb R,\mathcal B(\mathbb R))\)</span>, called the <strong>distribution</strong> or <strong>law</strong> of <span class="math tex">\(X\)</span>. This holds because <span class="math tex">\(\mu_X(\mathbb R)=\mathbb P(\Omega)=1\)</span>, and because preimages preserve complements, countable unions and disjointness, so the axioms satisfied by <span class="math tex">\(\mathbb P\)</span> carry over to <span class="math tex">\(\mu_X\)</span>.</p>
+<p>Moreover, <span class="math tex">\(\mu_X\)</span> is uniquely determined by the cumulative distribution function</p>
+<div class="display-math tex">\[F_X(x)=\mu_X\big((-\infty,x]\big)=\mathbb P\{X\le x\}.\]</div>
+<p>Knowing <span class="math tex">\(F_X\)</span> therefore suffices to compute the probability of every Borel set.</p>
+<p>The distribution is specific to the variable. Two random variables on the same probability space generally induce different distributions on the same value space. A Borel set therefore carries no probability of its own; it acquires one only through a random variable.</p>
+<h2 id="expectation">Expectation</h2>
+<p>Let <span class="math tex">\(X\)</span> be a random variable on <span class="math tex">\((\Omega,\mathcal F,\mathbb P)\)</span>. If <span class="math tex">\(X\ge 0\)</span>, or if <span class="math tex">\(\mathbb E\lvert X\rvert<\infty\)</span>, the <em>expectation</em> of <span class="math tex">\(X\)</span> is defined as</p>
+<div class="display-math tex">\[\mathbb E X:=\int_\Omega X(\omega)\,\mathrm d\mathbb P(\omega).\]</div>
+<p>Intuitively, <span class="math tex">\(\mathbb E X\)</span> is a probability-weighted average of the values <span class="math tex">\(X(\omega)\)</span> over all scenarios <span class="math tex">\(\omega\)</span>. For <span class="math tex">\(X\ge 0\)</span> the integral is always defined, although it may equal <span class="math tex">\(+\infty\)</span>. For general <span class="math tex">\(X\)</span> the condition <span class="math tex">\(\mathbb E\lvert X\rvert<\infty\)</span> is required; otherwise large positive and large negative values may fail to balance, and the average is undefined.</p>
+<p><strong>Theorem (change of variables).</strong> Let <span class="math tex">\(X\)</span> be a random variable on <span class="math tex">\((\Omega,\mathcal F,\mathbb P)\)</span> with distribution <span class="math tex">\(\mu_X\)</span>, and let <span class="math tex">\(g:\mathbb R\to\mathbb R\)</span> be Borel measurable. Then</p>
+<div class="display-math tex">\[\mathbb E\,\lvert g(X)\rvert=\int_{\mathbb R}\lvert g(x)\rvert\,\mathrm d\mu_X(x),\]</div>
+<p>where both sides may equal <span class="math tex">\(+\infty\)</span>. If this quantity is finite, then</p>
+<div class="display-math tex">\[\mathbb E\,g(X)=\int_\Omega g\big(X(\omega)\big)\,\mathrm d\mathbb P(\omega)=\int_{\mathbb R}g(x)\,\mathrm d\mu_X(x).\]</div>
+<p>The first statement is used to verify that <span class="math tex">\(\mathbb E\,g(X)\)</span> exists; the second computes it. This result is also known as the <a href="https://www.youtube.com/watch?v=o1zSCrFaet8"><em>law of the unconscious statistician</em></a>.</p>
+<p><strong>Remark.</strong> The theorem replaces an integral over the abstract scenario space <span class="math tex">\(\Omega\)</span> by an integral over the real line. Its significance is that the expectation of any function of <span class="math tex">\(X\)</span> depends only on the distribution <span class="math tex">\(\mu_X\)</span>, not on the underlying probability space. Two models that assign the same distribution to, for instance, the return on a pension reserve yield the same expected value for every function of that return, however differently they describe the scenarios. In particular, once <span class="math tex">\(\mu_X\)</span> is known or can be sampled from, <span class="math tex">\(\Omega\)</span> need not be specified explicitly.</p>
+<p>The right-hand side is still a Lebesgue integral, but with respect to <span class="math tex">\(\mu_X\)</span> rather than Lebesgue measure (ordinary length). An explicit computation requires a further reduction, which depends on the form of <span class="math tex">\(\mu_X\)</span>:</p>
+<ul>
+<li>
+<p><strong>Distributions with a density.</strong> If there exists a function <span class="math tex">\(f_X\ge 0\)</span> such that <span class="math tex">\(\mu_X(B)=\int_B f_X(x)\,\mathrm dx\)</span> for all <span class="math tex">\(B\in\mathcal B(\mathbb R)\)</span>, then <span class="math tex">\(X\)</span> is called <em>absolutely continuous</em> with density <span class="math tex">\(f_X\)</span>, and</p>
+<div class="display-math tex">\[\mathbb E\,g(X)=\int_{-\infty}^{\infty}g(x)\,f_X(x)\,\mathrm dx.\]</div>
+<p>The density plays the role of a weight attached to each value <span class="math tex">\(x\)</span>. Having a continuous distribution function <span class="math tex">\(F_X\)</span> does not by itself guarantee that a density exists.[⁴]</p>
+</li>
+<li>
+<p><strong>Discrete distributions.</strong> If <span class="math tex">\(X\)</span> takes only the distinct values <span class="math tex">\(x_1,x_2,\dots\)</span>, with probabilities <span class="math tex">\(p_i=\mathbb P\{X=x_i\}\)</span> satisfying <span class="math tex">\(\sum_i p_i=1\)</span>, then</p>
+<div class="display-math tex">\[\mathbb E\,g(X)=\sum_i g(x_i)\,p_i,\]</div>
+<p>provided <span class="math tex">\(\sum_i \lvert g(x_i)\rvert\,p_i<\infty\)</span>.</p>
+</li>
+<li>
+<p><strong>Mixed distributions.</strong> Many quantities of interest are neither purely discrete nor absolutely continuous. A benefit of the form <span class="math tex">\(\max(A_T,G_T)\)</span>, where <span class="math tex">\(A_T\)</span> is the accumulated account value and <span class="math tex">\(G_T\)</span> the guaranteed amount, equals <span class="math tex">\(G_T\)</span> with positive probability and varies continuously above it. In such cases the expectation combines both forms: a sum over the values carrying positive probability, plus an integral against a density over the remaining values.</p>
+</li>
+</ul>
+<h2 id="change-of-measure">Change of measure</h2>
+<p><strong>Motivation.</strong> The real-world measure <span class="math tex">\(\mathbb P\)</span> and the risk-neutral measure <span class="math tex">\(\mathbb Q\)</span> are defined on the same measurable space <span class="math tex">\((\Omega,\mathcal F)\)</span>. They describe the same scenarios and the same events; they differ only in the probability assigned to each event. A change of measure keeps the scenarios fixed and changes their weights.</p>
+<p><em>Example.</em> Consider two interest-rate scenarios: <span class="math tex">\(\omega_1\)</span> (rates rise) and <span class="math tex">\(\omega_2\)</span> (rates fall). Suppose <span class="math tex">\(\mathbb P(\omega_1)=\mathbb P(\omega_2)=0.5\)</span>, while <span class="math tex">\(\mathbb Q(\omega_1)=0.6\)</span> and <span class="math tex">\(\mathbb Q(\omega_2)=0.4\)</span>. Define the weight <span class="math tex">\(Z(\omega):=\mathbb Q(\omega)/\mathbb P(\omega)\)</span>, so that <span class="math tex">\(Z(\omega_1)=1.2\)</span> and <span class="math tex">\(Z(\omega_2)=0.8\)</span>. For any random variable <span class="math tex">\(Y\)</span>,</p>
+<div class="display-math tex">\[\mathbb E^{\mathbb Q}[Y]=0.6\,Y(\omega_1)+0.4\,Y(\omega_2)=\mathbb E^{\mathbb P}[Z\,Y].\]</div>
+<p>A <span class="math tex">\(\mathbb Q\)</span>-expectation is thus a <span class="math tex">\(\mathbb P\)</span>-expectation in which each scenario is reweighted by <span class="math tex">\(Z\)</span>. The weights are positive and average to one under <span class="math tex">\(\mathbb P\)</span>: <span class="math tex">\(\mathbb E^{\mathbb P}[Z]=0.5\cdot1.2+0.5\cdot0.8=1\)</span>.</p>
+<p><strong>Definition (equivalent measures).</strong> Two probability measures <span class="math tex">\(\mathbb P\)</span> and <span class="math tex">\(\mathbb Q\)</span> on <span class="math tex">\((\Omega,\mathcal F)\)</span> are <em>equivalent</em>, written <span class="math tex">\(\mathbb Q\sim\mathbb P\)</span>, if they assign probability zero to the same events:</p>
+<div class="display-math tex">\[\mathbb P(A)=0\iff\mathbb Q(A)=0\qquad\text{for all }A\in\mathcal F.\]</div>
+<p>Equivalent measures agree on which events are possible; they may disagree only on how likely the possible events are. This is the natural requirement for valuation: a scenario that cannot occur in reality should not affect prices, and conversely.</p>
+<p><strong>Theorem (Radon–Nikodym).</strong> If <span class="math tex">\(\mathbb Q\sim\mathbb P\)</span>, there exists a random variable <span class="math tex">\(Z>0\)</span> with <span class="math tex">\(\mathbb E^{\mathbb P}[Z]=1\)</span> such that</p>
+<div class="display-math tex">\[\mathbb Q(A)=\mathbb E^{\mathbb P}\big[Z\,\mathbf 1_A\big]\quad\text{for all }A\in\mathcal F,\qquad
+\mathbb E^{\mathbb Q}[Y]=\mathbb E^{\mathbb P}[Z\,Y]\]</div>
+<p>for every random variable <span class="math tex">\(Y\)</span> for which either side is defined. <span class="math tex">\(Z\)</span> is called the <em>Radon–Nikodym derivative</em> and is written <span class="math tex">\(Z=\mathrm d\mathbb Q/\mathrm d\mathbb P\)</span>. It generalises the scenario weights of the example to settings in which individual scenarios have probability zero, so the ratio <span class="math tex">\(\mathbb Q(\omega)/\mathbb P(\omega)\)</span> is no longer defined.</p>
+<p>So far the change of measure is static: it reweights scenarios as a whole. How it acts on processes evolving over time, and in particular what it does to the dynamics of interest rates, is treated after stochastic processes and stochastic integrals have been introduced.</p>
+<h2 id="information-over-time">Information over time</h2>
+<p><strong>Stochastic processes.</strong> A <em>stochastic process</em> is a collection of random variables <span class="math tex">\(X=(X_t)_{t\in[0,T]}\)</span> on a common probability space, one for each time <span class="math tex">\(t\)</span>. For a fixed scenario <span class="math tex">\(\omega\)</span>, the map <span class="math tex">\(t\mapsto X_t(\omega)\)</span> is the <em>path</em> of the process in that scenario: for instance, the evolution of the short rate over the projection horizon.</p>
+<p><strong>Definition (filtration).</strong> A <em>filtration</em> is a family <span class="math tex">\((\mathcal F_t)_{t\in[0,T]}\)</span> of σ-algebras with <span class="math tex">\(\mathcal F_s\subseteq\mathcal F_t\subseteq\mathcal F\)</span> for <span class="math tex">\(s\le t\)</span>. The tuple <span class="math tex">\((\Omega,\mathcal F,(\mathcal F_t),\mathbb P)\)</span> is called a <em>filtered probability space</em>.</p>
+<p><span class="math tex">\(\mathcal F_t\)</span> represents the information available at time <span class="math tex">\(t\)</span>: the collection of events whose occurrence can be decided by then. The inclusion <span class="math tex">\(\mathcal F_s\subseteq\mathcal F_t\)</span> expresses that information is never lost.</p>
+<p>A process <span class="math tex">\(X\)</span> is <em>adapted</em> to <span class="math tex">\((\mathcal F_t)\)</span> if <span class="math tex">\(X_t\)</span> is <span class="math tex">\(\mathcal F_t\)</span>-measurable for every <span class="math tex">\(t\)</span>. In words, the value of <span class="math tex">\(X_t\)</span> is known at time <span class="math tex">\(t\)</span>. Decisions in a pension plan, such as a contribution rate set at time <span class="math tex">\(t\)</span>, must be adapted: they may depend on the past and present, but not on the future.</p>
+<p><strong>Definition (conditional expectation).</strong> Let <span class="math tex">\(Y\)</span> be a random variable with <span class="math tex">\(\mathbb E\lvert Y\rvert<\infty\)</span>, and let <span class="math tex">\(\mathcal G\subseteq\mathcal F\)</span> be a σ-algebra. The <em>conditional expectation</em> <span class="math tex">\(\mathbb E[Y\mid\mathcal G]\)</span> is the random variable that</p>
+<ol>
+<li>is <span class="math tex">\(\mathcal G\)</span>-measurable, and</li>
+<li>satisfies <span class="math tex">\(\mathbb E\big[\mathbb E[Y\mid\mathcal G]\,\mathbf 1_A\big]=\mathbb E[Y\,\mathbf 1_A]\)</span> for every <span class="math tex">\(A\in\mathcal G\)</span>.</li>
+</ol>
+<p>Such a random variable exists and is unique up to events of probability zero.</p>
+<p><strong>Interpretation.</strong> <span class="math tex">\(\mathbb E[Y\mid\mathcal F_t]\)</span> is the best forecast of <span class="math tex">\(Y\)</span> given the information available at time <span class="math tex">\(t\)</span>. Condition 1 states that the forecast uses only that information. Condition 2 states that it is correct on average over every event observable at time <span class="math tex">\(t\)</span>. Unlike an ordinary expectation, it is itself a random variable, since the forecast depends on which scenario has unfolded up to time <span class="math tex">\(t\)</span>. This is why the bond-price formula at the start is a conditional expectation: the price at time <span class="math tex">\(t\)</span> depends on the short rate observed at <span class="math tex">\(t\)</span>.</p>
+<p><strong>Properties.</strong> For integrable <span class="math tex">\(Y\)</span>, <span class="math tex">\(X\)</span> and σ-algebras <span class="math tex">\(\mathcal H\subseteq\mathcal G\)</span>:</p>
+<ul>
+<li><em>Tower property:</em> <span class="math tex">\(\mathbb E\big[\mathbb E[Y\mid\mathcal G]\mid\mathcal H\big]=\mathbb E[Y\mid\mathcal H]\)</span>. Forecasting today a forecast that will be made tomorrow gives today's forecast. In particular <span class="math tex">\(\mathbb E\big[\mathbb E[Y\mid\mathcal G]\big]=\mathbb E[Y]\)</span>.</li>
+<li><em>Taking out what is known:</em> if <span class="math tex">\(X\)</span> is <span class="math tex">\(\mathcal G\)</span>-measurable and <span class="math tex">\(XY\)</span> is integrable, then <span class="math tex">\(\mathbb E[XY\mid\mathcal G]=X\,\mathbb E[Y\mid\mathcal G]\)</span>.</li>
+<li><em>Independence:</em> if <span class="math tex">\(Y\)</span> is independent of <span class="math tex">\(\mathcal G\)</span>, then <span class="math tex">\(\mathbb E[Y\mid\mathcal G]=\mathbb E[Y]\)</span>. Information unrelated to <span class="math tex">\(Y\)</span> does not improve the forecast.</li>
+</ul>
+<p><strong>Definition (martingale).</strong> An adapted process <span class="math tex">\(M\)</span> with <span class="math tex">\(\mathbb E\lvert M_t\rvert<\infty\)</span> for all <span class="math tex">\(t\)</span> is a <em>martingale</em> if</p>
+<div class="display-math tex">\[\mathbb E[M_t\mid\mathcal F_s]=M_s\qquad\text{for all }0\le s\le t\le T.\]</div>
+<p>The best forecast of any future value is the current value: the process has no predictable tendency to rise or fall.</p>
+<p>Under the risk-neutral measure, the price of every traded asset divided by the bank account <span class="math tex">\(B(t)=\exp\big(\int_0^t r_s\,\mathrm ds\big)\)</span> is a martingale. For a zero-coupon bond this means that <span class="math tex">\(P(t,T)/B(t)\)</span> is a <span class="math tex">\(\mathbb Q\)</span>-martingale. Since <span class="math tex">\(P(T,T)=1\)</span>, this property is equivalent to the bond-price formula at the start of this post. The bond price itself is not a martingale: it rises towards its face value as maturity approaches.</p>
+<h2 id="brownian-motion">Brownian motion</h2>
+<p>Interest rates and asset returns are subject to a continuous stream of small, unpredictable shocks. Brownian motion is the basic mathematical model for the cumulative effect of such shocks, and it is the source of randomness in the Vasicek model.</p>
+<p><strong>Definition (Brownian motion).</strong> A process <span class="math tex">\(W=(W_t)_{t\in[0,T]}\)</span> on a filtered probability space <span class="math tex">\((\Omega,\mathcal F,(\mathcal F_t),\mathbb P)\)</span> is a <em>Brownian motion</em> if</p>
+<ol>
+<li><span class="math tex">\(W_0=0\)</span>;</li>
+<li><span class="math tex">\(W\)</span> is adapted to <span class="math tex">\((\mathcal F_t)\)</span>;</li>
+<li>for <span class="math tex">\(0\le s<t\)</span>, the increment <span class="math tex">\(W_t-W_s\)</span> is independent of <span class="math tex">\(\mathcal F_s\)</span>: future shocks cannot be predicted from the past;</li>
+<li>for <span class="math tex">\(0\le s<t\)</span>, the increment <span class="math tex">\(W_t-W_s\)</span> is normally distributed with mean <span class="math tex">\(0\)</span> and variance <span class="math tex">\(t-s\)</span>;</li>
+<li>the paths <span class="math tex">\(t\mapsto W_t(\omega)\)</span> are continuous for every <span class="math tex">\(\omega\)</span>.</li>
+</ol>
+<p><strong>Interpretation.</strong> Each scenario <span class="math tex">\(\omega\)</span> now corresponds to an entire path. Conditions 3 and 4 state that the change over any interval is unpredictable, has no systematic direction, and has a variance proportional to the length of the interval. A useful mental picture is a random walk taking very many very small steps. By the central limit theorem, the sum of many small independent shocks is approximately normal, which motivates condition 4. Condition 4 is also why the noise term in the discretised Vasicek equation is <span class="math tex">\(\sigma\sqrt{\Delta t}\,\varepsilon\)</span>: the increment <span class="math tex">\(W_{t+\Delta t}-W_t\)</span> has the same distribution as <span class="math tex">\(\sqrt{\Delta t}\,\varepsilon\)</span> with <span class="math tex">\(\varepsilon\sim\mathcal N(0,1)\)</span>.</p>
+<p><strong>Properties.</strong></p>
+<ul>
+<li><em>Mean and variance:</em> <span class="math tex">\(\mathbb E[W_t]=0\)</span> and <span class="math tex">\(\operatorname{Var}(W_t)=t\)</span>. Uncertainty grows with the horizon, with the standard deviation growing as <span class="math tex">\(\sqrt t\)</span>.</li>
+<li><em>Martingale property:</em> <span class="math tex">\(W\)</span> is a martingale. Indeed, for <span class="math tex">\(s<t\)</span>, <span class="math tex">\(\mathbb E[W_t\mid\mathcal F_s]=W_s+\mathbb E[W_t-W_s\mid\mathcal F_s]=W_s+\mathbb E[W_t-W_s]=W_s\)</span>, using that <span class="math tex">\(W_s\)</span> is known at time <span class="math tex">\(s\)</span> and that the increment is independent of <span class="math tex">\(\mathcal F_s\)</span> with mean zero.</li>
+<li><em>Irregular paths:</em> although continuous, the paths are nowhere differentiable. Consequently an integral <span class="math tex">\(\int H_t\,\mathrm dW_t\)</span> cannot be defined path by path as an ordinary integral, and a separate construction is required.</li>
+<li><em>Quadratic variation:</em> if <span class="math tex">\([0,t]\)</span> is divided into <span class="math tex">\(n\)</span> subintervals of equal length, then
+$$\sum_{k=1}^{n}\big(W_{kt/n}-W_{(k-1)t/n}\big)^2\ \longrightarrow\ t\qquad\text{as }n\to\infty.$$
+The squared fluctuations of a single path therefore reveal the elapsed time and, once the process is scaled by a volatility, that volatility as well. This property is used later to explain why a change of measure can alter the drift of a process but never its volatility.[⁵]</li>
+</ul>
+<h2 id="the-stochastic-integral">The stochastic integral</h2>
+<p><strong>Construction.</strong> Let <span class="math tex">\(H\)</span> be an adapted process, for instance the amount invested in a risky asset at each time. The gain from holding <span class="math tex">\(H_t\)</span> units of exposure while <span class="math tex">\(W\)</span> moves should be <span class="math tex">\(\int_0^T H_t\,\mathrm dW_t\)</span>. For a process that is constant on the intervals of a partition <span class="math tex">\(0=t_0<t_1<\dots<t_n=T\)</span>, the natural definition is</p>
+<div class="display-math tex">\[\int_0^T H_t\,\mathrm dW_t:=\sum_{k=0}^{n-1}H_{t_k}\big(W_{t_{k+1}}-W_{t_k}\big).\]</div>
+<p>The integrand is evaluated at the <em>left</em> endpoint of each interval: the position is chosen with the information available at <span class="math tex">\(t_k\)</span>, before the subsequent shock is observed. This reflects the requirement that decisions cannot anticipate the future. For general adapted <span class="math tex">\(H\)</span>, the integral is defined as the limit of such sums as the partition becomes finer. The result is the <em>Itô integral</em>.</p>
+<p><strong>Theorem (properties of the Itô integral).</strong> Let <span class="math tex">\(H\)</span> be adapted with <span class="math tex">\(\mathbb E\big[\int_0^T H_t^2\,\mathrm dt\big]<\infty\)</span>, and let <span class="math tex">\(I_t:=\int_0^t H_s\,\mathrm dW_s\)</span>. Then</p>
+<ol>
+<li><span class="math tex">\(\mathbb E[I_t]=0\)</span>;</li>
+<li><em>Itô isometry:</em> <span class="math tex">\(\mathbb E\big[I_t^2\big]=\mathbb E\big[\int_0^t H_s^2\,\mathrm ds\big]\)</span>;</li>
+<li><span class="math tex">\((I_t)\)</span> is a martingale.</li>
+</ol>
+<p><strong>Remark.</strong> The integrability condition is essential. If only <span class="math tex">\(\int_0^T H_t^2\,\mathrm dt<\infty\)</span> holds scenario by scenario, the integral can still be defined, but it is in general only a <em>local martingale</em>: a process that behaves as a martingale up to suitable random times, but whose expectation may change over time. Not every stochastic integral is therefore a martingale. This distinction becomes important for the change of measure below.</p>
+<p><strong>Itô processes and SDEs.</strong> An <em>Itô process</em> is a process of the form</p>
+<div class="display-math tex">\[X_t=X_0+\int_0^t\mu_s\,\mathrm ds+\int_0^t\sigma_s\,\mathrm dW_s,\]</div>
+<p>with adapted <span class="math tex">\(\mu\)</span> and <span class="math tex">\(\sigma\)</span>. The first integral is an ordinary integral describing the predictable tendency, or <em>drift</em>. The second is an Itô integral describing the random fluctuations, scaled by the <em>volatility</em> <span class="math tex">\(\sigma\)</span>. This is abbreviated as</p>
+<div class="display-math tex">\[\mathrm dX_t=\mu_t\,\mathrm dt+\sigma_t\,\mathrm dW_t.\]</div>
+<p>The differential notation is shorthand for the integral equation; it does not assert that <span class="math tex">\(X\)</span> is differentiable. When <span class="math tex">\(\mu_t=\mu(t,X_t)\)</span> and <span class="math tex">\(\sigma_t=\sigma(t,X_t)\)</span> depend on the current state, the equation is a <em>stochastic differential equation</em> (SDE). The Vasicek equation from the start of this post is of this form, with <span class="math tex">\(\mu(t,r)=\kappa(\theta-r)\)</span> and constant <span class="math tex">\(\sigma\)</span>. It is now clear how it should be read:</p>
+<div class="display-math tex">\[r_t=r_0+\int_0^t\kappa(\theta-r_s)\,\mathrm ds+\sigma W_t.\]</div>
+<p><strong>Theorem (Itô's formula).</strong> Let <span class="math tex">\(X\)</span> be an Itô process as above and let <span class="math tex">\(f(t,x)\)</span> be once continuously differentiable in <span class="math tex">\(t\)</span> and twice in <span class="math tex">\(x\)</span>. Then</p>
+<div class="display-math tex">\[\mathrm df(t,X_t)=\partial_t f\,\mathrm dt+\partial_x f\,\mathrm dX_t+\tfrac12\,\partial_{xx}f\,\sigma_t^2\,\mathrm dt,\]</div>
+<p>with the derivatives evaluated at <span class="math tex">\((t,X_t)\)</span>.</p>
+<p>Compared with the ordinary chain rule, the additional term <span class="math tex">\(\tfrac12\partial_{xx}f\,\sigma_t^2\,\mathrm dt\)</span> arises from the quadratic variation of Brownian motion. Over a short interval of length <span class="math tex">\(\Delta t\)</span>, the squared increment <span class="math tex">\((\Delta W)^2\)</span> is of order <span class="math tex">\(\Delta t\)</span> rather than negligible, so second-order terms in a Taylor expansion contribute. This is often summarised by the heuristic rule <span class="math tex">\((\mathrm dW_t)^2=\mathrm dt\)</span>.</p>
+<h2 id="change-of-measure-for-processes">Change of measure for processes</h2>
+<p><strong>Density process.</strong> Let <span class="math tex">\(\mathbb Q\sim\mathbb P\)</span> with Radon–Nikodym derivative <span class="math tex">\(Z=\mathrm d\mathbb Q/\mathrm d\mathbb P\)</span>, as introduced earlier. The weight associated with the information available at time <span class="math tex">\(t\)</span> is</p>
+<div class="display-math tex">\[Z_t:=\mathbb E^{\mathbb P}\big[Z\,\big|\,\mathcal F_t\big],\qquad t\in[0,T].\]</div>
+<p>By the tower property, <span class="math tex">\((Z_t)\)</span> is a <span class="math tex">\(\mathbb P\)</span>-martingale with <span class="math tex">\(Z_T=Z\)</span>; if <span class="math tex">\(\mathcal F_0\)</span> contains no information beyond events of probability zero or one, then also <span class="math tex">\(Z_0=1\)</span>. It is called the <em>density process</em>. In the two-scenario example, <span class="math tex">\(Z\)</span> reweighted entire scenarios. <span class="math tex">\(Z_t\)</span> refines this to the information available at time <span class="math tex">\(t\)</span>: it is the reweighting of what has been observed so far.</p>
+<p><strong>Theorem (Girsanov).</strong> Let <span class="math tex">\(W\)</span> be a Brownian motion under <span class="math tex">\(\mathbb P\)</span>, and let <span class="math tex">\(\lambda\)</span> be an adapted process. Define</p>
+<div class="display-math tex">\[Z_t:=\exp\!\Big(-\int_0^t\lambda_s\,\mathrm dW_s-\tfrac12\int_0^t\lambda_s^2\,\mathrm ds\Big).\]</div>
+<p>If <span class="math tex">\((Z_t)\)</span> is a martingale on <span class="math tex">\([0,T]\)</span>, then <span class="math tex">\(\mathrm d\mathbb Q:=Z_T\,\mathrm d\mathbb P\)</span>, that is, <span class="math tex">\(\mathbb Q(A):=\mathbb E^{\mathbb P}[Z_T\mathbf 1_A]\)</span>, defines a probability measure equivalent to <span class="math tex">\(\mathbb P\)</span>. Under <span class="math tex">\(\mathbb Q\)</span>, the process</p>
+<div class="display-math tex">\[W^{\mathbb Q}_t:=W_t+\int_0^t\lambda_s\,\mathrm ds\]</div>
+<p>is a Brownian motion.[⁶]</p>
+<p><strong>When is <span class="math tex">\(Z\)</span> a martingale?</strong> By Itô's formula, <span class="math tex">\(Z\)</span> satisfies <span class="math tex">\(\mathrm dZ_t=-\lambda_t Z_t\,\mathrm dW_t\)</span>, so it is a stochastic integral. As noted in the previous section, stochastic integrals are in general only local martingales. Since <span class="math tex">\(Z>0\)</span>, it can be shown that <span class="math tex">\(\mathbb E^{\mathbb P}[Z_T]\le1\)</span>, with equality precisely when <span class="math tex">\(Z\)</span> is a true martingale on <span class="math tex">\([0,T]\)</span>. If the inequality is strict, <span class="math tex">\(\mathbb Q(\Omega)<1\)</span>, and <span class="math tex">\(\mathbb Q\)</span> is not a probability measure. The martingale condition in the theorem therefore cannot be omitted. A sufficient condition is Novikov's criterion,</p>
+<div class="display-math tex">\[\mathbb E^{\mathbb P}\Big[\exp\Big(\tfrac12\int_0^T\lambda_s^2\,\mathrm ds\Big)\Big]<\infty,\]</div>
+<p>which holds in particular when <span class="math tex">\(\lambda\)</span> is bounded.</p>
+<p><strong>Effect on the Vasicek model.</strong> Consider the Vasicek model under <span class="math tex">\(\mathbb P\)</span>:</p>
+<div class="display-math tex">\[\mathrm dr_t=\kappa(\theta-r_t)\,\mathrm dt+\sigma\,\mathrm dW_t.\]</div>
+<p>With a constant market price of risk <span class="math tex">\(\lambda\)</span>, substituting <span class="math tex">\(\mathrm dW_t=\mathrm dW^{\mathbb Q}_t-\lambda\,\mathrm dt\)</span> gives</p>
+<div class="display-math tex">\[\mathrm dr_t=\big[\kappa(\theta-r_t)-\sigma\lambda\big]\,\mathrm dt+\sigma\,\mathrm dW^{\mathbb Q}_t
+=\kappa\big(\theta^{\mathbb Q}-r_t\big)\,\mathrm dt+\sigma\,\mathrm dW^{\mathbb Q}_t,
+\qquad\theta^{\mathbb Q}:=\theta-\frac{\sigma\lambda}{\kappa}.\]</div>
+<p>The model keeps the same form under both measures. Only the long-run level towards which rates revert changes; the volatility <span class="math tex">\(\sigma\)</span> is unaffected.</p>
+<p>This holds generally. By the quadratic variation property of Brownian motion, the volatility of a process can be recovered from the fluctuations of a single path. Since equivalent measures agree on which paths are possible, they must agree on the volatility. Only the drift, which reflects how likely the various paths are, can differ. The market price of risk <span class="math tex">\(\lambda\)</span> quantifies the compensation investors require for bearing interest-rate risk, and it is the parameter that connects the real-world projection model under <span class="math tex">\(\mathbb P\)</span> to the risk-neutral valuation model under <span class="math tex">\(\mathbb Q\)</span>.</p>
+<h2 id="back-to-the-yield-curve">Back to the yield curve</h2>
+<p>We can now return to the bond-price formula from the start:</p>
+<div class="display-math tex">\[P(t,T)=\mathbb E^{\mathbb Q}\Big[\exp\!\Big(-\int_t^T r_s\,\mathrm ds\Big)\,\Big|\,\mathcal F_t\Big].\]</div>
+<p>Under the Vasicek model this expectation can be computed in closed form. With <span class="math tex">\(\tau:=T-t\)</span> the remaining maturity,</p>
+<div class="display-math tex">\[P(t,T)=A(\tau)\,e^{-B(\tau)\,r_t},\qquad
+B(\tau)=\frac{1-e^{-\kappa\tau}}{\kappa},\qquad
+\ln A(\tau)=\Big(\theta^{\mathbb Q}-\frac{\sigma^2}{2\kappa^2}\Big)\big(B(\tau)-\tau\big)-\frac{\sigma^2}{4\kappa}\,B(\tau)^2 .\]</div>
+<p>The corresponding continuously compounded yield is</p>
+<div class="display-math tex">\[y(t,T)=-\frac{\ln P(t,T)}{\tau}=\frac{B(\tau)\,r_t-\ln A(\tau)}{\tau}.\]</div>
+<p>Two observations follow. First, the entire yield curve at time <span class="math tex">\(t\)</span> is determined by a single number, the current short rate <span class="math tex">\(r_t\)</span>: this is what it means to reconstruct the curve from the short rate. Second, the formula uses the risk-neutral parameter <span class="math tex">\(\theta^{\mathbb Q}\)</span>, not the real-world <span class="math tex">\(\theta\)</span>, because prices are <span class="math tex">\(\mathbb Q\)</span>-expectations.</p>
+<p>This gives a natural way to simulate future yield curves:</p>
+<ol>
+<li>Simulate paths of the short rate under <span class="math tex">\(\mathbb P\)</span>, using the discretised Vasicek equation with the real-world parameters <span class="math tex">\(\kappa\)</span>, <span class="math tex">\(\theta\)</span> and <span class="math tex">\(\sigma\)</span>.</li>
+<li>At each future date along each path, evaluate the bond-price formula at the simulated <span class="math tex">\(r_t\)</span>, using the risk-neutral level <span class="math tex">\(\theta^{\mathbb Q}\)</span>.</li>
+</ol>
+<p>The result is a collection of realistic yield-curve scenarios, each of which is internally consistent with no-arbitrage pricing.</p>
+<p>The model has known limitations. Because a single random factor drives the entire curve, yields of all maturities move in perfect correlation, so the model cannot capture changes in the slope or curvature of the curve that are independent of its level. Moreover, the short rate is normally distributed and can therefore become negative. Depending on the period under study, the latter is a weakness or, given the negative euro-area yields observed in recent years, a realistic feature.</p>
+<h2 id="further-reading">Further reading</h2>
+<p>If you want to explore these concepts in more depth, the following books are recommended:</p>
+<ul>
+<li>D. Williams, <em>Probability with Martingales</em>, Cambridge University Press — a concise, rigorous introduction to measure-theoretic probability, conditional expectation and martingales.</li>
+<li>S. Shreve, <em>Stochastic Calculus for Finance II: Continuous-Time Models</em>, Springer — Brownian motion, Itô calculus, Girsanov's theorem and risk-neutral pricing, with a financial focus.</li>
+<li>T. Björk, <em>Arbitrage Theory in Continuous Time</em>, Oxford University Press — an accessible treatment of arbitrage pricing, including short-rate models.</li>
+<li>D. Brigo and F. Mercurio, <em>Interest Rate Models — Theory and Practice</em>, Springer — the standard reference on short-rate models, including Vasicek and its extensions.</li>
+</ul>
+<h4>Footnotes</h4>
+<p>[¹]: Brownian motion is continuous but nowhere differentiable, so <span class="math tex">\(\mathrm dW_t\)</span> is not the derivative of a smooth function multiplied by <span class="math tex">\(\mathrm dt\)</span>. This is why stochastic calculus requires its own integral (see the section on the stochastic integral). The two terms of the SDE also scale differently with the time step: the drift scales as <span class="math tex">\(\Delta t\)</span>, while the noise scales as <span class="math tex">\(\sqrt{\Delta t}\)</span>. For <span class="math tex">\(\Delta t=0.01\)</span>, the drift scale is <span class="math tex">\(0.01\)</span> and the noise scale is <span class="math tex">\(\sqrt{0.01}=0.1\)</span>, ten times larger, and the ratio grows as the step shrinks. On very short time scales, a path is therefore dominated by noise and the drift is barely visible. Over longer horizons the picture reverses. For a process with constant drift, the drift accumulates linearly in time while the noise accumulates only as <span class="math tex">\(\sqrt t\)</span>, so the drift eventually dominates. In the Vasicek model, mean reversion keeps the noise from accumulating indefinitely: the variance of <span class="math tex">\(r_t\)</span> converges to <span class="math tex">\(\sigma^2/(2\kappa)\)</span>, and the rate fluctuates around <span class="math tex">\(\theta\)</span> instead of drifting away.</p>
+<p>[²]: An accessible introduction to measure theory can be found <a href="https://www.youtube.com/watch?v=FtEmLexUw3Y&amp;list=PLBh2i93oe2quIJS-j1NpbzEvQCmN00F5o">here</a>.</p>
+<p>[³]: The best-known example of such an irregular set is <a href="https://en.wikipedia.org/wiki/Vitali_set">the Vitali set</a>; see also <a href="https://www.youtube.com/watch?v=hs3eDa3_DzU">this video</a>.</p>
+<p>[⁴]: The standard counterexample is the Cantor distribution, which places all its probability on the <a href="https://en.wikipedia.org/wiki/Cantor_set">Cantor set</a>. Its distribution function is continuous, but the Cantor set has length zero, so no density can exist.</p>
+<p>[⁵]: The convergence holds in mean square, and almost surely along suitable sequences of refining partitions.</p>
+<p>[⁶]: Sign conventions differ across the literature; some authors define <span class="math tex">\(W^{\mathbb Q}_t:=W_t-\int_0^t\lambda_s\,\mathrm ds\)</span>, which reverses the sign of <span class="math tex">\(\lambda\)</span> throughout.</p>
+
+      </div>
+      <nav class="post-pager" aria-label="More posts">
+  <a class="pager-prev" href="01.BelgiumBonds.html" rel="prev"><span class="meta">← Previous</span>Belgian Government Bonds</a>
+  <a class="pager-next" href="04.optimalPensionDesign_I.html" rel="next"><span class="meta">Next →</span>Optimal Pension Design I: A Naive Approach</a>
+</nav>
+    </article>
+
+    <aside class="post-aside"><nav class="toc" aria-label="On this page">
+  <h2>On this page</h2>
+  <ol>
+    <li><a href="#modelling-the-yield-curve">Modelling the yield curve</a></li>
+          <li><a href="#the-probability-space">The probability space</a></li>
+          <li><a href="#random-variables">Random variables</a></li>
+          <li><a href="#expectation">Expectation</a></li>
+          <li><a href="#change-of-measure">Change of measure</a></li>
+          <li><a href="#information-over-time">Information over time</a></li>
+          <li><a href="#brownian-motion">Brownian motion</a></li>
+          <li><a href="#the-stochastic-integral">The stochastic integral</a></li>
+          <li><a href="#change-of-measure-for-processes">Change of measure for processes</a></li>
+          <li><a href="#back-to-the-yield-curve">Back to the yield curve</a></li>
+          <li><a href="#further-reading">Further reading</a></li>
+  </ol>
+</nav>
+      <nav class="series-nav" aria-label="All posts">
+        <h2>All posts</h2>
+        <ul>
+          <li><a href="01.BelgiumBonds.html">Belgian Government Bonds</a></li>
+          <li><a href="02.StochasticCalculus.html" aria-current="page">From Theory to the Vasicek Model</a></li>
+          <li><a href="04.optimalPensionDesign_I.html">Optimal Pension Design I: A Naive Approach</a></li>
+          <li><a href="05.optimalPensionDesign_II.html">Optimal Pension Design II: A High-Dimensional Take</a></li>
+          <li><a href="06.MPT.html">Modern Portfolio Theory</a></li>
+        </ul>
+      </nav>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <p>© 2026 Ignace Decocq</p>
+      <ul class="social-links">
+        <li><a href="mailto:igance.decocq@hotmail.com" aria-label="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg></a></li>
+        <li><a href="https://www.linkedin.com/in/ignace-decocq-7a47472aa/" aria-label="LinkedIn" rel="noopener noreferrer" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg></a></li>
+        <li><a href="https://github.com/korilium" aria-label="GitHub" rel="noopener noreferrer" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.3-3.1-.2-.4-.6-1.6 0-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.8.1 3.2.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.6-5.5 5.9.5.4.9 1.1.9 2.2v3.3c0 .3.1.7.8.6A12 12 0 0 0 12 .3"/></svg></a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="../../../js/toggleTheme.js"></script>
+</body>
+
+</html>

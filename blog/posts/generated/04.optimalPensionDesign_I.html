@@ -1,66 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>04.optimalPensionDesign I</title>
-  <!-- Favicon -->
-  <link rel="icon" href="../../../img/favicon.svg">
-    <script>
-  (function () {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "light") {
-      document.documentElement.setAttribute("data-theme", savedTheme);
-    }
-  })();
-</script>
-  <!-- Stylesheet -->
-  <link href="../../../css/styles/styleBlog.css" rel="stylesheet">
-  <script>
-    MathJax = {
-    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
-    svg: { fontCache: 'global' }
-    };
-  </script>
-  <script>
-    // Immediately set theme before rendering
-    (function() {
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme === "light") {
-        document.documentElement.classList.add("light");
-      }
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Optimal Pension Design I: A Naive Approach — Ignace Decocq</title>
+<meta name="description" content="A simple environment in which a Monte Carlo RL agent learns whether contributing to a pension plan is optimal.">
+<link rel="icon" href="../../../img/favicon.svg">
+<script>
+    (function () {
+      var t;
+      try { t = localStorage.getItem("theme"); } catch (e) { }
+      if (!t) t = window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", t);
     })();
   </script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
-
-
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="../../../css/styles/styleBlog.css" rel="stylesheet">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" async></script>
 </head>
-<body>
-  <aside id="sidebar">
-      <button id="close-sidebar" aria-label="Close menu">&times;</button>
-    <h2>The peccon blog </h2>
-    <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="01.BelgiumBonds.html">01.BelgiumBonds</a></li>
-<li><a href="02.Vasicek.html">02.Vasicek</a></li>
-<li><a href="03.Hull-White.html">03.Hull-White</a></li>
-<li><a href="04.optimalPensionDesign_I.html">04.optimalPensionDesign_I</a></li>
-<li><a href="05.optimalPensionDesign_II.html">05.optimalPensionDesign_II</a></li>
-<li><a href="06.MPT.html">06.MPT</a></li>
-    </ul>
-  </aside>
-  <main>
-    <button id="open-sidebar" aria-label="Open menu">&#9776;</button>
 
-    <label class="theme-switch">
-      <input type="checkbox" id="theme-toggle">
-      <span class="slider"></span>
-    </label>
-    <article>
-      <h1>IN PROGRESS: Optimal Pension Design: A Naive Approach</h1>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="../../../index.html"><span class="brand__mark" aria-hidden="true"><span>Δ</span><span>t</span></span>Ignace Decocq</a>
+      <nav class="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="../../../index.html">Home</a></li>
+          <li><a href="index.html" aria-current="page">Blog</a></li>
+          <li><a href="../../../playGround.html">Playground</a></li>
+          <li><a href="../../../project.html">Peccon</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="content" class="container post-layout">
+    <article class="post">
+      <header class="post-header">
+        <a class="post-back" href="index.html">← All posts</a>
+        <p class="post-kicker"><span class="tag">Pension design</span> <span class="tag tag--warm">In progress</span></p>
+        <h1>Optimal Pension Design I: A Naive Approach</h1>
+        <p class="post-summary">A simple environment in which a Monte Carlo RL agent learns whether contributing to a pension plan is optimal.</p>
+        <p class="meta">July 2026 · 40 min read</p>
+      </header>
+      <div class="post-body">
 <p>In this post we look at why pension plans exist, how they work in Belgium, and how we can naively search for an optimal plan design using a model. The goal is to explain the reasoning behind the model: why you would want such a model in the first place, and how it works under the hood.</p>
-<h2>Why a Pension Plan?</h2>
+<h2 id="why-a-pension-plan">Why a Pension Plan?</h2>
 <p>The honest answer is that most of us are bad at saving for a future self we have
 never met. This is less a character flaw than a wiring problem: we discount the
 future steeply, and the person who will actually need the money — retired, decades
@@ -108,7 +107,7 @@ be respected — turns out to be exactly how the model in this project is
 structured. Which raises the question the post is really about: given that a plan's
 design is a choice about how to balance these competing claims, can that choice be
 made <em>optimally</em> — and what would &quot;optimal&quot; even mean?</p>
-<h2>Belgium Legal Framework: the Three pillars</h2>
+<h2 id="belgium-legal-framework-the-three-pillars">Belgium Legal Framework: the Three pillars</h2>
 <p>Belgian retirement income rests on <a href="https://www.fsma.be/nl/wat-zijn-de-drie-pensioenpijlers-belgie">three pillars</a>.
 The distinction between them is not bureaucratic tidiness — each pillar places the
 risk of funding your old age on a different party, and the project lives entirely
@@ -181,7 +180,7 @@ individual. Because no employer or collective guarantee sits behind it, it falls
 outside the risk-sharing problem this project is about, and I leave it aside here —
 relevant to an employee's full retirement picture, but not to the design question
 that follows.</p>
-<h2>Different types of Pension Plans</h2>
+<h2 id="different-types-of-pension-plans">Different types of Pension Plans</h2>
 <p>Within the second pillar the classic dichotomy is, at heart, about <em>who carries the
 risk</em> — which makes it the natural place to pin down exactly where this project sits.</p>
 <p><strong>Defined Benefit (DB):</strong> the plan promises an <em>outcome</em> — typically a formula on
@@ -223,14 +222,17 @@ the guarantee behaves like a put option the employer has written to the employee
 dormant while the fund clears the floor, triggered precisely when it does not — and
 Branch 23 leaves it triggered more often. Comparing how these two vehicles behave
 under one and the same contribution policy is one of the axes of the wider project.</p>
+<blockquote>
+<p><em>Update (October 2026): the model no longer treats the guarantee as an option to be priced. It is the shortfall <span class="math tex">\((L_\tau - R_T)^+\)</span> the employer bears at retirement, assessed by its expected value; and in the model Branch 23 is cash-flow matched to retirement (zero-coupon exposure maturing at <span class="math tex">\(T\)</span>) rather than a generic unit-linked fund.</em></p>
+</blockquote>
 <p>This post works with the simplest member of the family: a single-employee Belgian
 DC plan with Branch 21-style <em>deterministic</em> crediting — the guarantee credited at a
-fixed rate, the put left dormant by construction. That is the same first-rung move
+fixed rate, the shortfall left dormant by construction. That is the same first-rung move
 as holding the WAP rate flat: strip out the stochastic crediting to get an
 environment whose behaviour you can check by hand, and switch it back on only once
 the mechanics are proven. The reasons for starting exactly here are what the next
 section makes precise.</p>
-<h2>What is Optimal?</h2>
+<h2 id="what-is-optimal">What is Optimal?</h2>
 <p>&quot;Optimal&quot; is meaningless until you say <em>for whom</em>. The same contribution policy is
 a different thing seen from each side of the contract: one that thrills the CFO —
 low, predictable outlays — can quietly starve the employee's replacement rate,
@@ -238,7 +240,7 @@ while one generous enough to delight the employee can make plan costs balloon
 exactly when the firm can least afford them, in a downturn. There is no policy that
 is optimal in the abstract; there is only optimal-for-a-chosen-balance. So rather
 than pick a side, the project's central object makes the balance itself explicit —
-a joint value function:</p>
+a joint reward function:</p>
 <div class="display-math tex">\[V \;=\; \lambda\, V_{\text{employee}} \;+\; (1-\lambda)\, V_{\text{employer}}.\]</div>
 <p>Read it as a single dial with the two parties at its ends. Each term encodes what
 that party is actually trying to get out of the plan.</p>
@@ -288,7 +290,7 @@ what the contributions are worth grown at the WAP guaranteed rate — while the 
 holds a <em>mathematical reserve</em> <span class="math tex">\(R_T\)</span>, the actual Branch 21 reserve backing the
 contract. If the reserve falls short of what the guarantee legally owes, the employer
 tops up the difference; if it does not, the employer owes nothing. That is exactly the
-written-put payoff we described earlier — dormant when the reserve clears the floor,
+employer-borne shortfall we described earlier — dormant when the reserve clears the floor,
 triggered only when it does not:</p>
 <div class="display-math tex">\[C_{\text{employer}} \;=\; \sum_{t=0}^{T}\frac{c_t}{(1+\text{r})^{t}} \;+\; \frac{\max\!\big(L_T - R_T,\,0\big)}{(1+\text{r})^{T}}.\]</div>
 <p>Because from the sponsor's chair this is a cost, its <em>value</em> is the negative of it:</p>
@@ -314,7 +316,7 @@ work out by hand. Once we understand how the agent responds to this stripped-dow
 environment, each later rung swaps one simplification for its realistic
 counterpart — curvature into the employee term, stochastic crediting into the
 reserve — against an agent we already know to be sound.</p>
-<h2>Reinforcement Learning: A Basic Introduction</h2>
+<h2 id="reinforcement-learning-a-basic-introduction">Reinforcement Learning: A Basic Introduction</h2>
 <p>Most financial plans are fixed at the outset: a contribution schedule, a
 rebalancing rule, a glide path decided on day one and followed regardless of
 what happens next. Reinforcement learning starts from the opposite instinct.
@@ -476,7 +478,7 @@ and no schedule to enumerate, and a policy learned from simulation is the only
 object that still scales. What we validate now is that the machinery finds the
 right answer where we can grade it — so that we can trust it where we cannot.</p>
 <!-- TODO: decide depth here — this audience needs the mapping to stochastic control, not a full RL tutorial -->
-<h2>The Environment</h2>
+<h2 id="the-environment">The Environment</h2>
 <p>The previous section lived on the agent's side of the loop. The environment is the other box — the thing that takes an action and hands back a reward and a next state — and at this first rung it is deliberately tiny: a few numbers evolving under fixed rules. That smallness is the point: the whole validation strategy rests on an environment simple enough to grade by hand.</p>
 <p>Each year the plan rule fixes a premium as a fraction of salary, <span class="math tex">\(c_t = \text{rate} \cdot S_t\)</span>, with salary growing deterministically. The <em>size</em> of a contribution is never the agent's to choose — the plan sets it. What the agent chooses is only the binary from the last section: pay this year's premium, or don't.</p>
 <p>What makes this more than a savings account is that the environment keeps two ledgers, not one. Every euro contributed is booked into both, but they grow at different rates. The mathematical reserve <span class="math tex">\(R\)</span> — the actual Branch 21 reserve — is credited at the tariff <span class="math tex">\(\mu\)</span>; the legal reserve <span class="math tex">\(L\)</span> — what the WAP guarantee owes on those same contributions — compounds at the guaranteed rate <span class="math tex">\(g\)</span>:</p>
@@ -485,8 +487,8 @@ right answer where we can grade it — so that we can trust it where we cannot.<
 <p>The reward is then just the bookkeeping from before, emitted as each cash flow occurs. A contribution is a cost the instant it is paid, so each year books <span class="math tex">\(-(1-\lambda)\,c_t\,e^{-\delta t}\)</span> — the burden set by the employer weight <span class="math tex">\((1-\lambda)\)</span>, heavy when the plan tilts toward the employer, near-weightless when it tilts toward the employee. At retirement the reserve funds the payout and the employer settles the put: <span class="math tex">\(\big(\lambda \max(R_T, L_T) - (1-\lambda)\max(L_T - R_T, 0)\big)\,e^{-\delta T}\)</span>.</p>
 <p>One choice there is worth dragging into the open. Discounting lives <em>entirely</em> in the reward, through the explicit rate <span class="math tex">\(\delta\)</span>, exactly as an actuary computes a present value. It does <strong>not</strong> live in the RL machinery. Reinforcement learning carries its own discount factor <span class="math tex">\(\gamma\)</span>, and the reflex is to set it below one — but <span class="math tex">\(\gamma\)</span> and <span class="math tex">\(\delta\)</span> discount the same thing, so any <span class="math tex">\(\gamma < 1\)</span> stacks a second discount on the financial one and silently reprices the objective with a cost of capital you never chose. So <span class="math tex">\(\gamma = 1\)</span>, permanently.</p>
 <p>That leaves the state, and at this rung it is just the year <span class="math tex">\(t\)</span>. That suffices only because everything else is a deterministic function of time — salary, both crediting rates, and so the reserve itself at a fixed policy. It will not survive the next rung: once credited return goes stochastic, two careers reaching the same year hold different reserves and face different odds of tripping the guarantee, and the funding position has to enter the state in its own right. That is exactly what will motivate a function approximator over a lookup table. For now, one integer is enough.</p>
-<p>And with <span class="math tex">\(\sigma = 0\)</span> the crediting is frozen, the put is dormant by construction, and the whole episode is a deterministic function of the policy alone — forty-five binary choices with a known payoff each, so the optimum can be enumerated and checked by hand.</p>
-<h2>Tuning the Learning Behaviour</h2>
+<p>And with <span class="math tex">\(\sigma = 0\)</span> the crediting is frozen, the shortfall is dormant by construction, and the whole episode is a deterministic function of the policy alone — forty-five binary choices with a known payoff each, so the optimum can be enumerated and checked by hand.</p>
+<h2 id="tuning-the-learning-behaviour">Tuning the Learning Behaviour</h2>
 <p>The RL introduction described the loop as if it simply runs: evaluate, improve, repeat, and the policy climbs toward the optimum. Under the right conditions it does — but &quot;the right conditions&quot; hides the work. The convergence guarantees behind Monte Carlo control are asymptotic and assume every state–action pair keeps being visited; they say nothing about whether a <em>finite</em> run lands on the right policy, or how fast. In practice the same loop can just as easily settle on a confidently wrong answer, and two failure modes drive that. If the agent stops exploring too soon it never learns that an action it tentatively rejected was in fact better, and locks in the mistake. And because it learns on its own behaviour, the returns it averages early — generated while the policy was still bad — are junk, and a naïve average lets them anchor the estimate long after the policy has improved. Left alone, either one produces exactly the trap the whole ladder is built to avoid: a run that converges, plateaus, and looks healthy while optimising something other than what you intended. Tuning is the handful of choices that keep the loop honest between those two failure modes.</p>
 <p>Each failure mode gets a lever. Against stopping too soon: explore while you know nothing, commit as the picture sharpens. The random fraction <span class="math tex">\(\varepsilon\)</span> starts at <span class="math tex">\(1.0\)</span>, decays linearly to <span class="math tex">\(0.05\)</span> over the first quarter of the million episodes, then holds — the floor kept above zero so every branch stays occasionally re-tested.</p>
 <p>Two update rules match those phases. While <span class="math tex">\(\varepsilon\)</span> is still decaying the policy is a <em>moving target</em>: early returns came from a worse policy, and a plain average would weight that junk as heavily as fresh returns and let it anchor the estimate — the age-plan starvation failure is exactly this. So the moving phase uses a constant step size <span class="math tex">\(\alpha = 0.02\)</span>, letting old returns fade. Once the policy stops moving the target is stationary and we want an honest, variance-shrinking average, so the update switches to a true sample mean <span class="math tex">\(1/N\)</span>.</p>
@@ -534,8 +536,8 @@ right answer where we can grade it — so that we can trust it where we cannot.<
 <line class="n0" x1="180" y1="165" x2="180" y2="175" stroke-width="1"/>
 <text class="cap" x="203" y="185" font-size="12">initial average seeded here &#8212; not a zeroed count</text>
 </svg>
-<h2>Results: the deterministic basic model</h2>
-<p>The basic model exists to answer one question before any stochasticity is introduced: does the joint value function behave like a negotiation instrument, and does the tabular agent recover the policy that value function implies? The deterministic setting (SIGMA = 0) makes this answerable against a benchmark that can be certified exactly, so that any disagreement between agent and benchmark is a fact about the learner rather than an artifact of sampling noise.</p>
+<h2 id="results-the-deterministic-basic-model">Results: the deterministic basic model</h2>
+<p>The basic model exists to answer one question before any stochasticity is introduced: does the joint reward function behave like a negotiation instrument, and does the tabular agent recover the policy that reward function implies? The deterministic setting (SIGMA = 0) makes this answerable against a benchmark that can be certified exactly, so that any disagreement between agent and benchmark is a fact about the learner rather than an artifact of sampling noise.</p>
 <h3>Environment</h3>
 <p>The episode is a 45-year accumulation horizon (years <span class="math tex">\(t = 0, \dots, 44\)</span>). At each year the agent chooses a binary action — contribute or don't — and the reward is the marginal change in the joint value function. All runs in this section are deterministic: SIGMA = 0, so a given policy produces a single trajectory with no dispersion.</p>
 <p>Each configuration is evaluated against three contribution schedules, which determine how a contribution is sized in a given year:</p>
@@ -546,7 +548,7 @@ right answer where we can grade it — so that we can trust it where we cannot.<
 The three schedules leave the economics of a single contribution unchanged and reshape only its distribution across the horizon; they are included as a robustness axis, not as separate experiments.</li>
 </ul>
 <p></p>
-<h3>Value function and the two levers</h3>
+<h3>Reward function and the two levers</h3>
 <p>The joint objective is</p>
 <div class="display-math tex">\[V = \lambda\,V_{\text{employee}} + (1-\lambda)\,V_{\text{employer}},\]</div>
 <p>with <span class="math tex">\(V_{\text{employee}}\)</span> the discounted member benefit and <span class="math tex">\(V_{\text{employer}}\)</span> the discounted sponsor cost. Two settings govern every result below:</p>
@@ -559,13 +561,13 @@ The four configurations below are chosen to isolate these two levers.</li>
 <h3>Configurations</h3>
 <p>All runs share DISC = 0.02 and SIGMA = 0. The indifference control sets MU = G = DISC; the other three fix MU = 0.03 and G = 0.0175 so that surplus exists, and vary only <span class="math tex">\(\lambda\)</span>.</p>
 <table><thead><tr><th align="left">Configuration</th><th align="left"><span class="math tex">\(\lambda\)</span></th><th align="left">MU</th><th align="left">G</th><th align="left">DISC</th><th align="left">SIGMA</th></tr></thead><tbody><tr><td align="left"><code>neut2</code> (indifference control)</td><td align="left">0.50</td><td align="left">0.0200</td><td align="left">0.0200</td><td align="left">0.02</td><td align="left">0</td></tr><tr><td align="left"><code>neg</code> (employer-weighted)</td><td align="left">0.25</td><td align="left">0.0300</td><td align="left">0.0175</td><td align="left">0.02</td><td align="left">0</td></tr><tr><td align="left"><code>neut</code> (balanced)</td><td align="left">0.50</td><td align="left">0.0300</td><td align="left">0.0175</td><td align="left">0.02</td><td align="left">0</td></tr><tr><td align="left"><code>pos</code> (employee-weighted)</td><td align="left">0.75</td><td align="left">0.0300</td><td align="left">0.0175</td><td align="left">0.02</td><td align="left">0</td></tr></tbody></table>
-<h2>Learner and training</h2>
+<h2 id="learner-and-training">Learner and training</h2>
 <p>The agent is a tabular Monte Carlo control learner over the discrete <span class="math tex">\((t, \text{action})\)</span> space, trained with identical hyperparameters across all configurations:</p>
 <table><thead><tr><th align="left">Hyperparameter</th><th align="left">Value</th></tr></thead><tbody><tr><td align="left">episodes</td><td align="left">1,000,000</td></tr><tr><td align="left">exploration decay fraction</td><td align="left">0.25</td></tr><tr><td align="left">burn-in episodes</td><td align="left">30,000</td></tr><tr><td align="left"><span class="math tex">\(n_0\)</span> (exploration constant)</td><td align="left">500</td></tr><tr><td align="left">action resolution RES</td><td align="left">0.01</td></tr></tbody></table>
 <h3>Benchmark and evaluation protocol</h3>
-<p>The benchmark is the <em>gap policy</em>: for each year the marginal value of contributing is computed numerically, and the optimal action is its sign. In the deterministic setting the value function is certified linear in the contribution decision, so this marginal gap is exact and the benchmark is optimal by construction — derived independently of the learner, satisfying the no-circular-validation requirement.</p>
+<p>The benchmark is the <em>gap policy</em>: for each year the marginal value of contributing is computed numerically, and the optimal action is its sign. In the deterministic setting the reward function is certified linear in the contribution decision, so this marginal gap is exact and the benchmark is optimal by construction — derived independently of the learner, satisfying the no-circular-validation requirement.</p>
 <p>A year is counted as <strong>decided</strong> only when the magnitude of its marginal gap exceeds the action resolution RES = 0.01. Below that threshold the two actions are indistinguishable on the evaluation grid and the year is a tie, for which any action is optimal. Agreement is therefore reported as the number of <em>decided</em> years on which the agent's greedy action matches the benchmark; tied years are excluded from the denominator because they carry no target to match.</p>
-<h2>Results</h2>
+<h2 id="results">Results</h2>
 <h3>Joint value and policy agreement</h3>
 <table><thead><tr><th align="left">Configuration</th><th align="left">value (fixed / step / age)</th><th align="left">decided-year match (fixed / step / age)</th></tr></thead><tbody><tr><td align="left"><code>neut2</code></td><td align="left">0.000 / 0.000 / 0.000</td><td align="left">0/45 · 0/45 · 0/45</td></tr><tr><td align="left"><code>neg</code></td><td align="left">0.000 / 0.000 / 0.000</td><td align="left">45/45 · 45/45 · 45/45</td></tr><tr><td align="left"><code>neut</code></td><td align="left">0.324 / 0.289 / 0.262</td><td align="left">14/45 · 6/45 · 0/45</td></tr><tr><td align="left"><code>pos</code></td><td align="left">1.736 / 1.710 / 1.607</td><td align="left">45/45 · 45/45 · 45/45</td></tr></tbody></table>
 <p>The agent matches the benchmark on every decided year in every configuration and plan. The apparent partial agreement in <code>neut</code> (14/45, 6/45, 0/45) reflects the number of years the benchmark <em>decides</em>, not disagreement on the years it does — see the interpretation below.</p>
@@ -573,28 +575,76 @@ The four configurations below are chosen to isolate these two levers.</li>
 <p>The following are computed along the zero-shock central path under the benchmark policy. <code>neg</code> never contributes and <code>neut2</code> produces no surplus, so both are degenerate; the contributing configurations <code>neut</code> and <code>pos</code> share a central path (the policy contributes in both) and are reported once.</p>
 <table><thead><tr><th align="left">Policy</th><th align="left">plan</th><th align="left">pv_contrib</th><th align="left">pv_payout</th><th align="left">efficiency</th><th align="left">duration</th><th align="left">replacement</th></tr></thead><tbody><tr><td align="left">contributing (<code>neut</code>, <code>pos</code>)</td><td align="left">fixed</td><td align="left">2.4993</td><td align="left">3.1473</td><td align="left">1.2593</td><td align="left">22.79</td><td align="left">2.6119</td></tr><tr><td align="left"></td><td align="left">step</td><td align="left">2.5522</td><td align="left">3.1311</td><td align="left">1.2268</td><td align="left">25.40</td><td align="left">2.5984</td></tr><tr><td align="left"></td><td align="left">age</td><td align="left">2.4274</td><td align="left">2.9519</td><td align="left">1.2161</td><td align="left">26.22</td><td align="left">2.4497</td></tr><tr><td align="left"><code>neut2</code></td><td align="left">fixed</td><td align="left">0.0603</td><td align="left">0.0603</td><td align="left">1.0000</td><td align="left">40.00</td><td align="left">0.0501</td></tr><tr><td align="left"></td><td align="left">step / age</td><td align="left">0.0000</td><td align="left">0.0000</td><td align="left">—</td><td align="left">—</td><td align="left">0.0000</td></tr><tr><td align="left"><code>neg</code></td><td align="left">all</td><td align="left">0.0000</td><td align="left">0.0000</td><td align="left">—</td><td align="left">—</td><td align="left">0.0000</td></tr></tbody></table>
 <p>The contributing configurations return an efficiency above 1.2 (payout exceeds contribution, the surplus MU &gt; G realised), while <code>neut2</code> returns efficiency exactly 1.0 where it contributes at all (a perfect wash) and <code>neg</code> returns nothing.</p>
-<h2>Interpretation</h2>
-<p>Read down the <span class="math tex">\(\lambda\)</span> column of the results table and the value function does what a negotiation parameter should. As <span class="math tex">\(\lambda\)</span> rises from 0.25 to 0.75 with the economics held fixed, the marginal value of a contribution moves from strictly negative, through a thin positive margin, to strongly positive, and the learned policy tracks that transition on every year the benchmark can rank.</p>
+<h2 id="interpretation">Interpretation</h2>
+<p>Read down the <span class="math tex">\(\lambda\)</span> column of the results table and the reward function does what a negotiation parameter should. As <span class="math tex">\(\lambda\)</span> rises from 0.25 to 0.75 with the economics held fixed, the marginal value of a contribution moves from strictly negative, through a thin positive margin, to strongly positive, and the learned policy tracks that transition on every year the benchmark can rank.</p>
 <p><strong><code>neut2</code> — the indifference control.</strong> With MU = G = DISC the surplus is identically zero, the joint value is flat at zero regardless of <span class="math tex">\(\lambda\)</span>, and no year is decided. The agent is correctly indifferent. This is the indispensable null: it establishes that the framework returns <em>zero signal</em> in the absence of economic content, so the non-zero results elsewhere cannot be an artifact of the reward's construction.</p>
 <p><strong><code>neg</code> — surplus declined.</strong> Surplus exists (MU &gt; G), yet at <span class="math tex">\(\lambda = 0.25\)</span> the employer's funding burden dominates the joint objective, every marginal contribution is priced negative, and the optimal policy is to never contribute. The joint value is zero — but for the opposite reason to <code>neut2</code>: not because no surplus exists, but because the negotiated weighting declines to capture it. That <code>neg</code> and <code>neut2</code> both report zero value on opposite economics is itself part of the demonstration: the value function distinguishes <em>no surplus</em> from <em>surplus declined</em>.</p>
 <p><strong><code>pos</code> — surplus captured.</strong> Nothing changes but <span class="math tex">\(\lambda\)</span>, now 0.75. The employee's gain dominates, every marginal contribution is strongly positive, and the optimal policy is to contribute throughout. The joint value jumps to 1.6–1.7. The <code>neg</code>/<code>pos</code> pair, differing only in <span class="math tex">\(\lambda\)</span>, is the cleanest isolation of the split lever: identical economics, opposite policies, both recovered exactly.</p>
 <p><strong><code>neut</code> — the thin margin, and why the match rate reads as it does.</strong> At <span class="math tex">\(\lambda = 0.5\)</span> the two legs nearly offset, leaving a small positive margin: the optimal policy is still to contribute, but the per-year marginal gap is correspondingly small — peaking around 0.0086 for the fixed plan, beneath the RES = 0.01 threshold for most years. Only the minority of years with a gap above resolution are decidable, and the agent matches the benchmark on all of them; the rest are ties by construction, which is why the decided-year counts are 14/45, 6/45, and 0/45 rather than a sign of error. The age plan reaching 0/45 is the limiting case — a fully-tied schedule — not a failure. Reporting agreement against the decided subset is what keeps this honest, and it is the same overlap between what is verifiable and what the learner finds that will license trusting the learner once exact verification becomes impossible at the stochastic rungs.</p>
 <p><strong>Robustness across plan types.</strong> The step and age schedules reshape the marginal-gap profile — a staircase and a U-shaped curve respectively, against the fixed plan's smooth decline — but leave the sweep unchanged: the sign of the gap and the direction of the policy flip track <span class="math tex">\(\lambda\)</span> identically in all three. The negotiation behaviour is therefore a property of the value function, not of any particular schedule.</p>
 <p><strong>Convergence is a sanity check, not the proof.</strong> The reward curves converge to stable plateaus whose height scales with <span class="math tex">\(\lambda\)</span> (near zero for <code>neut2</code>, roughly 1.7 for <code>pos</code>), confirming that training completed and did not collapse. This plateau cannot by itself distinguish a stable-but-correct policy from a stable-but-wrong one; the optimality claim rests entirely on the independently derived benchmark. Convergence is necessary evidence, independent benchmarking is the sufficient evidence — the same separation that has to carry the argument once the environment becomes stochastic and exact verification is no longer available.</p>
-<h2>Summary</h2>
-<p>Across the four configurations the deterministic basic model shows two things. The joint value function behaves as an economic instrument: it returns zero when no surplus exists, scores a real surplus as fundable or not according to <span class="math tex">\(\lambda\)</span>, and does so monotonically as <span class="math tex">\(\lambda\)</span> is swept. And on every year the independent benchmark decides, the agent recovers the benchmark's action exactly, across all three plan types; the remaining years are ties, and are reported as such. With framework and learner both certified in the deterministic setting, the environment is ready for the introduction of stochasticity.</p>
-<h2>Final thoughts</h2>
+<h2 id="summary">Summary</h2>
+<p>Across the four configurations the deterministic basic model shows two things. The joint reward function behaves as an economic instrument: it returns zero when no surplus exists, scores a real surplus as fundable or not according to <span class="math tex">\(\lambda\)</span>, and does so monotonically as <span class="math tex">\(\lambda\)</span> is swept. And on every year the independent benchmark decides, the agent recovers the benchmark's action exactly, across all three plan types; the remaining years are ties, and are reported as such. With framework and learner both certified in the deterministic setting, the environment is ready for the introduction of stochasticity.</p>
+<h2 id="final-thoughts">Final thoughts</h2>
 <p>The value of the deterministic basic model is not any single number in the tables above but the fact that every number is checkable. The benchmark is exact, the ties are labelled as ties, and the agent's agreement with the benchmark is established on the years where agreement is even a well-posed question. That discipline is what earns the right to make the same claim later, when the environment stops being exactly solvable and the benchmark can no longer be certified line by line.</p>
 <p>The clearest way to see the negotiation lever at work is to turn it. An interactive version of this model is available in the playground at <a href="https://ignacedecocq.com/playGround.html">Playground</a>: the reader can move <span class="math tex">\(\lambda\)</span> between the employer-weighted and employee-weighted extremes and watch the marginal gap change sign and the greedy policy flip in real time, reproducing the sweep from <code>neg</code> through <code>neut</code> to <code>pos</code> without rerunning any training. It is the fastest way to build the intuition that the rest of this chapter formalises.</p>
-<h2>Next steps: introducing stochasticity</h2>
+<h2 id="next-steps-introducing-stochasticity">Next steps: introducing stochasticity</h2>
 <p>Everything in this chapter rests on SIGMA = 0. The moment stochasticity is switched on, the structure of the problem changes, and it changes in a way the tabular model cannot follow.</p>
 <p>The reason is the guarantee itself. The WAP guarantee is <strong>path-accumulated</strong>: what the sponsor owes at any point depends on the entire history of contributions and returns, not on the current year alone. Under stochastic returns, the year index <span class="math tex">\(t\)</span> is no longer a sufficient description of the state. The quantity that <em>is</em> sufficient is the <strong>funding ratio</strong> <span class="math tex">\(F_t = A_t / L_t\)</span> — accumulated assets over the accumulated guarantee floor — together with the <strong>contribution level</strong> that has built that floor. These are the stochastic processes the decision actually depends on, and for the problem to remain a well-posed Markov decision process they must enter the state. Omitting them does not simplify the model; it makes it non-Markov and quietly wrong.</p>
 <p>Carrying the funding ratio in the state breaks the tabular approach on three fronts at once. The state space becomes <strong>continuous</strong>, so there is no finite table to fill. Visitation becomes <strong>endogenous and starved</strong>: the policy itself determines which regions of <span class="math tex">\(F\)</span> are ever reached, and large parts of the space are visited too rarely to estimate. And the value function acquires a <strong>kink at <span class="math tex">\(F = 1\)</span></strong> — the boundary between funded and underfunded, the moneyness of the guarantee — across which a table cannot generalise. Each of these is fatal on its own; together they close the door on tabular Monte Carlo.</p>
 <p>Two moves follow, and they are the substance of the next rung. The benchmark stops being a per-year linearity certificate and becomes <strong>dynamic programming</strong> over a discretised <span class="math tex">\((t, F)\)</span> grid — backward induction that sweeps the state space by construction rather than relying on visitation, and so survives one rung further than any sampling-based benchmark could. The learner becomes <strong>PPO</strong>, a policy-gradient method with a function approximator that can represent a continuous value function and generalise across the kink instead of tabulating around it. The methodology is unchanged — an independent benchmark, then a learner checked against it, then the rung frozen as a regression test — but every component is rebuilt for a state space that can no longer be enumerated. That rung is where the framework stops being a proof of concept and starts being a model of the actual product.</p>
 
+      </div>
+      <nav class="post-pager" aria-label="More posts">
+  <a class="pager-prev" href="02.StochasticCalculus.html" rel="prev"><span class="meta">← Previous</span>From Theory to the Vasicek Model</a>
+  <a class="pager-next" href="05.optimalPensionDesign_II.html" rel="next"><span class="meta">Next →</span>Optimal Pension Design II: A High-Dimensional Take</a>
+</nav>
     </article>
+
+    <aside class="post-aside"><nav class="toc" aria-label="On this page">
+  <h2>On this page</h2>
+  <ol>
+    <li><a href="#why-a-pension-plan">Why a Pension Plan?</a></li>
+          <li><a href="#belgium-legal-framework-the-three-pillars">Belgium Legal Framework: the Three pillars</a></li>
+          <li><a href="#different-types-of-pension-plans">Different types of Pension Plans</a></li>
+          <li><a href="#what-is-optimal">What is Optimal?</a></li>
+          <li><a href="#reinforcement-learning-a-basic-introduction">Reinforcement Learning: A Basic Introduction</a></li>
+          <li><a href="#the-environment">The Environment</a></li>
+          <li><a href="#tuning-the-learning-behaviour">Tuning the Learning Behaviour</a></li>
+          <li><a href="#results-the-deterministic-basic-model">Results: the deterministic basic model</a></li>
+          <li><a href="#learner-and-training">Learner and training</a></li>
+          <li><a href="#results">Results</a></li>
+          <li><a href="#interpretation">Interpretation</a></li>
+          <li><a href="#summary">Summary</a></li>
+          <li><a href="#final-thoughts">Final thoughts</a></li>
+          <li><a href="#next-steps-introducing-stochasticity">Next steps: introducing stochasticity</a></li>
+  </ol>
+</nav>
+      <nav class="series-nav" aria-label="All posts">
+        <h2>All posts</h2>
+        <ul>
+          <li><a href="01.BelgiumBonds.html">Belgian Government Bonds</a></li>
+          <li><a href="02.StochasticCalculus.html">From Theory to the Vasicek Model</a></li>
+          <li><a href="04.optimalPensionDesign_I.html" aria-current="page">Optimal Pension Design I: A Naive Approach</a></li>
+          <li><a href="05.optimalPensionDesign_II.html">Optimal Pension Design II: A High-Dimensional Take</a></li>
+          <li><a href="06.MPT.html">Modern Portfolio Theory</a></li>
+        </ul>
+      </nav>
+    </aside>
   </main>
-<script src="../../../js/toggleTheme.js"></script>
-<script src="../../../js/toggleSideBar.js"></script>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <p>© 2026 Ignace Decocq</p>
+      <ul class="social-links">
+        <li><a href="mailto:igance.decocq@hotmail.com" aria-label="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg></a></li>
+        <li><a href="https://www.linkedin.com/in/ignace-decocq-7a47472aa/" aria-label="LinkedIn" rel="noopener noreferrer" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg></a></li>
+        <li><a href="https://github.com/korilium" aria-label="GitHub" rel="noopener noreferrer" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.3-3.1-.2-.4-.6-1.6 0-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.8.1 3.2.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.6-5.5 5.9.5.4.9 1.1.9 2.2v3.3c0 .3.1.7.8.6A12 12 0 0 0 12 .3"/></svg></a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="../../../js/toggleTheme.js"></script>
 </body>
+
 </html>

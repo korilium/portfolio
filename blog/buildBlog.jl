@@ -1,240 +1,261 @@
-using CommonMark 
-using Markdown
-using Glob 
+# Builds the blog: one HTML page per post, the blog index, and the "Latest writing"
+# list on the home page. Run from the repository root:  julia blog/buildBlog.jl
+using CommonMark
+using Dates
 
-posts_dir = "blog/posts"
-index_dir = "blog/"
-output_dir = "blog/posts/generated"
-mkpath(output_dir)  # Ensure output directory exists
-posts = glob("*.md", posts_dir) # Find all markdown files
+const POSTS_DIR = "blog/posts"
+const OUTPUT_DIR = "blog/posts/generated"
+const HOME_PAGE = "index.html"
+const ROOT = "../../../"          # from OUTPUT_DIR back to the site root
 
-function make_side_links(posts) # Generate sidebar links
-  item = String[] 
-  for post in posts 
-    name= splitext(basename(post))[1]
-    push!(item, """<li><a href="$(name).html">$(name)</a></li>""")
-  end
-  return join(item, "\n")
+# --- Posts -------------------------------------------------------------------
+# One entry per published post, in reading order. A markdown file without an entry
+# here is not built (e.g. drafts that are still empty).
+#   slug    output file name (keep it stable: it is the post's URL)
+#   status  "" for finished posts, otherwise shown as a badge (e.g. "In progress")
+const POSTS = [
+  (file = "01.BelgiumBonds.md", slug = "01.BelgiumBonds",
+   title = "Belgian Government Bonds",
+   summary = "How Belgian government bonds (OLOs) are priced in the market, and how their yield curve is derived.",
+   date = Date(2026, 7), series = "Interest rates", status = ""),
+  (file = "02.intermezzo: Stochastic Calculus.md", slug = "02.StochasticCalculus",
+   title = "From Theory to the Vasicek Model",
+   summary = "A first-principles route from the short rate and stochastic calculus to bond prices under the Vasicek model.",
+   date = Date(2026, 10), series = "Interest rates", status = ""),
+  (file = "04.optimalPensionDesign_I.md", slug = "04.optimalPensionDesign_I",
+   title = "Optimal Pension Design I: A Naive Approach",
+   summary = "A simple environment in which a Monte Carlo RL agent learns whether contributing to a pension plan is optimal.",
+   date = Date(2026, 7), series = "Pension design", status = "In progress"),
+  (file = "05.optimalPensionDesign_II.md", slug = "05.optimalPensionDesign_II",
+   title = "Optimal Pension Design II: A High-Dimensional Take",
+   summary = "Bringing in the risk and variability a pension plan faces, and how they change its valuation.",
+   date = Date(2026, 7), series = "Pension design", status = "In progress"),
+  (file = "06.MPT.md", slug = "06.MPT",
+   title = "Modern Portfolio Theory",
+   summary = "The principles of Modern Portfolio Theory: balancing a portfolio's risk against its return.",
+   date = Date(2025, 1), series = "Portfolio theory", status = ""),
+]
+
+# --- Helpers -----------------------------------------------------------------
+
+esc(s) = replace(string(s), "&" => "&amp;", "<" => "&lt;", ">" => "&gt;", "\"" => "&quot;")
+fmtdate(d) = Dates.format(d, "U yyyy")
+strip_tags(s) = replace(s, r"<[^>]*>" => "")
+
+function slugify(s)
+  s = lowercase(strip_tags(s))
+  s = replace(s, r"\\\(.*?\\\)" => "")           # inline maths
+  s = replace(s, r"[^a-z0-9]+" => "-")
+  strip(s, '-')
 end
 
-sidebarLinks = make_side_links(posts) # Create sidebar HTML
+status_tag(p) = isempty(p.status) ? "" : """ <span class="tag tag--warm">$(esc(p.status))</span>"""
 
-parser = CommonMark.Parser() # Create a parser instance
+# Rewrites the relative links of a snippet taken from the home page so they work
+# from `prefix` (absolute URLs, mailto: and #anchors are left alone).
+relink(html, prefix) = replace(html, r"(href|src)=\"(?!https?:|mailto:|#)([^\"]*)\"" => SubstitutionString("\\1=\"$(prefix)\\2\""))
+
+# The theme script, header and footer are shared with the rest of the site and are
+# taken from the home page, so the navigation only has to be edited in one place.
+function site_shell()
+  home = read(HOME_PAGE, String)
+  grab(rx) = (m = match(rx, home); m === nothing ? error("site shell: $(rx) not found in $(HOME_PAGE)") : m.match)
+  theme = grab(r"<script>\s*\(function \(\) \{\s*var t;.*?crossorigin>"s)
+  header = grab(r"<a class=\"skip-link\".*?</header>"s)
+  footer = grab(r"<footer class=\"site-footer\">.*?</footer>"s)
+  header = replace(header, " aria-current=\"page\"" => "")
+  header = replace(relink(header, ROOT), "href=\"$(ROOT)blog/posts/generated/index.html\"" => "href=\"index.html\" aria-current=\"page\"")
+  (theme = theme, header = header, footer = relink(footer, ROOT))
+end
+
+function post_list(posts, prefix)
+  items = map(posts) do p
+    """
+          <li>
+            <a href="$(prefix)$(p.slug).html">
+              <span class="meta">$(fmtdate(p.date))</span>
+              <div>
+                <h3>$(esc(p.title))$(status_tag(p))</h3>
+                <p>$(esc(p.summary))</p>
+              </div>
+            </a>
+          </li>"""
+  end
+  """<ol class="post-list">\n$(join(items, "\n"))\n        </ol>"""
+end
+
+function head(shell, title, description)
+  """
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>$(esc(title))</title>
+  <meta name="description" content="$(esc(description))">
+  <link rel="icon" href="$(ROOT)img/favicon.svg">
+  $(shell.theme)
+  <link href="$(ROOT)css/styles/styleBlog.css" rel="stylesheet">"""
+end
+
+# --- Post pages ----------------------------------------------------------------
+
+parser = CommonMark.Parser()
 CommonMark.enable!(parser, [
-    CommonMark.TableRule(),
-    CommonMark.DollarMathRule(),   # if you're using $...$ math
-    CommonMark.FootnoteRule(),
+  CommonMark.TableRule(),
+  CommonMark.DollarMathRule(),
+  CommonMark.FootnoteRule(),
 ])
 
+function render_body(md)
+  html = CommonMark.html(parser(md))
+  # the title comes from POSTS, so drop a leading "# ..." heading
+  html = replace(html, r"^\s*<h1>.*?</h1>\s*"s => "")
+  # give every h2 an id and collect them for the table of contents
+  toc = Tuple{String,String}[]
+  seen = Dict{String,Int}()
+  html = replace(html, r"<h2>(.*?)</h2>"s => function (m)
+    inner = match(r"<h2>(.*?)</h2>"s, m).captures[1]
+    id = slugify(inner)
+    isempty(id) && (id = "section")
+    n = get(seen, id, 0); seen[id] = n + 1
+    n > 0 && (id = "$(id)-$(n)")
+    push!(toc, (id, inner))
+    """<h2 id="$(id)">$(inner)</h2>"""
+  end)
+  html, toc
+end
 
+function pager(i)
+  prev = i > 1 ? POSTS[i-1] : nothing
+  next = i < length(POSTS) ? POSTS[i+1] : nothing
+  link(p, rel, label) = p === nothing ? "<span></span>" :
+    """<a class="pager-$(rel)" href="$(p.slug).html" rel="$(rel)"><span class="meta">$(label)</span>$(esc(p.title))</a>"""
+  """<nav class="post-pager" aria-label="More posts">
+        $(link(prev, "prev", "← Previous"))
+        $(link(next, "next", "Next →"))
+      </nav>"""
+end
 
-
-# Wrap with your site’s HTML template
-html_page = raw"""
+function post_page(shell, i, body, toc, minutes)
+  p = POSTS[i]
+  toc_html = isempty(toc) ? "" : """
+      <nav class="toc" aria-label="On this page">
+        <h2>On this page</h2>
+        <ol>
+          $(join(["<li><a href=\"#$(id)\">$(strip_tags(t))</a></li>" for (id, t) in toc], "\n          "))
+        </ol>
+      </nav>"""
+  others = join(["""<li><a href="$(q.slug).html"$(q.slug == p.slug ? " aria-current=\"page\"" : "")>$(esc(q.title))</a></li>""" for q in POSTS], "\n          ")
+  """
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{TITLE}}</title>
-  <!-- Favicon -->
-  <link rel="icon" href="../../../img/favicon.svg">
-    <script>
-  (function () {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "light") {
-      document.documentElement.setAttribute("data-theme", savedTheme);
-    }
-  })();
-</script>
-  <!-- Stylesheet -->
-  <link href="../../../css/styles/styleBlog.css" rel="stylesheet">
+  $(head(shell, "$(p.title) — Ignace Decocq", p.summary))
   <script>
     MathJax = {
-    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
-    svg: { fontCache: 'global' }
+      tex: { inlineMath: [['\$', '\$'], ['\\\\(', '\\\\)']] },
+      svg: { fontCache: 'global' }
     };
   </script>
-  <script>
-    // Immediately set theme before rendering
-    (function() {
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme === "light") {
-        document.documentElement.classList.add("light");
-      }
-    })();
-  </script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
-
-
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" async></script>
 </head>
-<body>
-  <aside id="sidebar">
-      <button id="close-sidebar" aria-label="Close menu">&times;</button>
-    <h2>The peccon blog </h2>
-    <ul>
-      <li><a href="index.html">Home</a></li>
-      {{sidebarLinks}}
-    </ul>
-  </aside>
-  <main>
-    <button id="open-sidebar" aria-label="Open menu">&#9776;</button>
 
-    <label class="theme-switch">
-      <input type="checkbox" id="theme-toggle">
-      <span class="slider"></span>
-    </label>
-    <article>
-      {{html_body}}
+<body>
+  $(shell.header)
+
+  <main id="content" class="container post-layout">
+    <article class="post">
+      <header class="post-header">
+        <a class="post-back" href="index.html">← All posts</a>
+        <p class="post-kicker"><span class="tag">$(esc(p.series))</span>$(status_tag(p))</p>
+        <h1>$(esc(p.title))</h1>
+        <p class="post-summary">$(esc(p.summary))</p>
+        <p class="meta">$(fmtdate(p.date)) · $(minutes) min read</p>
+      </header>
+      <div class="post-body">
+$(body)
+      </div>
+      $(pager(i))
     </article>
+
+    <aside class="post-aside">$(toc_html)
+      <nav class="series-nav" aria-label="All posts">
+        <h2>All posts</h2>
+        <ul>
+          $(others)
+        </ul>
+      </nav>
+    </aside>
   </main>
-<script src="../../../js/toggleTheme.js"></script>
-<script src="../../../js/toggleSideBar.js"></script>
+
+  $(shell.footer)
+
+  <script src="$(ROOT)js/toggleTheme.js"></script>
 </body>
+
 </html>
 """
+end
 
+# --- Index page --------------------------------------------------------------
 
-# --- HTML template for index page ---
-index_template = raw"""
+function index_page(shell)
+  sections = String[]
+  for series in unique(p.series for p in POSTS)
+    push!(sections, """
+      <section class="series">
+        <h2>$(esc(series))</h2>
+        $(post_list(filter(p -> p.series == series, POSTS), ""))
+      </section>""")
+  end
+  """
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Blog Index</title>
-  <link rel="icon" href="../../../img/favicon.svg">
-      <script>
-  (function () {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "light") {
-      document.documentElement.setAttribute("data-theme", savedTheme);
-    }
-  })();
-</script>
-  <link href="../../../css/styles/styleBlogIndex.css" rel="stylesheet">
+  $(head(shell, "Blog — Ignace Decocq", "Writing on time, money, and the decisions that connect them: financial planning, interest-rate models and pension design."))
 </head>
-  <body class="index" id="page-top" data-spy="scroll" data-target=".side-menu">
-    <!-- Header -->
-    <div class="header">
-      <div class="menu-container">
-        <ul class="menu">
-          <li><a href="../../../index.html">Home</a></li>
-          <li><a href="index.html" aria-current="page">Blog</a></li>
-          <li><a href="../../../playGround.html">Playground</a></li>
-          <li><a href="../../../project.html">Peccon</a></li>
-        </ul>
-      </div>
-      <label class="theme-switch">
-        <input type="checkbox" id="theme-toggle">
-        <span class="slider">
-          <span class="knob"></span>
-        </span>
-      </label>
-    </div>
 
-    </div>
+<body>
+  $(shell.header)
 
+  <main id="content" class="container">
+    <header class="page-head">
+      <span class="eyebrow">Blog</span>
+      <h1>Writing</h1>
+      <p class="lede">Writing on time, money, and the decisions that connect them. I cover financial planning,
+        investment, and the occasional detour into whatever I'm testing in the playground — always with an eye on
+        how things behave in practice.</p>
+    </header>
+$(join(sections, "\n"))
+  </main>
 
-  <div>
-    <div class="title-description">
-      <div class="title">
-        <h1>The Peccon Blog</h1>
-      </div>
-      <div class="description">
-        <p>Writing on time, money, and the decisions that connect them. I cover financial planning, investment, and the occasional detour into whatever 
-        I'm testing in the playground — always with an eye on how things behave in practice.</p>
-      </div>
-    </div>
-    <div class="blog-overview">
-      <a href="01.BelgiumBonds.html" class="blog-card-link">
-        <div class="blog-card">
-          <div class="blog-content">
-            <h3>Belgium Goverment Bonds</h3>
-            <p>Discover how Belgium Goverment Bonds get priced in the market and how their yield curve is derived.</p>
-            <span class="meta">July, 2026 • Financial Market</span>
-          </div>
-        </div>
-      </a>
-      <a href="02.Vasicek.html" class="blog-card-link">
-        <div class="blog-card">
-          <div class="blog-content">
-            <h3>Modelling bond prices with the Vasicek model</h3>
-            <p>a first principle approach in modelling bond prices.</p>
-            <span class="meta">July, 2026 • Financial Modelling</span>
-          </div>
-        </div>
-      </a>
-      <a href="04.optimalPensionDesign_I.html" class="blog-card-link">
-        <div class="blog-card">
-          <div class="blog-content">
-            <h3>Optimal pension plan design part one- toy example</h3>
-            <p>A simplistic environment in which a Monte Carlo RL agent learns whether contributing to a pension plan is optimal </p>
-            <span class="meta">July, 2026 • Financial Modelling</span>
-          </div>
-        </div>
-      </a>
-      <a href="05.optimalPensionDesign_II.html" class="blog-card-link">
-        <div class="blog-card">
-          <div class="blog-content">
-            <h3>Optimal pension plan design part two- a high dimensional take away </h3>
-            <p> Introducing the inherent risk and variability of the valuation of a pension plan and how this effects valuation  </p>
-            <span class="meta">July, 2026 • Financial Modelling</span>
-          </div>
-        </div>
-      </a>
-      <a href="06.MPT.html" class="blog-card-link">
-        <div class="blog-card">
-          <div class="blog-content">
-            <h3>Modern Portfolio Theory</h3>
-            <p>Explore the principles of Modern Portfolio Theory (MPT) and learn how to optimize your investment portfolio by balancing risk and return...</p>
-            <span class="meta">Jan 2025 • Financial Modelling</span>
-          </div>
-        </div>
-      </a>
-    </div>
-  </div>
+  $(shell.footer)
 
-<script src="../../../js/toggleTheme.js"></script>
-<script src="../../../js/toggleSideBar.js"></script>
+  <script src="$(ROOT)js/toggleTheme.js"></script>
 </body>
+
 </html>
 """
-
-
-for mdfile in posts
-  println("Processing: ", mdfile)
-
-  open(mdfile, "r") do io 
-    doc = CommonMark.parse(parser, io)
-    html_body = CommonMark.html(doc)
-
-    name= splitext(basename(mdfile))[1]
-    title = replace(name, "_" => " ")
-
-
-    # Inject title and sidebar links
-    page = html_page |>
-      x -> replace(x, "{{TITLE}}" => title) |>
-      x -> replace(x, "{{sidebarLinks}}" => sidebarLinks) |>
-      x -> replace(x, "{{html_body}}" => html_body)
-      # x -> replace(x, "" => name) # Just to show you can chain more replacements
-
-    outfile = joinpath(output_dir, name * ".html")
-    mkpath(dirname(outfile))
-    open(outfile, "w") do f
-        write(f, page)
-    end
-  end
-end 
-
-
-# --- Generate blog index ---
-println("Generating blog index page...")
-sidebar = make_side_links(posts)
-index_file = joinpath(output_dir, "index.html")
-open(index_file, "w") do f
-    page = replace(index_template, "{{SIDEBAR}}" => sidebar)
-    write(f, page)
 end
+
+# --- Build ---------------------------------------------------------------------
+
+mkpath(OUTPUT_DIR)
+shell = site_shell()
+
+for (i, p) in enumerate(POSTS)
+  println("Processing: ", p.file)
+  md = read(joinpath(POSTS_DIR, p.file), String)
+  body, toc = render_body(md)
+  minutes = max(1, ceil(Int, length(split(md)) / 220))
+  write(joinpath(OUTPUT_DIR, p.slug * ".html"), post_page(shell, i, body, toc, minutes))
+end
+
+println("Generating blog index page...")
+write(joinpath(OUTPUT_DIR, "index.html"), index_page(shell))
+
+println("Updating latest posts on the home page...")
+latest = first(sort(collect(enumerate(POSTS)), by = ((i, p),) -> (p.date, i), rev = true), 3)
+home = read(HOME_PAGE, String)
+block = "<!-- latest-posts:start -->\n        $(post_list(last.(latest), "blog/posts/generated/"))\n        <!-- latest-posts:end -->"
+write(HOME_PAGE, replace(home, r"<!-- latest-posts:start -->.*?<!-- latest-posts:end -->"s => block))
